@@ -1,0 +1,233 @@
+object FormMain: TFormMain
+  Left = 922
+  Height = 574
+  Top = 193
+  Width = 989
+  Caption = 'LCV'
+  ClientHeight = 574
+  ClientWidth = 989
+  Menu = MainMenu1
+  OnCreate = FormCreate
+  Position = poDefaultPosOnly
+  LCLVersion = '3.2.0.0'
+  object Chart1: TChart
+    Cursor = crCross
+    Left = 0
+    Height = 525
+    Top = 26
+    Width = 989
+    AutoFocus = True
+    AxisList = <    
+      item
+        Grid.Color = clSilver
+        Arrow.Inverted = True
+        Inverted = True
+        Marks.LabelBrush.Style = bsClear
+        Minors = <>
+        Title.LabelFont.Orientation = 900
+        Title.LabelBrush.Style = bsClear
+      end    
+      item
+        Grid.Color = clSilver
+        Intervals.MaxLength = 200
+        Intervals.MinLength = 100
+        Intervals.NiceSteps = '0.1|1'
+        Alignment = calBottom
+        Marks.LabelBrush.Style = bsClear
+        Minors = <>
+        Title.LabelBrush.Style = bsClear
+      end>
+    Title.Text.Strings = (
+      'TAChart'
+    )
+    Align = alClient
+    OnClick = Chart1Click
+    OnMouseMove = Chart1MouseMove
+    object Chart1LineSeriesData: TLineSeries
+      LineType = ltNone
+      Pointer.Brush.Color = clPurple
+      Pointer.HorizSize = 2
+      Pointer.Pen.Color = clPurple
+      Pointer.Style = psCircle
+      Pointer.VertSize = 2
+      Pointer.Visible = True
+      ShowPoints = True
+    end
+    object Chart1LineSeriesModel: TLineSeries
+    end
+  end
+  object StatusBar1: TStatusBar
+    Left = 0
+    Height = 23
+    Top = 551
+    Width = 989
+    Panels = <    
+      item
+        Width = 200
+      end    
+      item
+        Width = 400
+      end    
+      item
+        Width = 50
+      end>
+    SimplePanel = False
+  end
+  object ToolBar1: TToolBar
+    Left = 0
+    Height = 26
+    Top = 0
+    Width = 989
+    Caption = 'ToolBar1'
+    ParentShowHint = False
+    ShowHint = True
+    TabOrder = 2
+    object ToolButton1: TToolButton
+      Left = 1
+      Top = 2
+      Action = ActionOpen
+    end
+    object ToolButton2: TToolButton
+      Left = 24
+      Height = 22
+      Top = 2
+      Caption = 'ToolButton2'
+      Style = tbsDivider
+    end
+    object ToolButton3: TToolButton
+      Left = 29
+      Top = 2
+      Action = ActionRawData
+    end
+    object ToolButton4: TToolButton
+      Left = 52
+      Top = 2
+      Action = ActionPhasePlotSimple
+    end
+  end
+  object MainMenu1: TMainMenu
+    Left = 48
+    Top = 96
+    object MenuFile: TMenuItem
+      Caption = '&File'
+      object MenuItem1: TMenuItem
+        Action = ActionOpen
+      end
+      object MenuItemExit: TMenuItem
+        Action = ActionExit
+      end
+    end
+    object MenuView: TMenuItem
+      Caption = '&View'
+      object MenuItemInvertedY: TMenuItem
+        Action = ActionInvertedY
+      end
+      object MenuItemRawData: TMenuItem
+        Action = ActionRawData
+      end
+      object MenuItemPhasePlot: TMenuItem
+        Action = ActionPhasePlot
+      end
+    end
+    object MenuItemTools: TMenuItem
+      Caption = '&Tools'
+      object MenuItem2: TMenuItem
+        Action = ActionPeriodogram
+      end
+    end
+  end
+  object ActionList1: TActionList
+    Images = ImageList1
+    OnUpdate = ActionList1Update
+    Left = 104
+    Top = 96
+    object ActionExit: TAction
+      Category = 'File'
+      Caption = 'E&xit'
+      Hint = 'Exit Application'
+      OnExecute = ActionExitExecute
+    end
+    object ActionOpen: TAction
+      Category = 'File'
+      Caption = '&Open...'
+      Hint = 'Open Data File'
+      ImageIndex = 0
+      OnExecute = ActionOpenExecute
+      ShortCut = 16463
+    end
+    object ActionInvertedY: TAction
+      Category = 'View'
+      Caption = 'Inverted &Y Axis'
+      Hint = 'Invert Y Axis'
+      OnExecute = ActionInvertedYExecute
+    end
+    object ActionPhasePlot: TAction
+      Category = 'View'
+      Caption = '&Phase Plot...'
+      Hint = 'Phase Plot'
+      ImageIndex = 2
+      OnExecute = ActionPhasePlotExecute
+    end
+    object ActionPhasePlotSimple: TAction
+      Category = 'View'
+      Caption = 'ActionPhasePlotSimple'
+      Hint = 'Phase Plot'
+      ImageIndex = 2
+      OnExecute = ActionPhasePlotSimpleExecute
+    end
+    object ActionRawData: TAction
+      Category = 'View'
+      Caption = '&Raw Data'
+      Hint = 'Raw Data'
+      ImageIndex = 1
+      OnExecute = ActionRawDataExecute
+    end
+    object ActionPeriodogram: TAction
+      Category = 'Tools'
+      Caption = 'Periodogram'
+      OnExecute = ActionPeriodogramExecute
+    end
+  end
+  object OpenDialog1: TOpenDialog
+    Title = ''
+    DefaultExt = '.tsv'
+    Filter = 'Tab-separated text files (*.tsv)|*.tsv|All files (*.*)|*.*'
+    Options = [ofFileMustExist, ofEnableSizing, ofViewDetail]
+    Left = 48
+    Top = 144
+  end
+  object ListChartSourceData: TListChartSource
+    Left = 48
+    Top = 192
+  end
+  object ListChartSourceFoldedData: TListChartSource
+    Left = 104
+    Top = 192
+  end
+  object ImageList1: TImageList
+    Left = 270
+    Top = 96
+    Bitmap = {
+      4C7A030000001000000010000000640200000000000078DADD95DB4FD3501CC7
+      FD13FC037CF4D1071F34C6682282BCF8A0091885181D331A83C6857889112FE0
+      056F204198221B08112FCC2091CBB30A1A240698A2A28C7587759776C0C6861B
+      9355F97A3AECD268CB4A409936F9E434FDFE3EBDFCCE690B6019FE71D26E3BD8
+      DD2D1CD94311C75D162FC9301383565FDFCA9387A38044233F83C2EE903FB7D9
+      4B72283B1F7BE2645BDC24BBC94D361AEDACDCD73DE5499D5B80898DA1DA390D
+      A3238A9B4C14E5C311940E8571F57318258393B8F02184A28120B63F7212B99F
+      D3EC21796D3CF4ED3EE8DB7CC84BC04327D2CA636F1C2E3EE63EE1841D168F6B
+      83D15E22FA594D2C11B3461F3453628D086BCA6C99A2BFF5C108D177F0BFD5DC
+      E381066E06F5943ACF77D4BABFC14CA97109D0B573AED5C56479BCFF66BBBBA0
+      33803BAC806ACAAD91589C2AC7342A2915CC57DA8B286E504A6D53B83E34856D
+      F7D93EE9F937D5D8C7CFF587E8F108AE51AE7C0AE332E5D2C72FB84839FF7E12
+      C594A28110CEBE0BE2CCDB10324C8E8EC4FC9B98B078ECB4358842EB044EF54F
+      E0645F00277AFD38DE1BC0B1377E1CA514F48CC3D03386FC2E1FD6570D974B7E
+      7A2D1335BC1EC311CAE1EE511C7AE5433EE5E04B1E07BA78ECEFE4B0EF8517FA
+      E75EE89E7990D5E2C4AAB2C14CC95F5B6113B6343862E9F54C82CD77ED142696
+      F6739C65767F5DA54D907AB7D4D00D0BD952CD5FB9C2AF5AAB94C97D2957AA53
+      CBFE94FF6B9D5AA6E42B5D472D4B155FA95EAD67F24CCDD73A1FC97CA5B99067
+      A23FDF3527CF1663FD2F94FFE9FDD7DAFB64FE5C6BE76FFB739D23999FEC1E52
+      D19FCFB7408BAFF5FB9BCC579A8BC5FCFF2CC5FBFF0360E9C17C
+    }
+  end
+end
