@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Menus, ActnList,
-  ComCtrls, TAGraph, TASources, TASeries, TACustomSource;
+  ComCtrls, TAGraph, TASources, TASeries, TACustomSource, DoLongOp, unitdcdft;
 
 type
 
@@ -57,6 +57,8 @@ type
     procedure FormCreate(Sender: TObject);
   private
     FFileName: string;
+    FPeriodogramFirstRun: Boolean;
+    FDCDFTThreadOnTerminated: Boolean;
     procedure CloseFile;
     procedure OpenFile(const AFileName: string);
     procedure PlotData;
@@ -66,6 +68,8 @@ type
     procedure CalcAndPlotFoldedProc(Period, Epoch: Double);
     procedure SetAxisBoundaries(Xmin, Xmax, Ymin, Ymax: Double; ExpandX, ExpandY: Boolean);
     procedure Periodogram;
+    function DoDCDFT(params: Pointer; ProgressCaptionProc: TProgressCaptionProc): Integer;
+    procedure DCDFTThreadOnTerminate(Sender: TObject);
   public
 
   end;
@@ -78,7 +82,7 @@ implementation
 {$R *.lfm}
 
 uses
-  Windows, math, typ, TAChartUtils, unitphasedialog, dataio;
+  Windows, math, typ, TAChartUtils, unitphasedialog, unitdftparamdialog, unitdftdialog, dataio;
 
 { TFormMain }
 
@@ -178,6 +182,7 @@ end;
 procedure TFormMain.CloseFile;
 begin
   FFileName := '';
+  FPeriodogramFirstRun := True;
   Chart1LineSeriesData.Source := nil;
   ListChartSourceData.Clear;
   ListChartSourceFoldedData.Clear;
@@ -316,9 +321,103 @@ begin
 end;
 
 procedure TFormMain.Periodogram;
+var
+  I: Integer;
+  Item: PChartDataItem;
+  MinX, MaxX: Double;
+  frequencies, periods, amp, power: TFloatArray;
+  params: TDCDFTparameters;
 begin
-  ShowMessage('Not implemented yet');
+  if ListChartSourceData.Count > 0 then begin
+    SetLength(params.X, ListChartSourceData.Count);
+    SetLength(params.Y, ListChartSourceData.Count);
+    for I := 0 to ListChartSourceData.Count - 1 do begin
+      Item := ListChartSourceData.Item[I];
+      params.X[I] := Item^.X;
+      params.Y[I] := Item^.Y;
+    end;
+    if FPeriodogramFirstRun then begin
+      MinX := MinValue(params.X);
+      MaxX := MaxValue(params.X);
+      SetCurrentFrequencyResolution(0.05 / (MaxX - MinX));
+      FPeriodogramFirstRun := False;
+    end;
+    if not GetDFTparams(params.FrequencyMin, params.FrequencyMax, params.FrequencyResolution) then
+      Exit;
+    FormDFTDialog.Hide;
+    params.Error := '';
+    try
+      DoLongOp.DoLongOperation(@DoDCDFT, @params);
+    except
+      on E: Exception do begin
+        ShowMessage(E.Message);
+        Exit;
+      end;
+    end;
+    if params.Error <> '' then begin
+      ShowMessage('Error:'^M^J + params.Error);
+      Exit;
+    end;
+    //ShowMessage('Done!');
+    FormDFTDialog.PlotData(params.frequencies, params.periods, params.amp, params.power);
+  end;
 end;
+
+type
+  TDCDFTThread = class(TThread)
+  private
+    FParamsPtr: PDCDFTparameters;
+  protected
+    procedure Execute; override;
+  public
+    constructor Create(AParamsPtr: PDCDFTparameters);
+  end;
+
+constructor TDCDFTThread.Create(AParamsPtr: PDCDFTparameters);
+begin
+  inherited Create(True);
+  FParamsPtr := AParamsPtr;
+end;
+
+procedure TDCDFTThread.Execute;
+begin
+  try
+    dcdft_proc(FParamsPtr^.X, FParamsPtr^.Y,
+               FParamsPtr^.FrequencyMin, FParamsPtr^.FrequencyMax, FParamsPtr^.FrequencyResolution,
+               True, 0,
+               FParamsPtr^.frequencies, FParamsPtr^.periods, FParamsPtr^.amp, FParamsPtr^.power);
+  except
+    on E: Exception do begin
+      FParamsPtr^.Error := E.Message;
+      if FParamsPtr^.Error = '' then
+        FParamsPtr^.Error := 'Unknown Error';
+    end
+    else
+      FParamsPtr^.Error := 'Unknown Error';
+  end;
+end;
+
+procedure TFormMain.DCDFTThreadOnTerminate(Sender: TObject);
+begin
+  FDCDFTThreadOnTerminated := True;
+end;
+
+function TFormMain.DoDCDFT(params: Pointer; ProgressCaptionProc: TProgressCaptionProc): Integer;
+var
+  DCDFTThread: TDCDFTThread;
+begin
+  FDCDFTThreadOnTerminated := False;
+  DCDFTThread := TDCDFTThread.Create(PDCDFTparameters(params));
+  DCDFTThread.OnTerminate := @DCDFTThreadOnTerminate;
+  DCDFTThread.FreeOnTerminate := True;
+  DCDFTThread.Start;
+  while not FDCDFTThreadOnTerminated do begin
+    Application.ProcessMessages;
+    Sleep(0);
+  end;
+  Result := 0;
+end;
+
 
 end.
 

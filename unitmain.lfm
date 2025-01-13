@@ -1,7 +1,7 @@
 object FormMain: TFormMain
-  Left = 922
+  Left = 499
   Height = 574
-  Top = 193
+  Top = 205
   Width = 989
   Caption = 'LCV'
   ClientHeight = 574
@@ -16,7 +16,6 @@ object FormMain: TFormMain
     Height = 525
     Top = 26
     Width = 989
-    AutoFocus = True
     AxisList = <    
       item
         Grid.Color = clSilver

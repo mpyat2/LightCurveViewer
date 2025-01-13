@@ -28,12 +28,16 @@ object FormDFTDialog: TFormDFTDialog
         Width = 705
         AxisList = <        
           item
+            Grid.Color = clSilver
             Marks.LabelBrush.Style = bsClear
             Minors = <>
             Title.LabelFont.Orientation = 900
             Title.LabelBrush.Style = bsClear
           end        
           item
+            Grid.Color = clSilver
+            Intervals.MaxLength = 200
+            Intervals.MinLength = 100
             Alignment = calBottom
             Marks.LabelBrush.Style = bsClear
             Minors = <>

@@ -1,0 +1,75 @@
+object FormDFTparams: TFormDFTparams
+  Left = 668
+  Height = 167
+  Top = 422
+  Width = 308
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsDialog
+  Caption = 'Parameters'
+  ClientHeight = 167
+  ClientWidth = 308
+  Position = poMainFormCenter
+  LCLVersion = '3.2.0.0'
+  object LabelFrequencyMin: TLabel
+    Left = 24
+    Height = 15
+    Top = 16
+    Width = 111
+    Caption = 'Minimum Frequency'
+  end
+  object EditFrequencyMin: TEdit
+    Left = 144
+    Height = 23
+    Top = 16
+    Width = 144
+    TabOrder = 0
+  end
+  object LabelFrequencyMax: TLabel
+    Left = 24
+    Height = 15
+    Top = 49
+    Width = 112
+    Caption = 'Maximum Frequency'
+  end
+  object EditFrequencyMax: TEdit
+    Left = 144
+    Height = 23
+    Top = 49
+    Width = 144
+    TabOrder = 1
+  end
+  object LabelFrequencyResolution: TLabel
+    Left = 24
+    Height = 15
+    Top = 83
+    Width = 56
+    Caption = 'Resolution'
+  end
+  object EditFrequencyResolution: TEdit
+    Left = 144
+    Height = 23
+    Top = 83
+    Width = 144
+    TabOrder = 2
+  end
+  object ButtonOk: TButton
+    Left = 53
+    Height = 25
+    Top = 128
+    Width = 75
+    Caption = 'OK'
+    Default = True
+    TabOrder = 3
+    OnClick = ButtonOkClick
+  end
+  object ButtonCancel: TButton
+    Left = 184
+    Height = 25
+    Top = 128
+    Width = 75
+    Cancel = True
+    Caption = 'Cancel'
+    ModalResult = 2
+    TabOrder = 4
+  end
+end

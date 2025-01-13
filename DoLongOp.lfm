@@ -1,0 +1,42 @@
+object FormLongOperation: TFormLongOperation
+  Left = 372
+  Top = 290
+  BorderIcons = []
+  BorderStyle = bsDialog
+  ClientHeight = 31
+  ClientWidth = 314
+  Color = clActiveCaption
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'MS Sans Serif'
+  Font.Style = []
+  OldCreateOrder = False
+  Position = poOwnerFormCenter
+  OnActivate = FormActivate
+  OnCreate = FormCreate
+  PixelsPerInch = 96
+  TextHeight = 13
+  object LabelProgress: TLabel
+    Left = 4
+    Top = 8
+    Width = 78
+    Height = 13
+    Caption = 'Please wait...'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWhite
+    Font.Height = -11
+    Font.Name = 'MS Sans Serif'
+    Font.Style = [fsBold]
+    ParentFont = False
+  end
+  object ButtonCancel: TButton
+    Left = 236
+    Top = 4
+    Width = 77
+    Height = 25
+    Cancel = True
+    Caption = 'Cancel'
+    TabOrder = 0
+  end
+end
