@@ -8,10 +8,9 @@
       <Unit>
         <Filename Value="LCV.lpr"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="7"/>
+        <EditorIndex Value="-1"/>
         <CursorPos X="77" Y="13"/>
-        <UsageCount Value="50"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="55"/>
       </Unit>
       <Unit>
         <Filename Value="unitmain.pas"/>
@@ -20,9 +19,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="unitMain"/>
-        <TopLine Value="389"/>
-        <CursorPos X="24" Y="347"/>
-        <UsageCount Value="50"/>
+        <TopLine Value="332"/>
+        <CursorPos X="25" Y="349"/>
+        <UsageCount Value="55"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -30,7 +29,8 @@
         <Filename Value="dataio.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <UsageCount Value="50"/>
+        <CursorPos X="46" Y="8"/>
+        <UsageCount Value="55"/>
       </Unit>
       <Unit>
         <Filename Value="unitphasedialog.pas"/>
@@ -38,12 +38,10 @@
         <ComponentName Value="FormPhaseDialog"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="83"/>
         <CursorPos X="13" Y="133"/>
-        <UsageCount Value="43"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
+        <UsageCount Value="48"/>
       </Unit>
       <Unit>
         <Filename Value="unitdftdialog.pas"/>
@@ -51,140 +49,13 @@
         <ComponentName Value="FormDFTDialog"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="2"/>
-        <TopLine Value="19"/>
-        <CursorPos X="40" Y="45"/>
-        <UsageCount Value="29"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="49"/>
+        <CursorPos X="10" Y="76"/>
+        <UsageCount Value="34"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\..\..\lazarus64\lcl\include\control.inc"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="3990"/>
-        <CursorPos Y="4009"/>
-        <UsageCount Value="8"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\..\..\lazarus64\components\tachart\tagraph.pas"/>
-        <UnitName Value="TAGraph"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="1972"/>
-        <CursorPos Y="1990"/>
-        <UsageCount Value="18"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\..\..\lazarus64\fpc\3.2.2\source\rtl\objpas\objpas.pp"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="113"/>
-        <CursorPos X="16" Y="131"/>
-        <UsageCount Value="8"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\..\..\lazarus64\components\tachart\taseries.pas"/>
-        <UnitName Value="TASeries"/>
-        <EditorIndex Value="-1"/>
-        <UsageCount Value="16"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\..\..\lazarus64\components\tachart\tacustomseries.pas"/>
-        <UnitName Value="TACustomSeries"/>
-        <EditorIndex Value="5"/>
-        <TopLine Value="814"/>
-        <CursorPos Y="831"/>
-        <UsageCount Value="17"/>
-        <Loaded Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\..\..\lazarus64\components\tachart\tasources.pas"/>
-        <UnitName Value="TASources"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="659"/>
-        <CursorPos Y="683"/>
-        <UsageCount Value="15"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\..\..\lazarus64\components\tachart\tacustomsource.pas"/>
-        <UnitName Value="TACustomSource"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="262"/>
-        <CursorPos X="14" Y="278"/>
-        <UsageCount Value="15"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\..\..\lazarus64\components\tachart\tachartutils.pas"/>
-        <UnitName Value="TAChartUtils"/>
-        <EditorIndex Value="-1"/>
-        <UsageCount Value="15"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\..\..\lazarus64\components\tachart\tachartaxis.pas"/>
-        <UnitName Value="TAChartAxis"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="17"/>
-        <CursorPos X="13" Y="45"/>
-        <UsageCount Value="15"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\..\..\lazarus64\lcl\forms.pp"/>
-        <UnitName Value="Forms"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="725"/>
-        <CursorPos X="14" Y="741"/>
-        <UsageCount Value="9"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\..\..\lazarus64\fpc\3.2.2\source\rtl\objpas\sysutils\sysstrh.inc"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="195"/>
-        <CursorPos X="20" Y="206"/>
-        <UsageCount Value="13"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\..\..\lazarus64\lcl\dialogs.pp"/>
-        <UnitName Value="Dialogs"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="713"/>
-        <CursorPos X="11" Y="730"/>
-        <UsageCount Value="13"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\..\..\lazarus64\lcl\include\messagedialogs.inc"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="206"/>
-        <CursorPos X="3" Y="208"/>
-        <UsageCount Value="13"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\..\..\lazarus64\fpc\3.2.2\source\rtl\objpas\math.pp"/>
-        <UnitName Value="Math"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="394"/>
-        <CursorPos X="10" Y="411"/>
-        <UsageCount Value="13"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\..\..\lazarus64\components\tachart\tatransformations.pas"/>
-        <UnitName Value="TATransformations"/>
-        <EditorIndex Value="-1"/>
-        <CursorPos X="22" Y="25"/>
-        <UsageCount Value="11"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\..\..\lazarus64\lcl\controls.pp"/>
-        <UnitName Value="Controls"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="41"/>
-        <CursorPos X="7" Y="60"/>
-        <UsageCount Value="9"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\..\..\lazarus64\lcl\actnlist.pas"/>
-        <UnitName Value="ActnList"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="107"/>
-        <CursorPos X="14" Y="124"/>
-        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="unitdftparamdialog.pas"/>
@@ -192,149 +63,380 @@
         <ComponentName Value="FormDFTparams"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="62"/>
         <CursorPos X="14" Y="38"/>
-        <UsageCount Value="28"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\..\..\lazarus64\lcl\include\application.inc"/>
-        <EditorIndex Value="8"/>
-        <TopLine Value="2237"/>
-        <CursorPos X="3" Y="2233"/>
-        <UsageCount Value="14"/>
-        <Loaded Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\..\..\lazarus64\fpc\3.2.2\source\rtl\inc\objpash.inc"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="189"/>
-        <CursorPos X="23" Y="206"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="33"/>
       </Unit>
       <Unit>
         <Filename Value="unitdcdft.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="1"/>
-        <TopLine Value="308"/>
-        <CursorPos X="5" Y="231"/>
-        <UsageCount Value="26"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="302"/>
+        <CursorPos X="22" Y="313"/>
+        <UsageCount Value="31"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="DoLongOp.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FormLongOperation"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="4"/>
-        <TopLine Value="141"/>
-        <CursorPos X="19" Y="142"/>
+        <TopLine Value="25"/>
+        <CursorPos X="10" Y="42"/>
+        <UsageCount Value="30"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="dftthread.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="9"/>
+        <CursorPos Y="37"/>
         <UsageCount Value="25"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="..\..\..\lazarus64\fpc\3.2.2\source\rtl\objpas\classes\classesh.inc"/>
+        <Filename Value="common.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="25" Y="8"/>
+        <UsageCount Value="25"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus64\lcl\include\control.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="3990"/>
+        <CursorPos Y="4009"/>
+        <UsageCount Value="8"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus64\components\tachart\tagraph.pas"/>
+        <UnitName Value="TAGraph"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1972"/>
+        <CursorPos Y="1990"/>
+        <UsageCount Value="18"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus64\fpc\3.2.2\source\rtl\objpas\objpas.pp"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="113"/>
+        <CursorPos X="16" Y="131"/>
+        <UsageCount Value="8"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus64\components\tachart\taseries.pas"/>
+        <UnitName Value="TASeries"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="16"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus64\components\tachart\tacustomseries.pas"/>
+        <UnitName Value="TACustomSeries"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="814"/>
+        <CursorPos Y="831"/>
+        <UsageCount Value="17"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus64\components\tachart\tasources.pas"/>
+        <UnitName Value="TASources"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="659"/>
+        <CursorPos Y="683"/>
+        <UsageCount Value="15"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus64\components\tachart\tacustomsource.pas"/>
+        <UnitName Value="TACustomSource"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="262"/>
+        <CursorPos X="14" Y="278"/>
+        <UsageCount Value="15"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus64\components\tachart\tachartutils.pas"/>
+        <UnitName Value="TAChartUtils"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="15"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus64\components\tachart\tachartaxis.pas"/>
+        <UnitName Value="TAChartAxis"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="17"/>
+        <CursorPos X="13" Y="45"/>
+        <UsageCount Value="15"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus64\lcl\forms.pp"/>
+        <UnitName Value="Forms"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="725"/>
+        <CursorPos X="14" Y="741"/>
+        <UsageCount Value="9"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus64\fpc\3.2.2\source\rtl\objpas\sysutils\sysstrh.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="195"/>
+        <CursorPos X="20" Y="206"/>
+        <UsageCount Value="13"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus64\lcl\dialogs.pp"/>
+        <UnitName Value="Dialogs"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="713"/>
+        <CursorPos X="11" Y="730"/>
+        <UsageCount Value="13"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus64\lcl\include\messagedialogs.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="206"/>
+        <CursorPos X="3" Y="208"/>
+        <UsageCount Value="13"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus64\fpc\3.2.2\source\rtl\objpas\math.pp"/>
+        <UnitName Value="Math"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="394"/>
+        <CursorPos X="10" Y="411"/>
+        <UsageCount Value="13"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus64\components\tachart\tatransformations.pas"/>
+        <UnitName Value="TATransformations"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="22" Y="25"/>
+        <UsageCount Value="11"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus64\lcl\controls.pp"/>
+        <UnitName Value="Controls"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="41"/>
+        <CursorPos X="7" Y="60"/>
+        <UsageCount Value="9"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus64\lcl\actnlist.pas"/>
+        <UnitName Value="ActnList"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="107"/>
+        <CursorPos X="14" Y="124"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus64\lcl\include\application.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="2237"/>
+        <CursorPos X="3" Y="2233"/>
+        <UsageCount Value="14"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus64\fpc\3.2.2\source\rtl\inc\objpash.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="189"/>
+        <CursorPos X="23" Y="206"/>
+        <UsageCount Value="9"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus64\fpc\3.2.2\source\rtl\objpas\classes\classesh.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="1802"/>
         <CursorPos X="83" Y="1829"/>
         <UsageCount Value="11"/>
       </Unit>
+      <Unit>
+        <Filename Value="..\..\lazarus\fpc\3.2.2\source\rtl\objpas\classes\classesh.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="100"/>
+        <CursorPos X="44" Y="118"/>
+        <UsageCount Value="12"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\lazarus\lcl\include\customform.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="2120"/>
+        <CursorPos Y="2138"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\lazarus\fpc\3.2.2\source\rtl\objpas\sysutils\sysutilh.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="225"/>
+        <CursorPos X="14" Y="242"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\lazarus\fpc\3.2.2\source\rtl\objpas\sysutils\sysutils.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="600"/>
+        <CursorPos X="3" Y="603"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\lazarus\fpc\3.2.2\source\rtl\objpas\sysconst.pp"/>
+        <UnitName Value="SysConst"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="3" Y="30"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\lazarus\fpc\3.2.2\source\rtl\inc\typshrdh.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="121"/>
+        <CursorPos X="19" Y="150"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\lazarus\lcl\graphics.pp"/>
+        <UnitName Value="Graphics"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1148"/>
+        <CursorPos X="15" Y="1164"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\lazarus\fpc\3.2.2\source\packages\amunits\src\coreunits\clipboard.pas"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\lazarus\lcl\clipbrd.pp"/>
+        <UnitName Value="Clipbrd"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="199"/>
+        <CursorPos X="26" Y="236"/>
+        <UsageCount Value="10"/>
+      </Unit>
     </Units>
-    <JumpHistory HistoryIndex="22">
+    <JumpHistory HistoryIndex="29">
       <Position>
         <Filename Value="unitdftdialog.pas"/>
-        <Caret Line="9" Column="31"/>
-      </Position>
-      <Position>
-        <Filename Value="unitdftdialog.pas"/>
-        <Caret Line="24"/>
+        <Caret Line="60" Column="25" TopLine="33"/>
       </Position>
       <Position>
         <Filename Value="unitdftdialog.pas"/>
-        <Caret Line="45" Column="8" TopLine="13"/>
-      </Position>
-      <Position>
-        <Filename Value="unitmain.pas"/>
-        <Caret Line="361" Column="5" TopLine="316"/>
-      </Position>
-      <Position>
-        <Filename Value="unitmain.pas"/>
-        <Caret Line="85" Column="89" TopLine="58"/>
+        <Caret Line="62" TopLine="33"/>
       </Position>
       <Position>
         <Filename Value="unitdftdialog.pas"/>
-        <Caret Line="44" Column="3" TopLine="13"/>
+        <Caret Line="72" TopLine="41"/>
       </Position>
       <Position>
         <Filename Value="unitdftdialog.pas"/>
-        <Caret Line="43" Column="12" TopLine="16"/>
+        <Caret Line="73" TopLine="42"/>
       </Position>
       <Position>
         <Filename Value="unitdftdialog.pas"/>
-        <Caret Line="45" Column="34" TopLine="19"/>
+        <Caret Line="74" TopLine="43"/>
       </Position>
       <Position>
         <Filename Value="unitdftdialog.pas"/>
-        <Caret Line="46" TopLine="19"/>
+        <Caret Line="81" TopLine="46"/>
       </Position>
       <Position>
         <Filename Value="unitdftdialog.pas"/>
-        <Caret Line="44" Column="20" TopLine="19"/>
-      </Position>
-      <Position>
-        <Filename Value="unitmain.pas"/>
-        <Caret Line="370" Column="32" TopLine="373"/>
+        <Caret Line="28" Column="6" TopLine="15"/>
       </Position>
       <Position>
         <Filename Value="unitdftdialog.pas"/>
-        <Caret Line="44" TopLine="19"/>
-      </Position>
-      <Position>
-        <Filename Value="..\..\..\lazarus64\components\tachart\tacustomseries.pas"/>
-        <Caret Line="829" TopLine="811"/>
-      </Position>
-      <Position>
-        <Filename Value="..\..\..\lazarus64\components\tachart\tacustomseries.pas"/>
-        <Caret Line="830" TopLine="811"/>
-      </Position>
-      <Position>
-        <Filename Value="..\..\..\lazarus64\components\tachart\tacustomseries.pas"/>
-        <Caret Line="1093" TopLine="1076"/>
-      </Position>
-      <Position>
-        <Filename Value="..\..\..\lazarus64\components\tachart\tacustomseries.pas"/>
-        <Caret Line="1094" TopLine="1076"/>
-      </Position>
-      <Position>
-        <Filename Value="..\..\..\lazarus64\components\tachart\tacustomseries.pas"/>
-        <Caret Line="1096" TopLine="1076"/>
-      </Position>
-      <Position>
-        <Filename Value="..\..\..\lazarus64\components\tachart\tacustomseries.pas"/>
-        <Caret Line="1097" TopLine="1076"/>
-      </Position>
-      <Position>
-        <Filename Value="..\..\..\lazarus64\components\tachart\tacustomseries.pas"/>
-        <Caret Line="831" TopLine="814"/>
+        <Caret Line="42" Column="14" TopLine="31"/>
       </Position>
       <Position>
         <Filename Value="unitdftdialog.pas"/>
-        <Caret Line="45" TopLine="19"/>
+        <Caret Line="67" Column="36" TopLine="34"/>
       </Position>
       <Position>
         <Filename Value="unitdftdialog.pas"/>
-        <Caret Line="41" Column="13" TopLine="19"/>
+        <Caret Line="28" Column="14" TopLine="14"/>
       </Position>
       <Position>
         <Filename Value="unitdftdialog.pas"/>
-        <Caret Line="44" Column="8" TopLine="19"/>
+        <Caret Line="77" Column="15" TopLine="62"/>
       </Position>
       <Position>
         <Filename Value="unitdftdialog.pas"/>
-        <Caret Line="45" TopLine="19"/>
+        <Caret Line="78" TopLine="62"/>
+      </Position>
+      <Position>
+        <Filename Value="unitdftdialog.pas"/>
+        <Caret Line="79" TopLine="62"/>
+      </Position>
+      <Position>
+        <Filename Value="unitdftdialog.pas"/>
+        <Caret Line="80" TopLine="62"/>
+      </Position>
+      <Position>
+        <Filename Value="unitdftdialog.pas"/>
+        <Caret Line="86" TopLine="62"/>
+      </Position>
+      <Position>
+        <Filename Value="unitdftdialog.pas"/>
+        <Caret Line="93" TopLine="64"/>
+      </Position>
+      <Position>
+        <Filename Value="unitdftdialog.pas"/>
+        <Caret Line="75" TopLine="64"/>
+      </Position>
+      <Position>
+        <Filename Value="unitdftdialog.pas"/>
+        <Caret Line="98" TopLine="69"/>
+      </Position>
+      <Position>
+        <Filename Value="unitdftdialog.pas"/>
+        <Caret Line="75" TopLine="68"/>
+      </Position>
+      <Position>
+        <Filename Value="unitdftdialog.pas"/>
+        <Caret Line="77" TopLine="68"/>
+      </Position>
+      <Position>
+        <Filename Value="unitdftdialog.pas"/>
+        <Caret Line="78" TopLine="68"/>
+      </Position>
+      <Position>
+        <Filename Value="unitdftdialog.pas"/>
+        <Caret Line="79" TopLine="68"/>
+      </Position>
+      <Position>
+        <Filename Value="unitdftdialog.pas"/>
+        <Caret Line="80" TopLine="68"/>
+      </Position>
+      <Position>
+        <Filename Value="unitdftdialog.pas"/>
+        <Caret Line="86" TopLine="68"/>
+      </Position>
+      <Position>
+        <Filename Value="unitdftdialog.pas"/>
+        <Caret Line="93" TopLine="68"/>
+      </Position>
+      <Position>
+        <Filename Value="unitdftdialog.pas"/>
+        <Caret Line="75" TopLine="68"/>
+      </Position>
+      <Position>
+        <Filename Value="unitdftdialog.pas"/>
+        <Caret Line="105" TopLine="84"/>
+      </Position>
+      <Position>
+        <Filename Value="unitdftdialog.pas"/>
+        <Caret Line="61" TopLine="49"/>
+      </Position>
+      <Position>
+        <Filename Value="unitdftdialog.pas"/>
+        <Caret Line="62" TopLine="49"/>
+      </Position>
+      <Position>
+        <Filename Value="unitdftdialog.pas"/>
+        <Caret Line="63" TopLine="49"/>
       </Position>
     </JumpHistory>
     <RunParams>

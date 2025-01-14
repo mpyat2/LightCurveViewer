@@ -6,8 +6,10 @@ object FormDFTDialog: TFormDFTDialog
   Caption = 'Periodogram'
   ClientHeight = 469
   ClientWidth = 713
+  FormStyle = fsStayOnTop
+  OnCreate = FormCreate
   Position = poMainFormCenter
-  LCLVersion = '3.2.0.0'
+  LCLVersion = '3.6.0.0'
   object PageControl1: TPageControl
     Left = 0
     Height = 469
@@ -53,6 +55,39 @@ object FormDFTDialog: TFormDFTDialog
     end
     object TabSheetTable: TTabSheet
       Caption = 'Table'
+      ClientHeight = 441
+      ClientWidth = 705
+      object DrawGrid1: TDrawGrid
+        Left = 0
+        Height = 441
+        Top = 0
+        Width = 705
+        Align = alClient
+        ColCount = 2
+        DefaultColWidth = 200
+        ExtendedSelect = False
+        FixedCols = 0
+        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goSmoothScroll]
+        PopupMenu = PopupMenuGrid
+        TabOrder = 0
+      end
+    end
+  end
+  object PopupMenuGrid: TPopupMenu
+    Left = 24
+    Top = 63
+    object MenuItem1: TMenuItem
+      Action = ActionGridCopyAll
+    end
+  end
+  object ActionList: TActionList
+    Left = 112
+    Top = 63
+    object ActionGridCopyAll: TAction
+      Category = 'Grid'
+      Caption = 'Copy &All'
+      OnExecute = ActionGridCopyAllExecute
+      ShortCut = 24643
     end
   end
 end

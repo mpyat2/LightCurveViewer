@@ -9,10 +9,9 @@ unit unitdcdft;
 interface
 
 uses
-  Windows, Classes, SysUtils, math, typ, sle;
+  Windows, Classes, SysUtils, math, typ, sle, common;
 
 type
-  TFloatArray = array of ArbFloat;
   TFloat3 = array[0..2] of ArbFloat;
   TFloat3Array = array of TFloat3;
 
@@ -39,7 +38,17 @@ procedure dcdft_proc(
           CmdLineNumberOfThreads: Integer;
           out frequencies, periods, amp, power: TFloatArray);
 
+procedure SetGlobalTerminateAllThreads(AValue: Boolean);
+
 implementation
+
+var
+  GlobalTerminateAllThreads: Boolean = False;
+
+procedure SetGlobalTerminateAllThreads(AValue: Boolean);
+begin
+  GlobalTerminateAllThreads := AValue;
+end;
 
 procedure CalcError(const S: string);
 begin
@@ -71,9 +80,6 @@ begin
     Result := SystemInfo.dwNumberOfProcessors;
   end;
 end;
-
-var
-  GlobalTerminateAllThreads: Boolean = False;
 
 type
   TCalcThread = class(TThread)
@@ -303,6 +309,13 @@ begin
         else
           CalcError('Unknown Exception');
       end;
+    end;
+
+    if GlobalTerminateAllThreads then begin
+      Abort;
+    end;
+
+    for I := 0 to NumberOfThreads - 1 do begin
       if not Threads[I].ExecuteCompleted then
          CalcError('Unknown Error: not all threads are completed.');
     end;

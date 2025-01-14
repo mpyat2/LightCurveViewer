@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Menus, ActnList,
-  ComCtrls, TAGraph, TASources, TASeries, TACustomSource, DoLongOp, unitdcdft;
+  ComCtrls, TAGraph, TASources, TASeries, TACustomSource, DoLongOp;
 
 type
 
@@ -58,7 +58,7 @@ type
   private
     FFileName: string;
     FPeriodogramFirstRun: Boolean;
-    FDCDFTThreadOnTerminated: Boolean;
+    FDFTThreadTerminated: Boolean;
     procedure CloseFile;
     procedure OpenFile(const AFileName: string);
     procedure PlotData;
@@ -70,6 +70,7 @@ type
     procedure Periodogram;
     function DoDCDFT(params: Pointer; ProgressCaptionProc: TProgressCaptionProc): Integer;
     procedure DCDFTThreadOnTerminate(Sender: TObject);
+    procedure DFTGlobalTerminate(Sender: TObject);
   public
 
   end;
@@ -82,7 +83,8 @@ implementation
 {$R *.lfm}
 
 uses
-  Windows, math, typ, TAChartUtils, unitphasedialog, unitdftparamdialog, unitdftdialog, dataio;
+  Windows, math, typ, TAChartUtils, common, unitphasedialog, unitdftparamdialog,
+  unitdftdialog, unitdcdft, dftthread, dataio;
 
 { TFormMain }
 
@@ -143,6 +145,8 @@ end;
 
 procedure TFormMain.ActionOpenExecute(Sender: TObject);
 begin
+  OpenDialog1.InitialDir := ExtractFileDir(FFileName);
+  OpenDialog1.FileName := ExtractFileName(FFileName);
   if OpenDialog1.Execute then begin
     OpenFile(OpenDialog1.FileName);
   end;
@@ -191,6 +195,8 @@ begin
     FormPhaseDialog.CurrentEpoch := NaN;
     FormPhaseDialog.CurrentPeriod := NaN;
   end;
+  if Assigned(FormDFTDialog) then
+    FormDFTDialog.Close;
 end;
 
 procedure TFormMain.OpenFile(const AFileName: string);
@@ -347,7 +353,7 @@ begin
     FormDFTDialog.Hide;
     params.Error := '';
     try
-      DoLongOp.DoLongOperation(@DoDCDFT, @params);
+      DoLongOp.DoLongOperation(@DoDCDFT, @params, @DFTGlobalTerminate, 'Periodogram');
     except
       on E: Exception do begin
         ShowMessage(E.Message);
@@ -363,59 +369,30 @@ begin
   end;
 end;
 
-type
-  TDCDFTThread = class(TThread)
-  private
-    FParamsPtr: PDCDFTparameters;
-  protected
-    procedure Execute; override;
-  public
-    constructor Create(AParamsPtr: PDCDFTparameters);
-  end;
-
-constructor TDCDFTThread.Create(AParamsPtr: PDCDFTparameters);
-begin
-  inherited Create(True);
-  FParamsPtr := AParamsPtr;
-end;
-
-procedure TDCDFTThread.Execute;
-begin
-  try
-    dcdft_proc(FParamsPtr^.X, FParamsPtr^.Y,
-               FParamsPtr^.FrequencyMin, FParamsPtr^.FrequencyMax, FParamsPtr^.FrequencyResolution,
-               True, 0,
-               FParamsPtr^.frequencies, FParamsPtr^.periods, FParamsPtr^.amp, FParamsPtr^.power);
-  except
-    on E: Exception do begin
-      FParamsPtr^.Error := E.Message;
-      if FParamsPtr^.Error = '' then
-        FParamsPtr^.Error := 'Unknown Error';
-    end
-    else
-      FParamsPtr^.Error := 'Unknown Error';
-  end;
-end;
-
 procedure TFormMain.DCDFTThreadOnTerminate(Sender: TObject);
 begin
-  FDCDFTThreadOnTerminated := True;
+  FDFTThreadTerminated := True;
+end;
+
+procedure TFormMain.DFTGlobalTerminate(Sender: TObject);
+begin
+  unitdcdft.SetGlobalTerminateAllThreads(True);
 end;
 
 function TFormMain.DoDCDFT(params: Pointer; ProgressCaptionProc: TProgressCaptionProc): Integer;
 var
-  DCDFTThread: TDCDFTThread;
+  DCDFTThread: TDFTThread;
 begin
-  FDCDFTThreadOnTerminated := False;
-  DCDFTThread := TDCDFTThread.Create(PDCDFTparameters(params));
-  DCDFTThread.OnTerminate := @DCDFTThreadOnTerminate;
-  DCDFTThread.FreeOnTerminate := True;
-  DCDFTThread.Start;
-  while not FDCDFTThreadOnTerminated do begin
-    Application.ProcessMessages;
-    Sleep(0);
-  end;
   Result := 0;
+  FDFTThreadTerminated := False;
+  DCDFTThread := TDFTThread.Create(PDCDFTparameters(params), @DCDFTThreadOnTerminate);
+  if Assigned(DCDFTThread.FatalException) then
+    raise DCDFTThread.FatalException;
+  DCDFTThread.Start;
+  while not FDFTThreadTerminated do begin
+    Application.ProcessMessages;
+    Sleep(1);
+  end;
 end;
 
 

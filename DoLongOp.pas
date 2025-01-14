@@ -169,6 +169,4 @@ begin
   LabelProgress.Caption := Msg;
 end;
 
-// resourcestring -- OK.
-
 end.

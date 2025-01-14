@@ -5,10 +5,7 @@ unit dataio;
 interface
 
 uses
-  Classes, SysUtils, typ, csvdocument;
-
-type
-  TFloatArray = array of ArbFloat;
+  Classes, SysUtils, typ, csvdocument, common;
 
 procedure ReadCSV(const AFileName: string; out X: TFloatArray; out Y: TFloatArray; Delimiter: Char = #09);
 

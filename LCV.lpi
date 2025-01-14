@@ -100,6 +100,7 @@
         <Filename Value="unitdftparamdialog.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FormDFTparams"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
@@ -110,7 +111,16 @@
         <Filename Value="DoLongOp.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FormLongOperation"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+      </Unit>
+      <Unit>
+        <Filename Value="dftthread.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="common.pas"/>
+        <IsPartOfProject Value="True"/>
       </Unit>
     </Units>
   </ProjectOptions>

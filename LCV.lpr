@@ -11,7 +11,7 @@ uses
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
   Forms, tachartlazaruspkg, unitMain, dataio, unitphasedialog, unitdftdialog,
-  unitdftparamdialog, unitdcdft, DoLongOp
+  unitdftparamdialog, unitdcdft, DoLongOp, dftthread, common
   { you can add units after this };
 
 {$R *.res}
