@@ -29,7 +29,7 @@ type
     function GetGridCell(C, R: Integer): string;
      procedure GridDrawCell(Sender: TObject; aCol, aRow: Integer; aRect: TRect; aState: TGridDrawState);
   public
-    procedure PlotData(const frequencies, periods, apm, power: TFloatArray);
+    procedure PlotData(const frequencies, periods, power: TFloatArray);
   end;
 
 var
@@ -106,7 +106,7 @@ begin
   GridCanvas.TextRect(aRect, aRect.Left + 2, aRect.Top + 2, GetGridCell(aCol, aRow));
 end;
 
-procedure TFormDFTDialog.PlotData(const frequencies, periods, apm, power: TFloatArray);
+procedure TFormDFTDialog.PlotData(const frequencies, periods, power: TFloatArray);
 var
   I: Integer;
 begin

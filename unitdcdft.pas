@@ -1,6 +1,3 @@
-// DCDFT code in this unit is derived from Grant Foster's Rprogs.r
-// https://www.aavso.org/software-directory
-
 unit unitdcdft;
 
 {$mode ObjFPC}{$H+}
@@ -12,8 +9,8 @@ uses
   Windows, Classes, SysUtils, math, typ, sle, common;
 
 type
-  TFloat3 = array[0..2] of ArbFloat;
-  TFloat3Array = array of TFloat3;
+  TFloat11 = array[0..10] of ArbFloat;
+  TFloat11Array = array of TFloat11;
 
 type
   PDCDFTparameters = ^TDCDFTparameters;
@@ -23,9 +20,9 @@ type
     FrequencyMin: Double;
     FrequencyMax: Double;
     FrequencyResolution: Double;
+    TrigPolyDegree: Integer;
     frequencies: TFloatArray;
     periods: TFloatArray;
-    amp: TFloatArray;
     power: TFloatArray;
     Error: string;
   end;
@@ -34,9 +31,9 @@ procedure dcdft_proc(
           const t, mag: TFloatArray;
           lowfreq, hifreq: ArbFloat;
           freq_step: ArbFloat;
-          mcv_mode: Boolean;
+          TrigPolyDegree: ArbInt;
           CmdLineNumberOfThreads: Integer;
-          out frequencies, periods, amp, power: TFloatArray);
+          out frequencies, periods, power: TFloatArray);
 
 procedure SetGlobalTerminateAllThreads(AValue: Boolean);
 
@@ -89,13 +86,12 @@ type
     Flowfreq: ArbFloat;
     Ffreq_step: ArbFloat;
     Fn_freq: ArbInt;
-    Fmcv_mode: Boolean;
-    Fpartial_frequencies, Fpartial_periods, Fpartial_amp, Fpartial_power: TFloatArray;
+    FTrigPolyDegree: ArbInt;
+    Fpartial_frequencies, Fpartial_periods, Fpartial_power: TFloatArray;
     FExecuteCompleted: Boolean;
   private
     function GetFreq(I: ArbInt): ArbFloat;
     function GetPeriod(I: ArbInt): ArbFloat;
-    function GetAmp(I: ArbInt): ArbFloat;
     function GetPower(I: ArbInt): ArbFloat;
   public
     property AThreadNo: Integer read FThreadNo;
@@ -103,7 +99,6 @@ type
     property An_freq: ArbInt read Fn_freq;
     property Freq[I: ArbInt]: ArbFloat read GetFreq;
     property Period[I: ArbInt]: ArbFloat read GetPeriod;
-    property Amp[I: ArbInt]: ArbFloat read GetAmp;
     property Power[I: ArbInt]: ArbFloat read GetPower;
   private
     procedure dcdft_proc_1;
@@ -115,7 +110,7 @@ type
                        lowfreq: ArbFloat;
                        freq_step: ArbFloat;
                        n_freq: ArbInt;
-                       mcv_mode: Boolean);
+                       trigPolyDegree: ArbInt);
   end;
 
 function TCalcThread.GetFreq(I: ArbInt): ArbFloat;
@@ -128,11 +123,6 @@ begin
   Result := Fpartial_periods[I];
 end;
 
-function TCalcThread.GetAmp(I: ArbInt): ArbFloat;
-begin
-  Result := Fpartial_amp[I];
-end;
-
 function TCalcThread.GetPower(I: ArbInt): ArbFloat;
 begin
   Result := Fpartial_power[I];
@@ -143,7 +133,7 @@ constructor TCalcThread.Create(ThreadNo: Integer;
                                lowfreq: ArbFloat;
                                freq_step: ArbFloat;
                                n_freq: ArbInt;
-                               mcv_mode: Boolean);
+                               trigPolyDegree: ArbInt);
 begin
   inherited Create(True);
   FreeOnTerminate := False;  // after inherited Create!
@@ -153,14 +143,12 @@ begin
   Flowfreq := lowfreq;
   Ffreq_step := freq_step;
   Fn_freq := n_freq;
-  Fmcv_mode := mcv_mode;
+  FTrigPolyDegree := trigPolyDegree;
   SetLength(Fpartial_frequencies, Fn_freq);
   SetLength(Fpartial_periods, Fn_freq);
-  SetLength(Fpartial_amp, Fn_freq);
   SetLength(Fpartial_power, Fn_freq);
   FillChar(Fpartial_frequencies[0], Fn_freq * SizeOf(ArbFloat), 0);
   FillChar(Fpartial_periods[0], Fn_freq * SizeOf(ArbFloat), 0);
-  FillChar(Fpartial_amp[0], Fn_freq * SizeOf(ArbFloat), 0);
   FillChar(Fpartial_power[0], Fn_freq * SizeOf(ArbFloat), 0);
   FExecuteCompleted := False;
 end;
@@ -178,25 +166,27 @@ begin
   end;
 end;
 
-// Translated from R (https://www.aavso.org/sites/default/files/software/Rcodes.zip)
-// Sligtly modified to get the result identical to the Peranso DCDFT (v. 3.0.4.4)
 procedure TCalcThread.dcdft_proc_1;
 var
   ndata: ArbInt;
   nu: ArbFloat;
   angle: ArbFloat;
   term: ArbInt;
-  amp_squared, pwr: ArbFloat;
-  I, II: ArbInt;
-  a: TFloat3Array;
-  x: TFloat3;
+  pwr: ArbFloat;
+  I, II, III, Idx: ArbInt;
+  a: TFloat11Array;
+  x: TFloat11;
   fittedValues: TFloatArray;
 begin
+  if (FTrigPolyDegree < 1) or (FTrigPolyDegree > 5) then
+    CalcError('Polynomial degree must be in the range 1..5');
+
   ndata := Length(Ft);
 
   SetLength(a, ndata);
   SetLength(fittedValues, ndata);
 
+  // Constant
   for II := 0 to ndata - 1 do begin
     a[II][0] := 1;
   end;
@@ -214,25 +204,29 @@ begin
       // Calculate cos and sin (c1 and s1) of the time-sequence for the trial frequency
       for II := 0 to ndata - 1 do begin
         angle := 2 * Pi * nu * Ft[II];
-        a[II][1] := Cos(angle);
-        a[II][2] := Sin(angle);
+        for III := 1 to FTrigPolyDegree do begin
+          Idx := 2 * (III - 1) + 1;
+          a[II][Idx]     := Cos(III * angle);
+          a[II][Idx + 1] := Sin(III * angle);
+        end;
       end;
       // Fit to the signal (mag)
-      slegls(a[0, 0], ndata, 3, 3, Fmag[0], x[0], term);
+      slegls(a[0, 0], ndata, 1 + FTrigPolyDegree * 2, 11, Fmag[0], x[0], term);
       if term <> 1 then
         raise Exception.Create('"slegls" error: ' + IntToStr(term));
-      amp_squared := x[1] * x[1] + x[2] * x[2];
-      Fpartial_amp[I] := Sqrt(amp_squared);
       // Get the power of the trial frequency
       for II := 0 to ndata - 1 do begin
-        fittedvalues[II] := x[0] + x[1] * a[II][1] + x[2] * a[II][2];
+        fittedvalues[II] := 0.0; // no constant
+        for III := 1 to FTrigPolyDegree do begin
+          Idx := 2 * (III - 1) + 1;
+          fittedvalues[II] := fittedvalues[II] + x[Idx] * a[II][Idx] + x[Idx + 1] * a[II][Idx + 1];
+        end;
       end;
-      pwr := PopnVariance(fittedvalues); // population variance instead of the sample variance as in the R source
+      pwr := PopnVariance(fittedvalues);
       Fpartial_power[I] := pwr;
     end
     else begin
       Fpartial_periods[I] := NaN;
-      Fpartial_amp[I] := NaN;
       Fpartial_power[I] := NaN;
     end;
     nu := nu + Ffreq_step;
@@ -244,9 +238,9 @@ procedure dcdft_proc(
           const t, mag: TFloatArray;
           lowfreq, hifreq: ArbFloat;
           freq_step: ArbFloat;
-          mcv_mode: Boolean;
+          TrigPolyDegree: ArbInt;
           CmdLineNumberOfThreads: Integer;
-          out frequencies, periods, amp, power: TFloatArray);
+          out frequencies, periods, power: TFloatArray);
 var
   n_freq: ArbInt;
   ndata: ArbInt;
@@ -260,7 +254,6 @@ begin
 
   SetLength(frequencies, n_freq + 1);
   SetLength(periods, n_freq + 1);
-  SetLength(amp, n_freq + 1);
   SetLength(power, n_freq + 1);
 
   if CmdLineNumberOfThreads < 1 then
@@ -284,7 +277,7 @@ begin
       if I = NumberOfThreads - 1 then
         StepsToDo := StepsToDo + Remainder;
       OutputDebugString(PChar('Thread ' + IntToStr(I) + '; steps: ' + IntToStr(StepsToDo)));
-      Threads[I] := TCalcThread.Create(I, t, mag, startfreq, freq_step, StepsToDo, mcv_mode);
+      Threads[I] := TCalcThread.Create(I, t, mag, startfreq, freq_step, StepsToDo, TrigPolyDegree);
       // check for exception while creation (see FPC docs)
       if Assigned(Threads[I].FatalException) then begin
         if Assigned(Threads[I].FatalException) then begin
@@ -326,7 +319,6 @@ begin
          Idx := StepsPerThread * I + II;
          frequencies[Idx] := Threads[I].Freq[II];
          periods[Idx] := Threads[I].Period[II];
-         amp[Idx] := Threads[I].Amp[II];
          power[Idx] := Threads[I].Power[II];
       end;
     end;
@@ -334,15 +326,8 @@ begin
     ndata := Length(t);
     mag_var := PopnVariance(mag);
 
-    if mcv_mode then begin
-      for I := 0 to n_freq do begin
-        power[I] := power[I] / mag_var;
-      end;
-    end
-    else begin
-      for I := 0 to n_freq do begin
-        power[I] := power[I] * (ndata - 1) / mag_var / 2.0; // (ndata - 1) instead of n data as in the R source
-      end;
+    for I := 0 to n_freq do begin
+      power[I] := power[I] / mag_var;
     end;
 
   finally

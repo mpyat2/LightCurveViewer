@@ -36,8 +36,9 @@ begin
   try
     dcdft_proc(FParamsPtr^.X, FParamsPtr^.Y,
                FParamsPtr^.FrequencyMin, FParamsPtr^.FrequencyMax, FParamsPtr^.FrequencyResolution,
-               True, 0,
-               FParamsPtr^.frequencies, FParamsPtr^.periods, FParamsPtr^.amp, FParamsPtr^.power);
+               FParamsPtr^.TrigPolyDegree,
+               0,
+               FParamsPtr^.frequencies, FParamsPtr^.periods, FParamsPtr^.power);
   except
     on E: Exception do begin
       FParamsPtr^.Error := E.Message;

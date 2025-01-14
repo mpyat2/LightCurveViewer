@@ -346,9 +346,10 @@ begin
       MinX := MinValue(params.X);
       MaxX := MaxValue(params.X);
       SetCurrentFrequencyResolution(0.05 / (MaxX - MinX));
+      SetCurrentTrigPolyDegree(1);
       FPeriodogramFirstRun := False;
     end;
-    if not GetDFTparams(params.FrequencyMin, params.FrequencyMax, params.FrequencyResolution) then
+    if not GetDFTparams(params.FrequencyMin, params.FrequencyMax, params.FrequencyResolution, params.TrigPolyDegree) then
       Exit;
     FormDFTDialog.Hide;
     params.Error := '';
@@ -365,7 +366,7 @@ begin
       Exit;
     end;
     //ShowMessage('Done!');
-    FormDFTDialog.PlotData(params.frequencies, params.periods, params.amp, params.power);
+    FormDFTDialog.PlotData(params.frequencies, params.periods, params.power);
   end;
 end;
 
