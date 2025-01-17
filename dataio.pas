@@ -2,6 +2,8 @@ unit dataio;
 
 {$mode ObjFPC}{$H+}
 
+{$include LCV.inc}
+
 interface
 
 uses

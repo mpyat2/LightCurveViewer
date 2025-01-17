@@ -2,6 +2,8 @@ unit unitMain;
 
 {$mode objfpc}{$H+}
 
+{$include LCV.inc}
+
 interface
 
 uses
@@ -13,6 +15,7 @@ type
   { TFormMain }
 
   TFormMain = class(TForm)
+    ActionPolyFit: TAction;
     ActionPeriodogram: TAction;
     ActionPhasePlotSimple: TAction;
     ActionRawData: TAction;
@@ -25,12 +28,15 @@ type
     Chart1LineSeriesModel: TLineSeries;
     Chart1LineSeriesData: TLineSeries;
     ImageList1: TImageList;
+    ListChartSourceModel: TListChartSource;
+    ListChartSourceFoldedModel: TListChartSource;
     ListChartSourceFoldedData: TListChartSource;
     ListChartSourceData: TListChartSource;
     MainMenu1: TMainMenu;
     MenuFile: TMenuItem;
     MenuItem1: TMenuItem;
     MenuItem2: TMenuItem;
+    MenuItemPolyFit: TMenuItem;
     MenuItemTools: TMenuItem;
     MenuItemRawData: TMenuItem;
     MenuItemPhasePlot: TMenuItem;
@@ -51,6 +57,7 @@ type
     procedure ActionPeriodogramExecute(Sender: TObject);
     procedure ActionPhasePlotExecute(Sender: TObject);
     procedure ActionPhasePlotSimpleExecute(Sender: TObject);
+    procedure ActionPolyFitExecute(Sender: TObject);
     procedure ActionRawDataExecute(Sender: TObject);
     procedure Chart1Click(Sender: TObject);
     procedure Chart1MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
@@ -68,6 +75,7 @@ type
     procedure CalcAndPlotFoldedProc(Period, Epoch: Double);
     procedure SetAxisBoundaries(Xmin, Xmax, Ymin, Ymax: Double; ExpandX, ExpandY: Boolean);
     procedure Periodogram;
+    procedure DoPolyFit;
     function DoDCDFT(params: Pointer; ProgressCaptionProc: TProgressCaptionProc): Integer;
     procedure DCDFTThreadOnTerminate(Sender: TObject);
     procedure DFTGlobalTerminate(Sender: TObject);
@@ -83,8 +91,8 @@ implementation
 {$R *.lfm}
 
 uses
-  Windows, math, typ, TAChartUtils, common, unitphasedialog, unitdftparamdialog,
-  unitdftdialog, unitdcdft, dftthread, dataio;
+  Windows, math, typ, TAChartUtils, common, unitphasedialog, unitfitparamdialog,
+  unitdftparamdialog, unitdftdialog, unitdcdft, dftthread, dataio;
 
 { TFormMain }
 
@@ -143,6 +151,11 @@ begin
   PlotFoldedSimple;
 end;
 
+procedure TFormMain.ActionPolyFitExecute(Sender: TObject);
+begin
+  DoPolyFit;
+end;
+
 procedure TFormMain.ActionOpenExecute(Sender: TObject);
 begin
   OpenDialog1.InitialDir := ExtractFileDir(FFileName);
@@ -180,6 +193,10 @@ begin
   else
   if AAction = ActionPeriodogram then begin
     (AAction as TAction).Enabled := ListChartSourceData.Count > 0;
+  end
+  else
+  if AAction = ActionPolyFit then begin
+    (AAction as TAction).Enabled := ListChartSourceData.Count > 0;
   end;
 end;
 
@@ -188,8 +205,11 @@ begin
   FFileName := '';
   FPeriodogramFirstRun := True;
   Chart1LineSeriesData.Source := nil;
+  Chart1LineSeriesModel.Source := nil;
   ListChartSourceData.Clear;
   ListChartSourceFoldedData.Clear;
+  ListChartSourceModel.Clear;
+  ListChartSourceFoldedModel.Clear;
   SetAxisBoundaries(-1, 1, -1, 1, True, True);
   if Assigned(FormPhaseDialog) then begin
     FormPhaseDialog.CurrentEpoch := NaN;
@@ -233,9 +253,12 @@ begin
     StatusBar1.Panels[0].Text := '';
     StatusBar1.Panels[1].Text := '';
     Chart1LineSeriesData.Source := nil;
+    Chart1LineSeriesModel.Source := nil;
     SourceExtent := ListChartSourceData.Extent;
     SetAxisBoundaries(SourceExtent.coords[1], SourceExtent.coords[3], SourceExtent.coords[2], SourceExtent.coords[4], True, True);
     Chart1LineSeriesData.Source := ListChartSourceData;
+    if ListChartSourceModel.Count > 0 then
+      Chart1LineSeriesModel.Source := ListChartSourceModel;
   end;
 end;
 
@@ -263,9 +286,12 @@ begin
   StatusBar1.Panels[0].Text := '';
   StatusBar1.Panels[1].Text := '';
   Chart1LineSeriesData.Source := nil;
+  Chart1LineSeriesModel.Source := nil;
   SourceExtent := ListChartSourceFoldedData.Extent;
   SetAxisBoundaries(-1.0, 1.0, SourceExtent.coords[2], SourceExtent.coords[4], False, True);
   Chart1LineSeriesData.Source := ListChartSourceFoldedData;
+  if ListChartSourceFoldedModel.Count > 0 then
+    Chart1LineSeriesModel.Source := ListChartSourceFoldedModel;
   StatusBar1.Panels[1].Text := ' P= ' + FloatToStr(FormPhaseDialog.CurrentPeriod) + ^I' E= ' + FloatToStr(FormPhaseDialog.CurrentEpoch) + ' ';
 end;
 
@@ -277,6 +303,7 @@ var
 begin
   if (ListChartSourceData.Count > 0) then begin
     ListChartSourceFoldedData.Clear;
+    ListChartSourceFoldedModel.Clear;
     for I := 0 to ListChartSourceData.Count - 1 do begin
       Item := ListChartSourceData.Item[I];
       X := Item^.X;
@@ -285,6 +312,15 @@ begin
       ListChartSourceFoldedData.Add(Phase, Y);
       ListChartSourceFoldedData.Add(Phase - 1.0, Y);
     end;
+    for I := 0 to ListChartSourceModel.Count - 1 do begin
+      Item := ListChartSourceModel.Item[I];
+      X := Item^.X;
+      Y := Item^.Y;
+      Phase := CalculatePhase(X, Period, Epoch);
+      ListChartSourceFoldedModel.Add(Phase, Y);
+      ListChartSourceFoldedModel.Add(Phase - 1.0, Y);
+    end;
+    ListChartSourceFoldedModel.Sort;
     PlotFoldedProc;
   end;
 end;
@@ -326,13 +362,56 @@ begin
   Chart1.AxisList[0].Marks.Range.UseMax := True;
 end;
 
+procedure TFormMain.DoPolyFit;
+var
+  X: TFloatArray;
+  Y: TFloatArray;
+  Frequency: Double;
+  TrendDegree: Integer;
+  TrigPolyDegree: Integer;
+  trend, trig_fit: TFloatArray;
+  meanTime: ArbFloat;
+  fitXmin, fitXmax, fitXstep: ArbFloat;
+  Xfit, Yfit: TFloatArray;
+  Item: PChartDataItem;
+  I: Integer;
+begin
+  if ListChartSourceData.Count > 0 then begin
+    if not GetFitParams(Frequency, TrendDegree, TrigPolyDegree) then
+      Exit;
+    Chart1LineSeriesModel.Source := nil;
+    SetLength(X, ListChartSourceData.Count);
+    SetLength(Y, ListChartSourceData.Count);
+    for I := 0 to ListChartSourceData.Count - 1 do begin
+      Item := ListChartSourceData.Item[I];
+      X[I] := Item^.X;
+      Y[I] := Item^.Y;
+    end;
+    meanTime := Mean(X);
+    for I := 0 to Length(X) - 1 do begin
+      X[I] := X[I] - meanTime;
+    end;
+    fitXmin := MinValue(X);
+    fitXmax := MaxValue(X);
+    //fitXstep := (fitXmax - fitXmin) / (Length(X) * 10);
+    fitXstep := 0.002430; // Temp value
+    PolyFit(X, Y, Frequency, TrendDegree, TrigPolyDegree, fitXmin, fitXmax, fitXstep, Xfit, Yfit);
+    ListChartSourceModel.Clear;
+    ListChartSourceFoldedModel.Clear;
+    for I := 0 to Length(Xfit) - 1 do begin
+      ListChartSourceModel.Add(Xfit[I] + meanTime, Yfit[I]);
+    end;
+    if Chart1LineSeriesData.Source = ListChartSourceData then
+      Chart1LineSeriesModel.Source := ListChartSourceModel;
+  end;
+end;
+
 procedure TFormMain.Periodogram;
 var
-  I: Integer;
-  Item: PChartDataItem;
-  MinX, MaxX: Double;
   frequencies, periods, amp, power: TFloatArray;
   params: TDCDFTparameters;
+  Item: PChartDataItem;
+  I: Integer;
 begin
   if ListChartSourceData.Count > 0 then begin
     SetLength(params.X, ListChartSourceData.Count);
@@ -343,13 +422,10 @@ begin
       params.Y[I] := Item^.Y;
     end;
     if FPeriodogramFirstRun then begin
-      MinX := MinValue(params.X);
-      MaxX := MaxValue(params.X);
-      SetCurrentFrequencyResolution(0.05 / (MaxX - MinX));
-      SetCurrentTrigPolyDegree(1);
+      unitdftparamdialog.SetCurrentFrequencyResolution(0.05 / (MaxValue(params.X) - MinValue(params.X)));
       FPeriodogramFirstRun := False;
     end;
-    if not GetDFTparams(params.FrequencyMin, params.FrequencyMax, params.FrequencyResolution, params.TrigPolyDegree) then
+    if not GetDFTparams(params.FrequencyMin, params.FrequencyMax, params.FrequencyResolution, params.TrendDegree, params.TrigPolyDegree) then
       Exit;
     FormDFTDialog.Hide;
     params.Error := '';

@@ -2,6 +2,8 @@ unit unitdftdialog;
 
 {$mode ObjFPC}{$H+}
 
+{$include LCV.inc}
+
 interface
 
 uses

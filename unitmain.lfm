@@ -42,6 +42,8 @@ object FormMain: TFormMain
     Align = alClient
     OnClick = Chart1Click
     OnMouseMove = Chart1MouseMove
+    object Chart1LineSeriesModel: TLineSeries
+    end
     object Chart1LineSeriesData: TLineSeries
       LineType = ltNone
       Pointer.Brush.Color = clPurple
@@ -51,8 +53,6 @@ object FormMain: TFormMain
       Pointer.VertSize = 2
       Pointer.Visible = True
       ShowPoints = True
-    end
-    object Chart1LineSeriesModel: TLineSeries
     end
   end
   object StatusBar1: TStatusBar
@@ -105,8 +105,8 @@ object FormMain: TFormMain
     end
   end
   object MainMenu1: TMainMenu
-    Left = 48
-    Top = 96
+    Left = 80
+    Top = 48
     object MenuFile: TMenuItem
       Caption = '&File'
       object MenuItem1: TMenuItem
@@ -133,13 +133,16 @@ object FormMain: TFormMain
       object MenuItem2: TMenuItem
         Action = ActionPeriodogram
       end
+      object MenuItemPolyFit: TMenuItem
+        Action = ActionPolyFit
+      end
     end
   end
   object ActionList1: TActionList
     Images = ImageList1
     OnUpdate = ActionList1Update
-    Left = 104
-    Top = 96
+    Left = 80
+    Top = 104
     object ActionExit: TAction
       Category = 'File'
       Caption = 'E&xit'
@@ -183,8 +186,13 @@ object FormMain: TFormMain
     end
     object ActionPeriodogram: TAction
       Category = 'Tools'
-      Caption = 'Periodogram'
+      Caption = 'Periodogram...'
       OnExecute = ActionPeriodogramExecute
+    end
+    object ActionPolyFit: TAction
+      Category = 'Tools'
+      Caption = 'Polynomial Approximation...'
+      OnExecute = ActionPolyFitExecute
     end
   end
   object OpenDialog1: TOpenDialog
@@ -192,20 +200,20 @@ object FormMain: TFormMain
     DefaultExt = '.tsv'
     Filter = 'Tab-separated text files (*.tsv)|*.tsv|All files (*.*)|*.*'
     Options = [ofFileMustExist, ofEnableSizing, ofViewDetail]
-    Left = 48
-    Top = 144
+    Left = 80
+    Top = 232
   end
   object ListChartSourceData: TListChartSource
-    Left = 48
-    Top = 192
+    Left = 264
+    Top = 48
   end
   object ListChartSourceFoldedData: TListChartSource
-    Left = 104
-    Top = 192
+    Left = 264
+    Top = 104
   end
   object ImageList1: TImageList
-    Left = 270
-    Top = 96
+    Left = 80
+    Top = 168
     Bitmap = {
       4C7A030000001000000010000000640200000000000078DADD95DB4FD3501CC7
       FD13FC037CF4D1071F34C6682282BCF8A0091885181D331A83C6857889112FE0
@@ -228,5 +236,13 @@ object FormMain: TFormMain
       A23FDF3527CF1663FD2F94FFE9FDD7DAFB64FE5C6BE76FFB739D23999FEC1E52
       D19FCFB7408BAFF5FB9BCC579A8BC5FCFF2CC5FBFF0360E9C17C
     }
+  end
+  object ListChartSourceModel: TListChartSource
+    Left = 264
+    Top = 168
+  end
+  object ListChartSourceFoldedModel: TListChartSource
+    Left = 264
+    Top = 240
   end
 end

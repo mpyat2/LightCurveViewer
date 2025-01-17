@@ -3,6 +3,7 @@ object FormDFTDialog: TFormDFTDialog
   Height = 469
   Top = 241
   Width = 713
+  BorderIcons = [biSystemMenu, biMaximize]
   Caption = 'Periodogram'
   ClientHeight = 469
   ClientWidth = 713
@@ -50,6 +51,7 @@ object FormDFTDialog: TFormDFTDialog
         )
         Align = alClient
         object Chart1LineSeries1: TLineSeries
+          LinePen.Color = clBlue
         end
       end
     end
@@ -74,15 +76,15 @@ object FormDFTDialog: TFormDFTDialog
     end
   end
   object PopupMenuGrid: TPopupMenu
-    Left = 24
-    Top = 63
+    Left = 128
+    Top = 56
     object MenuItem1: TMenuItem
       Action = ActionGridCopyAll
     end
   end
   object ActionList: TActionList
-    Left = 112
-    Top = 63
+    Left = 128
+    Top = 128
     object ActionGridCopyAll: TAction
       Category = 'Grid'
       Caption = 'Copy &All'

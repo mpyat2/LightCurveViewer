@@ -122,6 +122,17 @@
         <Filename Value="common.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
+      <Unit>
+        <Filename Value="LCV.inc"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="unitfitparamdialog.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormFitparams"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

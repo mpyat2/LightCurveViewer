@@ -1,16 +1,13 @@
 unit unitdcdft;
 
 {$mode ObjFPC}{$H+}
-//{$R+}
+
+{$include LCV.inc}
 
 interface
 
 uses
-  Windows, Classes, SysUtils, math, typ, sle, common;
-
-type
-  TFloat11 = array[0..10] of ArbFloat;
-  TFloat11Array = array of TFloat11;
+  Windows, Classes, SysUtils, math, typ, common;
 
 type
   PDCDFTparameters = ^TDCDFTparameters;
@@ -20,6 +17,7 @@ type
     FrequencyMin: Double;
     FrequencyMax: Double;
     FrequencyResolution: Double;
+    TrendDegree: Integer;
     TrigPolyDegree: Integer;
     frequencies: TFloatArray;
     periods: TFloatArray;
@@ -31,6 +29,7 @@ procedure dcdft_proc(
           const t, mag: TFloatArray;
           lowfreq, hifreq: ArbFloat;
           freq_step: ArbFloat;
+          TrendDegree: ArbInt;
           TrigPolyDegree: ArbInt;
           CmdLineNumberOfThreads: Integer;
           out frequencies, periods, power: TFloatArray);
@@ -45,11 +44,6 @@ var
 procedure SetGlobalTerminateAllThreads(AValue: Boolean);
 begin
   GlobalTerminateAllThreads := AValue;
-end;
-
-procedure CalcError(const S: string);
-begin
-  raise Exception.Create(S);
 end;
 
 // http://wiki.freepascal.org/Example_of_multi-threaded_application:_array_of_threads
@@ -86,6 +80,7 @@ type
     Flowfreq: ArbFloat;
     Ffreq_step: ArbFloat;
     Fn_freq: ArbInt;
+    FTrendDegree: ArbInt;
     FTrigPolyDegree: ArbInt;
     Fpartial_frequencies, Fpartial_periods, Fpartial_power: TFloatArray;
     FExecuteCompleted: Boolean;
@@ -110,6 +105,7 @@ type
                        lowfreq: ArbFloat;
                        freq_step: ArbFloat;
                        n_freq: ArbInt;
+                       trendDegree: ArbInt;
                        trigPolyDegree: ArbInt);
   end;
 
@@ -133,6 +129,7 @@ constructor TCalcThread.Create(ThreadNo: Integer;
                                lowfreq: ArbFloat;
                                freq_step: ArbFloat;
                                n_freq: ArbInt;
+                               trendDegree: ArbInt;
                                trigPolyDegree: ArbInt);
 begin
   inherited Create(True);
@@ -143,6 +140,7 @@ begin
   Flowfreq := lowfreq;
   Ffreq_step := freq_step;
   Fn_freq := n_freq;
+  FTrendDegree := trendDegree;
   FTrigPolyDegree := trigPolyDegree;
   SetLength(Fpartial_frequencies, Fn_freq);
   SetLength(Fpartial_periods, Fn_freq);
@@ -174,21 +172,20 @@ var
   term: ArbInt;
   pwr: ArbFloat;
   I, II, III, Idx: ArbInt;
-  a: TFloat11Array;
-  x: TFloat11;
-  fittedValues: TFloatArray;
+  meanTime: ArbFloat;
+  meanMag: ArbFloat;
+  times: TFloatArray;
+  temp_mags: TFloatArray;
+  trend: TFloatArray;
+  trig_fit: TFloatArray;
 begin
-  if (FTrigPolyDegree < 1) or (FTrigPolyDegree > 5) then
-    CalcError('Polynomial degree must be in the range 1..5');
-
   ndata := Length(Ft);
-
-  SetLength(a, ndata);
-  SetLength(fittedValues, ndata);
-
-  // Constant
+  SetLength(times, ndata);
+  SetLength(temp_mags, ndata);
+  meanTime := Mean(Ft);
+  meanMag := Mean(Fmag);
   for II := 0 to ndata - 1 do begin
-    a[II][0] := 1;
+    times[II] := Ft[II] - meanTime;
   end;
 
   nu := Flowfreq;
@@ -201,28 +198,17 @@ begin
     if nu > 0.0 then begin
       Fpartial_frequencies[I] := nu;
       Fpartial_periods[I] := 1 / nu;
-      // Calculate cos and sin (c1 and s1) of the time-sequence for the trial frequency
-      for II := 0 to ndata - 1 do begin
-        angle := 2 * Pi * nu * Ft[II];
-        for III := 1 to FTrigPolyDegree do begin
-          Idx := 2 * (III - 1) + 1;
-          a[II][Idx]     := Cos(III * angle);
-          a[II][Idx + 1] := Sin(III * angle);
-        end;
-      end;
-      // Fit to the signal (mag)
-      slegls(a[0, 0], ndata, 1 + FTrigPolyDegree * 2, 11, Fmag[0], x[0], term);
-      if term <> 1 then
-        raise Exception.Create('"slegls" error: ' + IntToStr(term));
+
+      PolyFit(times, Fmag, nu, FTrendDegree, FTrigPolyDegree, trend, trig_fit);
+
       // Get the power of the trial frequency
+      pwr := PopnVariance(trig_fit);
+
       for II := 0 to ndata - 1 do begin
-        fittedvalues[II] := 0.0; // no constant
-        for III := 1 to FTrigPolyDegree do begin
-          Idx := 2 * (III - 1) + 1;
-          fittedvalues[II] := fittedvalues[II] + x[Idx] * a[II][Idx] + x[Idx + 1] * a[II][Idx + 1];
-        end;
+        temp_mags[II] := Fmag[II] - trend[II];
       end;
-      pwr := PopnVariance(fittedvalues);
+
+      pwr := pwr / PopnVariance(temp_mags);
       Fpartial_power[I] := pwr;
     end
     else begin
@@ -238,13 +224,14 @@ procedure dcdft_proc(
           const t, mag: TFloatArray;
           lowfreq, hifreq: ArbFloat;
           freq_step: ArbFloat;
+          TrendDegree: ArbInt;
           TrigPolyDegree: ArbInt;
           CmdLineNumberOfThreads: Integer;
           out frequencies, periods, power: TFloatArray);
 var
   n_freq: ArbInt;
   ndata: ArbInt;
-  mag_var: ArbFloat;
+  //mag_var: ArbFloat;
   startfreq: ArbFloat;
   NumberOfThreads, StepsPerThread, Remainder, StepsToDo: integer;
   I, II, Idx: Integer;
@@ -277,7 +264,7 @@ begin
       if I = NumberOfThreads - 1 then
         StepsToDo := StepsToDo + Remainder;
       OutputDebugString(PChar('Thread ' + IntToStr(I) + '; steps: ' + IntToStr(StepsToDo)));
-      Threads[I] := TCalcThread.Create(I, t, mag, startfreq, freq_step, StepsToDo, TrigPolyDegree);
+      Threads[I] := TCalcThread.Create(I, t, mag, startfreq, freq_step, StepsToDo, TrendDegree, TrigPolyDegree);
       // check for exception while creation (see FPC docs)
       if Assigned(Threads[I].FatalException) then begin
         if Assigned(Threads[I].FatalException) then begin
@@ -323,12 +310,12 @@ begin
       end;
     end;
 
-    ndata := Length(t);
-    mag_var := PopnVariance(mag);
+    //ndata := Length(t);
+    //mag_var := PopnVariance(mag);
 
-    for I := 0 to n_freq do begin
-      power[I] := power[I] / mag_var;
-    end;
+    //for I := 0 to n_freq do begin
+    //  power[I] := power[I] / mag_var;
+    //end;
 
   finally
     for I := Length(Threads) - 1 downto 0 do begin

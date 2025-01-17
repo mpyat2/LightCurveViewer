@@ -2,6 +2,8 @@ program LCV;
 
 {$mode objfpc}{$H+}
 
+{$include LCV.inc}
+
 uses
   {$IFDEF UNIX}
   cthreads,
@@ -11,7 +13,7 @@ uses
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
   Forms, tachartlazaruspkg, unitMain, dataio, unitphasedialog, unitdftdialog,
-  unitdftparamdialog, unitdcdft, DoLongOp, dftthread, common
+  unitdftparamdialog, unitdcdft, DoLongOp, dftthread, common, unitfitparamdialog
   { you can add units after this };
 
 {$R *.res}

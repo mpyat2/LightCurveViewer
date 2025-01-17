@@ -2,6 +2,8 @@ unit DoLongOp;
 
 {$mode ObjFPC}{$H+}
 
+{$include LCV.inc}
+
 interface
 
 uses

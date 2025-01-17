@@ -2,6 +2,8 @@ unit dftthread;
 
 {$mode ObjFPC}{$H+}
 
+{$include LCV.inc}
+
 interface
 
 uses
@@ -36,7 +38,7 @@ begin
   try
     dcdft_proc(FParamsPtr^.X, FParamsPtr^.Y,
                FParamsPtr^.FrequencyMin, FParamsPtr^.FrequencyMax, FParamsPtr^.FrequencyResolution,
-               FParamsPtr^.TrigPolyDegree,
+               FParamsPtr^.TrendDegree, FParamsPtr^.TrigPolyDegree,
                0,
                FParamsPtr^.frequencies, FParamsPtr^.periods, FParamsPtr^.power);
   except
