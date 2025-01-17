@@ -60,10 +60,14 @@ var
   term: ArbInt;
   I, II, Idx: ArbInt;
 begin
-  if (ATrendDegree < 0) or (ATrendDegree > 10) then
-    CalcError('Trend degree must be in the range 0..10');
-  if (ATrigPolyDegree < 0) or (ATrigPolyDegree > 5) then
-    CalcError('Polynomial degree must be in the range 0..5');
+  if (ATrendDegree < 0) then
+    CalcError('Trend degree must be >= 0');
+
+  if (ATrigPolyDegree < 0) then
+    CalcError('Trigonometric polynomial degree must be >= 0');
+
+  if (1 + ATrendDegree + ATrigPolyDegree * 2) > Length(TFloat21) then
+    CalcError('Too many parameters. Please reduce trend or trigonometric polynomial degree');
 
   if Length(Xarray) <> Length(Yarray) then
     CalcError('X and Y arrays must be of equal length');

@@ -104,9 +104,9 @@ var
   TrendDegree, TrigPolyDegree: Integer;
 begin
   ModalResult := mrNone;
-  if not GetFieldValue(EditTrendDegree, 0, 10, LabelTrendDegree.Caption, TrendDegree) then
+  if not GetFieldValue(EditTrendDegree, 0, 20, LabelTrendDegree.Caption, TrendDegree) then
     Exit;
-  if not GetFieldValue(EditTrigPolyDegree, 0, 5, LabelTrigPolyDegree.Caption, TrigPolyDegree) then
+  if not GetFieldValue(EditTrigPolyDegree, 0, 10, LabelTrigPolyDegree.Caption, TrigPolyDegree) then
     Exit;
   if (TrigPolyDegree > 0) then begin
     if not GetFieldValue(EditPeriod, 0.000001, NaN, LabelPeriod.Caption, Period) then

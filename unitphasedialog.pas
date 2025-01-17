@@ -10,7 +10,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, math;
 
 type
-  TApplyPhasePlotParams = procedure(Period, Epoch: Double) of object;
+  TApplyPhasePlotParams = procedure of object;
 
 type
 
@@ -111,7 +111,7 @@ begin
   end;
   CurrentPeriod := LPeriod;
   CurrentEpoch := LEpoch;
-  FApplyPhasePlotParams(LPeriod, LEpoch);
+  FApplyPhasePlotParams;
   FParamOk := True;
 end;
 

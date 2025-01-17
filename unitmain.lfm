@@ -43,6 +43,7 @@ object FormMain: TFormMain
     OnClick = Chart1Click
     OnMouseMove = Chart1MouseMove
     object Chart1LineSeriesModel: TLineSeries
+      LinePen.Color = clRed
     end
     object Chart1LineSeriesData: TLineSeries
       LineType = ltNone
@@ -127,6 +128,12 @@ object FormMain: TFormMain
       object MenuItemPhasePlot: TMenuItem
         Action = ActionPhasePlot
       end
+      object Separator1: TMenuItem
+        Caption = '-'
+      end
+      object MenuItem3: TMenuItem
+        Action = ActionModelAsTable
+      end
     end
     object MenuItemTools: TMenuItem
       Caption = '&Tools'
@@ -166,21 +173,21 @@ object FormMain: TFormMain
     object ActionPhasePlot: TAction
       Category = 'View'
       Caption = '&Phase Plot...'
-      Hint = 'Phase Plot'
+      Hint = 'Create New Phase Plot'
       ImageIndex = 2
       OnExecute = ActionPhasePlotExecute
     end
     object ActionPhasePlotSimple: TAction
       Category = 'View'
-      Caption = 'ActionPhasePlotSimple'
-      Hint = 'Phase Plot'
+      Caption = 'Phase Plot'
+      Hint = 'Show Current Phase Plot'
       ImageIndex = 2
       OnExecute = ActionPhasePlotSimpleExecute
     end
     object ActionRawData: TAction
       Category = 'View'
       Caption = '&Raw Data'
-      Hint = 'Raw Data'
+      Hint = 'Show Raw Data'
       ImageIndex = 1
       OnExecute = ActionRawDataExecute
     end
@@ -193,6 +200,11 @@ object FormMain: TFormMain
       Category = 'Tools'
       Caption = 'Polynomial Approximation...'
       OnExecute = ActionPolyFitExecute
+    end
+    object ActionModelAsTable: TAction
+      Category = 'View'
+      Caption = 'Show Model Points...'
+      OnExecute = ActionModelAsTableExecute
     end
   end
   object OpenDialog1: TOpenDialog

@@ -15,6 +15,7 @@ type
   { TFormMain }
 
   TFormMain = class(TForm)
+    ActionModelAsTable: TAction;
     ActionPolyFit: TAction;
     ActionPeriodogram: TAction;
     ActionPhasePlotSimple: TAction;
@@ -36,6 +37,8 @@ type
     MenuFile: TMenuItem;
     MenuItem1: TMenuItem;
     MenuItem2: TMenuItem;
+    MenuItem3: TMenuItem;
+    Separator1: TMenuItem;
     MenuItemPolyFit: TMenuItem;
     MenuItemTools: TMenuItem;
     MenuItemRawData: TMenuItem;
@@ -52,6 +55,7 @@ type
     ToolButton4: TToolButton;
     procedure ActionInvertedYExecute(Sender: TObject);
     procedure ActionList1Update(AAction: TBasicAction; var Handled: Boolean);
+    procedure ActionModelAsTableExecute(Sender: TObject);
     procedure ActionOpenExecute(Sender: TObject);
     procedure ActionExitExecute(Sender: TObject);
     procedure ActionPeriodogramExecute(Sender: TObject);
@@ -72,7 +76,8 @@ type
     procedure PlotFolded;
     procedure PlotFoldedSimple;
     procedure PlotFoldedProc;
-    procedure CalcAndPlotFoldedProc(Period, Epoch: Double);
+    procedure CalculateModelPhasePlot;
+    procedure CalcAndPlotFoldedProc;
     procedure SetAxisBoundaries(Xmin, Xmax, Ymin, Ymax: Double; ExpandX, ExpandY: Boolean);
     procedure Periodogram;
     procedure DoPolyFit;
@@ -92,7 +97,8 @@ implementation
 
 uses
   Windows, math, typ, TAChartUtils, common, unitphasedialog, unitfitparamdialog,
-  unitdftparamdialog, unitdftdialog, unitdcdft, dftthread, dataio;
+  unitdftparamdialog, unitdftdialog, unitdcdft, unittableform, dftthread,
+  dataio;
 
 { TFormMain }
 
@@ -197,6 +203,28 @@ begin
   else
   if AAction = ActionPolyFit then begin
     (AAction as TAction).Enabled := ListChartSourceData.Count > 0;
+  end
+  else
+  if AAction = ActionModelAsTable then begin
+    (AAction as TAction).Enabled := ListChartSourceModel.Count > 0;
+  end;
+end;
+
+procedure TFormMain.ActionModelAsTableExecute(Sender: TObject);
+var
+  X, Y: TFloatArray;
+  Item: PChartDataItem;
+  I: Integer;
+begin
+  if ListChartSourceModel.Count > 0 then begin
+    SetLength(X, ListChartSourceModel.Count);
+    SetLength(Y, ListChartSourceModel.Count);
+    for I := 0 to ListChartSourceModel.Count - 1 do begin
+      Item := ListChartSourceModel.Item[I];
+      X[I] := Item^.X;
+      Y[I] := Item^.Y;
+    end;
+    ShowTable(X, Y, 'Time', 'Model');
   end;
 end;
 
@@ -295,13 +323,37 @@ begin
   StatusBar1.Panels[1].Text := ' P= ' + FloatToStr(FormPhaseDialog.CurrentPeriod) + ^I' E= ' + FloatToStr(FormPhaseDialog.CurrentEpoch) + ' ';
 end;
 
-procedure TFormMain.CalcAndPlotFoldedProc(Period, Epoch: Double);
+procedure TFormMain.CalculateModelPhasePlot;
 var
   I: Integer;
   Item: PChartDataItem;
-  X, Y, Phase: Double;
+  Period, Epoch, X, Y, Phase: Double;
+begin
+  Period := FormPhaseDialog.CurrentPeriod;
+  Epoch := FormPhaseDialog.CurrentEpoch;
+  ListChartSourceFoldedModel.Clear;
+  if IsNaN(Period) or IsNaN(Epoch) then
+    Exit;
+  for I := 0 to ListChartSourceModel.Count - 1 do begin
+    Item := ListChartSourceModel.Item[I];
+    X := Item^.X;
+    Y := Item^.Y;
+    Phase := CalculatePhase(X, Period, Epoch);
+    ListChartSourceFoldedModel.Add(Phase, Y);
+    ListChartSourceFoldedModel.Add(Phase - 1.0, Y);
+  end;
+  ListChartSourceFoldedModel.Sort;
+end;
+
+procedure TFormMain.CalcAndPlotFoldedProc;
+var
+  I: Integer;
+  Item: PChartDataItem;
+  Period, Epoch, X, Y, Phase: Double;
 begin
   if (ListChartSourceData.Count > 0) then begin
+    Period := FormPhaseDialog.CurrentPeriod;
+    Epoch := FormPhaseDialog.CurrentEpoch;
     ListChartSourceFoldedData.Clear;
     ListChartSourceFoldedModel.Clear;
     for I := 0 to ListChartSourceData.Count - 1 do begin
@@ -312,14 +364,7 @@ begin
       ListChartSourceFoldedData.Add(Phase, Y);
       ListChartSourceFoldedData.Add(Phase - 1.0, Y);
     end;
-    for I := 0 to ListChartSourceModel.Count - 1 do begin
-      Item := ListChartSourceModel.Item[I];
-      X := Item^.X;
-      Y := Item^.Y;
-      Phase := CalculatePhase(X, Period, Epoch);
-      ListChartSourceFoldedModel.Add(Phase, Y);
-      ListChartSourceFoldedModel.Add(Phase - 1.0, Y);
-    end;
+    CalculateModelPhasePlot;
     ListChartSourceFoldedModel.Sort;
     PlotFoldedProc;
   end;
@@ -393,16 +438,29 @@ begin
     end;
     fitXmin := MinValue(X);
     fitXmax := MaxValue(X);
-    //fitXstep := (fitXmax - fitXmin) / (Length(X) * 10);
-    fitXstep := 0.002430; // Temp value
-    PolyFit(X, Y, Frequency, TrendDegree, TrigPolyDegree, fitXmin, fitXmax, fitXstep, Xfit, Yfit);
+    fitXstep := (fitXmax - fitXmin) / (ListChartSourceData.Count * 3);
+    try
+      PolyFit(X, Y, Frequency, TrendDegree, TrigPolyDegree, fitXmin, fitXmax, fitXstep, Xfit, Yfit);
+    except
+      on E: Exception do begin
+        ShowMessage('Error: '^M^J + E.Message);
+        Exit;
+      end;
+    end;
     ListChartSourceModel.Clear;
     ListChartSourceFoldedModel.Clear;
     for I := 0 to Length(Xfit) - 1 do begin
       ListChartSourceModel.Add(Xfit[I] + meanTime, Yfit[I]);
     end;
     if Chart1LineSeriesData.Source = ListChartSourceData then
-      Chart1LineSeriesModel.Source := ListChartSourceModel;
+      Chart1LineSeriesModel.Source := ListChartSourceModel
+    else
+    if Chart1LineSeriesData.Source = ListChartSourceFoldedData then begin
+      CalculateModelPhasePlot;
+      Chart1LineSeriesModel.Source := ListChartSourceFoldedModel;
+    end
+    else
+      Chart1LineSeriesModel.Source := nil;
   end;
 end;
 
