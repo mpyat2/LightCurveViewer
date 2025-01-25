@@ -1,4 +1,4 @@
-unit unitfitparamdialog;
+unit unitFitParamDialog;
 
 {$mode ObjFPC}{$H+}
 

@@ -1,4 +1,4 @@
-unit unitdftparamdialog;
+unit unitDFTparamDialog;
 
 {$mode ObjFPC}{$H+}
 

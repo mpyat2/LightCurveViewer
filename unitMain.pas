@@ -15,6 +15,7 @@ type
   { TFormMain }
 
   TFormMain = class(TForm)
+    ActionFitInfo: TAction;
     ActionModelAsTable: TAction;
     ActionPolyFit: TAction;
     ActionPeriodogram: TAction;
@@ -38,6 +39,7 @@ type
     MenuItem1: TMenuItem;
     MenuItem2: TMenuItem;
     MenuItem3: TMenuItem;
+    MenuItemModelInfo: TMenuItem;
     Separator1: TMenuItem;
     MenuItemPolyFit: TMenuItem;
     MenuItemTools: TMenuItem;
@@ -53,6 +55,8 @@ type
     ToolButton2: TToolButton;
     ToolButton3: TToolButton;
     ToolButton4: TToolButton;
+    ToolButton5: TToolButton;
+    procedure ActionFitInfoExecute(Sender: TObject);
     procedure ActionInvertedYExecute(Sender: TObject);
     procedure ActionList1Update(AAction: TBasicAction; var Handled: Boolean);
     procedure ActionModelAsTableExecute(Sender: TObject);
@@ -63,13 +67,13 @@ type
     procedure ActionPhasePlotSimpleExecute(Sender: TObject);
     procedure ActionPolyFitExecute(Sender: TObject);
     procedure ActionRawDataExecute(Sender: TObject);
-    procedure Chart1Click(Sender: TObject);
     procedure Chart1MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure FormCreate(Sender: TObject);
   private
     FFileName: string;
     FPeriodogramFirstRun: Boolean;
     FDFTThreadTerminated: Boolean;
+    FFitFormula: string;
     procedure CloseFile;
     procedure OpenFile(const AFileName: string);
     procedure PlotData;
@@ -96,9 +100,9 @@ implementation
 {$R *.lfm}
 
 uses
-  Windows, math, typ, TAChartUtils, common, unitphasedialog, unitfitparamdialog,
-  unitdftparamdialog, unitdftdialog, unitdcdft, unittableform, dftthread,
-  dataio;
+  Windows, math, typ, TAChartUtils, common, unitPhaseDialog, unitFitParamDialog,
+  unitDFTparamDialog, unitDFTdialog, unitDFT, unitTableDialog, unitInfoDialog,
+  dftThread, dataio;
 
 { TFormMain }
 
@@ -111,11 +115,6 @@ end;
 procedure TFormMain.ActionExitExecute(Sender: TObject);
 begin
   Close;
-end;
-
-procedure TFormMain.Chart1Click(Sender: TObject);
-begin
-  //
 end;
 
 procedure TFormMain.Chart1MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
@@ -176,6 +175,11 @@ begin
   Chart1.AxisList[0].Inverted := not Chart1.AxisList[0].Inverted;
 end;
 
+procedure TFormMain.ActionFitInfoExecute(Sender: TObject);
+begin
+  ShowInfo(FFitFormula, 'Approximation');
+end;
+
 procedure TFormMain.ActionList1Update(AAction: TBasicAction; var Handled: Boolean);
 begin
   if AAction = ActionInvertedY then begin
@@ -184,17 +188,17 @@ begin
   else
   if AAction = ActionRawData then begin
     (AAction as TAction).Enabled := ListChartSourceData.Count > 0;
-    (AAction as TAction).Checked := Chart1LineSeriesData.Source = ListChartSourceData;
+    //(AAction as TAction).Checked := Chart1LineSeriesData.Source = ListChartSourceData;
   end
   else
   if AAction = ActionPhasePlot then begin
     (AAction as TAction).Enabled := ListChartSourceData.Count > 0;
-    (AAction as TAction).Checked := Chart1LineSeriesData.Source = ListChartSourceFoldedData;
+    //(AAction as TAction).Checked := Chart1LineSeriesData.Source = ListChartSourceFoldedData;
   end
   else
   if AAction = ActionPhasePlotSimple then begin
     (AAction as TAction).Enabled := ListChartSourceData.Count > 0;
-    (AAction as TAction).Checked := Chart1LineSeriesData.Source = ListChartSourceFoldedData;
+    //(AAction as TAction).Checked := Chart1LineSeriesData.Source = ListChartSourceFoldedData;
   end
   else
   if AAction = ActionPeriodogram then begin
@@ -207,6 +211,10 @@ begin
   else
   if AAction = ActionModelAsTable then begin
     (AAction as TAction).Enabled := ListChartSourceModel.Count > 0;
+  end
+  else
+  if AAction = ActionFitInfo then begin
+    (AAction as TAction).Enabled := FFitFormula <> '';
   end;
 end;
 
@@ -231,6 +239,7 @@ end;
 procedure TFormMain.CloseFile;
 begin
   FFileName := '';
+  FFitFormula := '';
   FPeriodogramFirstRun := True;
   Chart1LineSeriesData.Source := nil;
   Chart1LineSeriesModel.Source := nil;
@@ -300,6 +309,8 @@ end;
 procedure TFormMain.PlotFoldedSimple;
 begin
   if ListChartSourceFoldedData.Count > 0 then begin
+    if (ListChartSourceModel.Count > 0) and (ListChartSourceFoldedModel.Count < 1) then
+      CalculateModelPhasePlot;
     PlotFoldedProc;
   end
   else begin
@@ -365,7 +376,6 @@ begin
       ListChartSourceFoldedData.Add(Phase - 1.0, Y);
     end;
     CalculateModelPhasePlot;
-    ListChartSourceFoldedModel.Sort;
     PlotFoldedProc;
   end;
 end;
@@ -418,9 +428,11 @@ var
   meanTime: ArbFloat;
   fitXmin, fitXmax, fitXstep: ArbFloat;
   Xfit, Yfit: TFloatArray;
+  Formula: string;
   Item: PChartDataItem;
   I: Integer;
 begin
+  FFitFormula := '';
   if ListChartSourceData.Count > 0 then begin
     if not GetFitParams(Frequency, TrendDegree, TrigPolyDegree) then
       Exit;
@@ -440,7 +452,8 @@ begin
     fitXmax := MaxValue(X);
     fitXstep := (fitXmax - fitXmin) / (ListChartSourceData.Count * 3);
     try
-      PolyFit(X, Y, Frequency, TrendDegree, TrigPolyDegree, fitXmin, fitXmax, fitXstep, Xfit, Yfit);
+      PolyFit(X, Y, Frequency, TrendDegree, TrigPolyDegree, fitXmin, fitXmax, fitXstep, Xfit, Yfit, FFitFormula);
+      FFitFormula := 'timeZeroPoint is ' + FloatToStr(meanTime) + ^M^J^M^J + 'f(t: real): real {' + ^M^J + FFitFormula + '}';
     except
       on E: Exception do begin
         ShowMessage('Error: '^M^J + E.Message);
@@ -511,7 +524,7 @@ end;
 
 procedure TFormMain.DFTGlobalTerminate(Sender: TObject);
 begin
-  unitdcdft.SetGlobalTerminateAllThreads(True);
+  unitDFT.SetGlobalTerminateAllThreads(True);
 end;
 
 function TFormMain.DoDCDFT(params: Pointer; ProgressCaptionProc: TProgressCaptionProc): Integer;

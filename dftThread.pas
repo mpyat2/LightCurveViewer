@@ -1,4 +1,4 @@
-unit dftthread;
+unit dftThread;
 
 {$mode ObjFPC}{$H+}
 
@@ -7,7 +7,7 @@ unit dftthread;
 interface
 
 uses
-  Classes, SysUtils, unitdcdft;
+  Classes, SysUtils, unitDFT;
 
 type
 

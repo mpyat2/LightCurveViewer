@@ -1,4 +1,4 @@
-unit unitdcdft;
+unit unitDFT;
 
 {$mode ObjFPC}{$H+}
 

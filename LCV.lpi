@@ -71,40 +71,39 @@
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="unitmain.pas"/>
+        <Filename Value="unitMain.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FormMain"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="unitMain"/>
       </Unit>
       <Unit>
         <Filename Value="dataio.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="unitphasedialog.pas"/>
+        <Filename Value="unitPhaseDialog.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FormPhaseDialog"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
-        <Filename Value="unitdftdialog.pas"/>
+        <Filename Value="unitDFTdialog.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FormDFTDialog"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
-        <Filename Value="unitdftparamdialog.pas"/>
+        <Filename Value="unitDFTparamDialog.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FormDFTparams"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
-        <Filename Value="unitdcdft.pas"/>
+        <Filename Value="unitDFT.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
@@ -115,7 +114,7 @@
         <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
-        <Filename Value="dftthread.pas"/>
+        <Filename Value="dftThread.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
@@ -127,16 +126,24 @@
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="unitfitparamdialog.pas"/>
+        <Filename Value="unitFitParamDialog.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FormFitparams"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
-        <Filename Value="unittableform.pas"/>
+        <Filename Value="unitTableDialog.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FormTable"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
+      <Unit>
+        <Filename Value="unitInfoDialog.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormInfo"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit>
     </Units>

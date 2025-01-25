@@ -1,0 +1,48 @@
+object FormInfo: TFormInfo
+  Left = 775
+  Height = 480
+  Top = 294
+  Width = 840
+  BorderIcons = [biSystemMenu, biMaximize]
+  Caption = 'Information'
+  ClientHeight = 480
+  ClientWidth = 840
+  Position = poMainFormCenter
+  LCLVersion = '3.2.0.0'
+  object MemoInfo: TMemo
+    Left = 0
+    Height = 435
+    Top = 0
+    Width = 840
+    Align = alClient
+    Font.Name = 'Courier New'
+    ParentFont = False
+    ReadOnly = True
+    ScrollBars = ssBoth
+    TabOrder = 1
+    WantReturns = False
+    WordWrap = False
+  end
+  object PanelButtons: TPanel
+    Left = 0
+    Height = 45
+    Top = 435
+    Width = 840
+    Align = alBottom
+    ClientHeight = 45
+    ClientWidth = 840
+    TabOrder = 0
+    object ButtonClose: TButton
+      Left = 745
+      Height = 25
+      Top = 8
+      Width = 75
+      Anchors = [akTop, akRight]
+      Cancel = True
+      Caption = 'Close'
+      Default = True
+      ModalResult = 2
+      TabOrder = 0
+    end
+  end
+end

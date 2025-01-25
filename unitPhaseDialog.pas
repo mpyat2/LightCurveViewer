@@ -1,4 +1,4 @@
-unit unitphasedialog;
+unit unitPhaseDialog;
 
 {$mode ObjFPC}{$H+}
 

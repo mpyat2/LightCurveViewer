@@ -28,7 +28,8 @@ procedure PolyFit(const Xarray: TFloatArray;
                   ATrigPolyDegree: ArbInt;
                   fitXmin, fitXmax, fitXstep: Double;
                   out Xfit: TFloatArray;
-                  out Yfit: TFloatArray);
+                  out Yfit: TFloatArray;
+                  out Formula: string);
 
 procedure CalcError(const S: string);
 
@@ -38,6 +39,7 @@ function GetFieldValue(const Field: TEdit; Min, Max: Integer; const FieldName: s
 
 implementation
 
+// to-do: get rid of the fixed-length TFloat21
 type
   TFloat21 = array[0..20] of ArbFloat;
   TFloat21Array = array of TFloat21;
@@ -103,6 +105,40 @@ begin
   end;
 end;
 
+function FloatToStrMod(V: ArbFloat): string;
+begin
+  //Result := FloatToStrF(V, ffFixed, 0, 15);
+  Result := FloatToStr(V);
+end;
+
+function PolyFitSolutionToFormula(ATrendDegree: ArbInt; ATrigPolyDegree: ArbInt; nu: ArbFloat; const solution_vector: TFloat21): string;
+var
+  I, Idx: Integer;
+  Sign: string;
+  S: string;
+begin
+  Result := '';
+  for I := 0 to ATrendDegree do begin
+    if solution_vector[I] < 0 then
+      Sign := ' - '
+    else begin
+      if I > 0 then Sign := ' + ' else Sign := '   ';
+    end;
+    Result := Result + Sign + FloatToStrMod(Abs(solution_vector[I]));
+    if I > 0 then
+      Result := Result + ' * (t-timeZeroPoint)^' + IntToStr(I);
+    Result := Result + ^M^J;
+  end;
+  for I := 1 to ATrigPolyDegree do begin
+    Idx := 1 + ATrendDegree + 2 * (I - 1);
+    S := '2*Pi*' + FloatToStrMod(I * nu) + '*(t-timeZeroPoint)';
+    if solution_vector[Idx] < 0 then Sign := ' - ' else Sign := ' + ';
+    Result := Result + Sign + FloatToStrMod(Abs(solution_vector[Idx]))     + ' * cos(' + S + ')';
+    if solution_vector[Idx + 1] < 0 then Sign := ' - ' else Sign := ' + ';
+    Result := Result + Sign + FloatToStrMod(Abs(solution_vector[Idx + 1])) + ' * sin(' + S + ')' + ^M^J;
+  end;
+end;
+
 procedure PolyFit(const Xarray: TFloatArray;
                   const Yarray: TFloatArray;
                   nu: ArbFloat;
@@ -148,7 +184,8 @@ procedure PolyFit(const Xarray: TFloatArray;
                   ATrigPolyDegree: ArbInt;
                   fitXmin, fitXmax, fitXstep: Double;
                   out Xfit: TFloatArray;
-                  out Yfit: TFloatArray);
+                  out Yfit: TFloatArray;
+                  out Formula: string);
 var
   ndata, nfit: ArbInt;
   a: TFloat21Array; // to-do: get rid of the fixed-length TFloat21
@@ -181,6 +218,8 @@ begin
       Yfit[I] := Yfit[I] + solution_vector[Idx] * c + solution_vector[Idx + 1] * s;
     end;
   end;
+
+  Formula := PolyFitSolutionToFormula(ATrendDegree, ATrigPolyDegree, nu, solution_vector);
 end;
 
 function GetFieldValue(const Field: TEdit; Min, Max: Double; const FieldName: string; out V: Double): Boolean;
