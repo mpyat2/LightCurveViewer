@@ -7,35 +7,58 @@ unit unitDFTdialog;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, ComCtrls,
-  Grids, Menus, ActnList, TAGraph, TASeries, common;
+  Windows, Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls,
+  ComCtrls, Grids, Menus, ActnList, StdCtrls, TAGraph, TACustomSource, TACustomSeries,
+  TASeries, TATools, common, Types;
 
 type
 
   { TFormDFTDialog }
 
   TFormDFTDialog = class(TForm)
-    ActionGridCopyAll: TAction;
+    ActionGridSelectAll: TAction;
+    ActionGridCopy: TAction;
     ActionList: TActionList;
+    ButtonClose: TButton;
     Chart1: TChart;
     Chart1LineSeries1: TLineSeries;
+    Chart1LineSeries2: TLineSeries;
+    ChartToolset1: TChartToolset;
+    ChartToolset1DataPointClickTool1: TDataPointClickTool;
+    ChartToolset1PanDragTool1: TPanDragTool;
+    ChartToolset1ZoomDragTool1: TZoomDragTool;
     DrawGrid1: TDrawGrid;
+    EditPeriod: TEdit;
+    EditPower: TEdit;
+    EditFrequency: TEdit;
+    Label1: TLabel;
+    LabelPower: TLabel;
+    LabelPeriod: TLabel;
     MenuItem1: TMenuItem;
+    MenuItem2: TMenuItem;
     PageControl1: TPageControl;
+    PanelChartControls: TPanel;
+    PanelButtons: TPanel;
     PopupMenuGrid: TPopupMenu;
     TabSheetFrequencies: TTabSheet;
     TabSheetTable: TTabSheet;
-    procedure ActionGridCopyAllExecute(Sender: TObject);
+    procedure ActionGridCopyExecute(Sender: TObject);
+    procedure ActionGridSelectAllExecute(Sender: TObject);
+    procedure ActionListUpdate(AAction: TBasicAction; var Handled: Boolean);
+    procedure ButtonCloseClick(Sender: TObject);
+    procedure ChartToolset1DataPointClickTool1AfterMouseDown(ATool: TChartTool;
+      APoint: TPoint);
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
   private
     function GetGridCell(C, R: Integer): string;
-     procedure GridDrawCell(Sender: TObject; aCol, aRow: Integer; aRect: TRect; aState: TGridDrawState);
+    procedure GridDrawCell(Sender: TObject; aCol, aRow: Integer; aRect: TRect; aState: TGridDrawState);
   public
-    procedure PlotData(const frequencies, periods, power: TFloatArray);
+
   end;
 
-var
-  FormDFTDialog: TFormDFTDialog;
+procedure PlotDFTresult(const frequencies, periods, power: TFloatArray);
+procedure CloseDFTdialog;
 
 implementation
 
@@ -44,6 +67,41 @@ implementation
 uses
   math, Clipbrd;
 
+var
+  FormDFTDialog: TFormDFTDialog = nil;
+
+procedure CloseDFTdialog;
+begin
+  if FormDFTDialog <> nil then
+    FormDFTDialog.Close;
+end;
+
+procedure PlotDFTresult(const frequencies, periods, power: TFloatArray);
+var
+  I: Integer;
+begin
+  FormDFTDialog := TFormDFTDialog.Create(Application);
+  try
+    //Chart1LineSeries2.Clear;
+    //Chart1LineSeries1.Clear;
+    //DrawGrid1.ClearSelections;
+    for I := 0 to Length(frequencies) - 1 do begin
+        if not IsNan(power[I]) then
+          FormDFTDialog.Chart1LineSeries1.AddXY(frequencies[I], power[I]);
+    end;
+    FormDFTDialog.DrawGrid1.ColCount := 2 + FormDFTDialog.DrawGrid1.FixedCols;
+    FormDFTDialog.DrawGrid1.RowCount := FormDFTDialog.DrawGrid1.FixedRows + 1;
+    if FormDFTDialog.Chart1LineSeries1.Count > 0 then
+      FormDFTDialog.DrawGrid1.RowCount := FormDFTDialog.Chart1LineSeries1.Count + FormDFTDialog.DrawGrid1.FixedRows;
+    //FormDFTDialog.DrawGrid1.Row := FormDFTDialog.DrawGrid1.FixedRows;
+    //FormDFTDialog.DrawGrid1.Col := FormDFTDialog.DrawGrid1.FixedCols;
+  except
+    FormDFTDialog.Release;
+    FormDFTDialog := nil;
+  end;
+  FormDFTDialog.Show;
+end;
+
 { TFormDFTDialog }
 
 procedure TFormDFTDialog.FormCreate(Sender: TObject);
@@ -51,24 +109,71 @@ begin
   DrawGrid1.OnDrawCell := @GridDrawCell;
 end;
 
-procedure TFormDFTDialog.ActionGridCopyAllExecute(Sender: TObject);
+procedure TFormDFTDialog.ActionGridCopyExecute(Sender: TObject);
 var
   CurrentCursor: TCursor;
-  S, S1: string;
-  R: Integer;
 begin
   CurrentCursor := Screen.Cursor;
   Screen.Cursor := crHourglass;
   try
-    S := '';
-    for R := 0 to DrawGrid1.RowCount - 1 do begin
-      S1 := GetGridCell(0, R) + ^I + GetGridCell(1, R) + ^M^J;
-      S := S + S1;
-    end;
-    Clipboard.AsText := S;
+    Clipboard.AsText := GetGridSelectionAsText(DrawGrid1, @GetGridCell);
   finally
     Screen.Cursor := CurrentCursor;
   end;
+end;
+
+procedure TFormDFTDialog.ActionGridSelectAllExecute(Sender: TObject);
+var
+  Selection: TRect;
+begin
+  Selection.Top := DrawGrid1.FixedRows;
+  Selection.Bottom := DrawGrid1.RowCount - 1;
+  Selection.Left := DrawGrid1.FixedCols;
+  Selection.Right := DrawGrid1.ColCount - 1;
+  DrawGrid1.Selection := Selection;
+end;
+
+procedure TFormDFTDialog.ActionListUpdate(AAction: TBasicAction; var Handled: Boolean);
+begin
+  if (AAction = ActionGridSelectAll) or (AAction = ActionGridCopy) then
+    (AAction as TAction).Enabled := DrawGrid1.Focused;
+end;
+
+procedure TFormDFTDialog.ButtonCloseClick(Sender: TObject);
+begin
+  Close;
+end;
+
+procedure TFormDFTDialog.ChartToolset1DataPointClickTool1AfterMouseDown(
+  ATool: TChartTool; APoint: TPoint);
+var
+  Item: PChartDataItem;
+var
+  PointClickTool: TDataPointClickTool;
+  Series: TChartSeries;
+  PointIndex: Integer;
+begin
+  PointClickTool := ATool as TDataPointClickTool;
+  Series := PointClickTool.Series as TChartSeries;
+
+  if Series = Chart1LineSeries2 then
+    Exit;
+
+  EditFrequency.Text := '';
+  EditPeriod.Text := '';
+  EditPower.Text := '';
+  Chart1LineSeries2.Clear;
+
+  if Series = nil then
+    Exit;
+
+  PointIndex := PointClickTool.PointIndex;
+  Item := Series.ListSource.Item[PointIndex];
+  EditFrequency.Text := FloatToStr(Item^.X);
+  EditPower.Text := FloatToStr(Item^.Y);
+  if (Item^.X <> 0) then
+    EditPeriod.Text := FloatToStr(1.0 / Item^.X);
+  Chart1LineSeries2.AddXY(Item^.X, Item^.Y);
 end;
 
 function TFormDFTDialog.GetGridCell(C, R: Integer): string;
@@ -102,25 +207,21 @@ end;
 procedure TFormDFTDialog.GridDrawCell(Sender: TObject; aCol, aRow: Integer; aRect: TRect; aState: TGridDrawState);
 var
   GridCanvas: TCanvas;
-  S: string;
 begin
   GridCanvas := DrawGrid1.Canvas;
   GridCanvas.TextRect(aRect, aRect.Left + 2, aRect.Top + 2, GetGridCell(aCol, aRow));
 end;
 
-procedure TFormDFTDialog.PlotData(const frequencies, periods, power: TFloatArray);
-var
-  I: Integer;
+procedure TFormDFTDialog.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-  Hide;
-  Chart1LineSeries1.Clear;
-  for I := 0 to Length(frequencies) - 1 do begin
-    if not IsNan(power[I]) then
-      Chart1LineSeries1.AddXY(frequencies[I], power[I]);
-  end;
-  DrawGrid1.ColCount := 2 + DrawGrid1.FixedCols;
-  DrawGrid1.RowCount := Chart1LineSeries1.Count + DrawGrid1.FixedRows;
-  Show;
+  //Chart1LineSeries2.Clear;
+  //Chart1LineSeries1.Clear;
+  //DrawGrid1.ClearSelections;
+  //DrawGrid1.RowCount := DrawGrid1.FixedRows + 1;
+  //DrawGrid1.Row := DrawGrid1.FixedRows;
+  //DrawGrid1.Col := DrawGrid1.FixedCols;
+  CloseAction := caFree;
+  FormDFTDialog := nil;
 end;
 
 end.

@@ -39,6 +39,7 @@ object FormMain: TFormMain
     Title.Text.Strings = (
       'TAChart'
     )
+    Toolset = ChartToolset1
     Align = alClient
     OnMouseMove = Chart1MouseMove
     object Chart1LineSeriesModel: TLineSeries
@@ -270,5 +271,16 @@ object FormMain: TFormMain
   object ListChartSourceFoldedModel: TListChartSource
     Left = 264
     Top = 240
+  end
+  object ChartToolset1: TChartToolset
+    Left = 600
+    Top = 48
+    object ChartToolset1ZoomDragTool1: TZoomDragTool
+      Shift = [ssCtrl, ssLeft]
+      Brush.Style = bsClear
+    end
+    object ChartToolset1PanDragTool1: TPanDragTool
+      Shift = [ssRight]
+    end
   end
 end

@@ -7,7 +7,7 @@ unit common;
 interface
 
 uses
-  Classes, SysUtils, StdCtrls, Dialogs, math, typ, sle;
+  Classes, SysUtils, StdCtrls, Dialogs, Grids, math, typ, sle;
 
 type
   PFloatArray = ^TFloatArray;
@@ -36,6 +36,11 @@ procedure CalcError(const S: string);
 function GetFieldValue(const Field: TEdit; Min, Max: Double; const FieldName: string; out V: Double): Boolean;
 
 function GetFieldValue(const Field: TEdit; Min, Max: Integer; const FieldName: string; out V: integer): Boolean;
+
+type
+  TGetGridCell = function(C, R: Integer): string of object;
+
+function GetGridSelectionAsText(Grid: TDrawGrid; GetGridCell: TGetGridCell): string;
 
 implementation
 
@@ -274,6 +279,25 @@ begin
     Exit;
   end;
   Result := True;
+end;
+
+function GetGridSelectionAsText(Grid: TDrawGrid; GetGridCell: TGetGridCell): string;
+var
+  Selection: TRect;
+  R, C: Integer;
+  S2: string;
+begin
+  Result := '';
+  Selection := Grid.Selection;
+  for R := Selection.Top to Selection.Bottom do begin
+    S2 := '';
+    for C := Selection.Left to Selection.Right do begin
+      S2 := S2 + GetGridCell(C, R);
+      if C < Selection.Right then
+        S2 := S2 + ^I;
+    end;
+    Result := Result + S2 + ^M^J;
+  end;
 end;
 
 end.

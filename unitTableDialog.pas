@@ -13,12 +13,15 @@ type
   { TFormTable }
 
   TFormTable = class(TForm)
-    ActionCopyAll: TAction;
+    ActionSelectAll: TAction;
+    ActionAll: TAction;
     ActionList1: TActionList;
     DrawGrid1: TDrawGrid;
+    MenuItem1: TMenuItem;
     MenuItemCopy: TMenuItem;
     PopupMenu1: TPopupMenu;
-    procedure ActionCopyAllExecute(Sender: TObject);
+    procedure ActionAllExecute(Sender: TObject);
+    procedure ActionSelectAllExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
     FX: TFloatArray;
@@ -65,29 +68,28 @@ begin
   DrawGrid1.OnDrawCell := @GridDrawCell;
 end;
 
-procedure TFormTable.ActionCopyAllExecute(Sender: TObject);
+procedure TFormTable.ActionAllExecute(Sender: TObject);
 var
   CurrentCursor: TCursor;
-  S, S1: string;
-  C, R: Integer;
 begin
   CurrentCursor := Screen.Cursor;
   Screen.Cursor := crHourglass;
   try
-    S := '';
-    for R := 0 to DrawGrid1.RowCount - 1 do begin
-      S1 := '';
-      for C := 0 to DrawGrid1.ColCount - 1 do begin
-        S1 := S1 + GetGridCell(C, R);
-        if C < DrawGrid1.ColCount - 1 then
-          S1 := S1 + ^I;
-      end;
-      S := S + S1 + ^M^J;
-    end;
-    Clipboard.AsText := S;
+    Clipboard.AsText := GetGridSelectionAsText(DrawGrid1, @GetGridCell);
   finally
     Screen.Cursor := CurrentCursor;
   end;
+end;
+
+procedure TFormTable.ActionSelectAllExecute(Sender: TObject);
+var
+  Selection: TRect;
+begin
+  Selection.Top := DrawGrid1.FixedRows;
+  Selection.Bottom := DrawGrid1.RowCount - 1;
+  Selection.Left := DrawGrid1.FixedCols;
+  Selection.Right := DrawGrid1.ColCount - 1;
+  DrawGrid1.Selection := Selection;
 end;
 
 function TFormTable.GetGridCell(C, R: Integer): string;

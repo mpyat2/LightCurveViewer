@@ -31,11 +31,11 @@ type
 
   end;
 
-//procedure SetCurrentPeriod(AValue: Double);
+procedure SetCurrentPeriod(AValue: Double);
 
-//procedure SetCurrentTrendDegree(AValue: Integer);
+procedure SetCurrentTrendDegree(AValue: Integer);
 
-//procedure SetCurrentTrigPolyDegree(AValue: Integer);
+procedure SetCurrentTrigPolyDegree(AValue: Integer);
 
 function GetFitParams(out AFrequency: Double; out ATrendDegree, ATrigPolyDegree: Integer): Boolean;
 

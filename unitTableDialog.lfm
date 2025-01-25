@@ -23,20 +23,30 @@ object FormTable: TFormTable
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goSmoothScroll]
     PopupMenu = PopupMenu1
     TabOrder = 0
+    UseXORFeatures = True
   end
   object PopupMenu1: TPopupMenu
     Left = 112
     Top = 176
     object MenuItemCopy: TMenuItem
-      Action = ActionCopyAll
+      Action = ActionAll
+    end
+    object MenuItem1: TMenuItem
+      Action = ActionSelectAll
     end
   end
   object ActionList1: TActionList
     Left = 216
     Top = 176
-    object ActionCopyAll: TAction
-      Caption = 'Copy All Data'
-      OnExecute = ActionCopyAllExecute
+    object ActionAll: TAction
+      Caption = '&Copy'
+      OnExecute = ActionAllExecute
+      ShortCut = 16451
+    end
+    object ActionSelectAll: TAction
+      Caption = 'Select &All'
+      OnExecute = ActionSelectAllExecute
+      ShortCut = 16449
     end
   end
 end

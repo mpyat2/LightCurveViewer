@@ -37,15 +37,15 @@ type
 
   end;
 
-//procedure SetCurrentFrequencyMin(AValue: Double);
+procedure SetCurrentFrequencyMin(AValue: Double);
 
-//procedure SetCurrentFrequencyMax(AValue: Double);
+procedure SetCurrentFrequencyMax(AValue: Double);
 
 procedure SetCurrentFrequencyResolution(AValue: Double);
 
-//procedure SetCurrentTrendDegree(AValue: Integer);
+procedure SetCurrentTrendDegree(AValue: Integer);
 
-//procedure SetCurrentTrigPolyDegree(AValue: Integer);
+procedure SetCurrentTrigPolyDegree(AValue: Integer);
 
 function GetDFTparams(out AFrequencyMin, AFrequencyMax, AFrequencyResolution: Double; out ATrendDegree, ATrigPolyDegree: Integer): Boolean;
 

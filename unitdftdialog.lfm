@@ -8,12 +8,13 @@ object FormDFTDialog: TFormDFTDialog
   ClientHeight = 469
   ClientWidth = 713
   FormStyle = fsStayOnTop
+  OnClose = FormClose
   OnCreate = FormCreate
   Position = poMainFormCenter
   LCLVersion = '3.2.0.0'
   object PageControl1: TPageControl
     Left = 0
-    Height = 469
+    Height = 428
     Top = 0
     Width = 713
     ActivePage = TabSheetFrequencies
@@ -22,11 +23,11 @@ object FormDFTDialog: TFormDFTDialog
     TabOrder = 0
     object TabSheetFrequencies: TTabSheet
       Caption = 'Frequencies'
-      ClientHeight = 441
+      ClientHeight = 400
       ClientWidth = 705
       object Chart1: TChart
         Left = 0
-        Height = 441
+        Height = 358
         Top = 0
         Width = 705
         AxisList = <        
@@ -49,19 +50,95 @@ object FormDFTDialog: TFormDFTDialog
         Title.Text.Strings = (
           'TAChart'
         )
+        Toolset = ChartToolset1
         Align = alClient
         object Chart1LineSeries1: TLineSeries
           LinePen.Color = clBlue
+          LineType = ltNone
+          Pointer.Brush.Color = clBlue
+          Pointer.HorizSize = 2
+          Pointer.Pen.Color = clBlue
+          Pointer.Style = psCircle
+          Pointer.VertSize = 2
+          Pointer.Visible = True
+          ShowPoints = True
+        end
+        object Chart1LineSeries2: TLineSeries
+          LinePen.Color = clRed
+          LineType = ltNone
+          Pointer.Brush.Style = bsClear
+          Pointer.HorizSize = 6
+          Pointer.Pen.Color = clRed
+          Pointer.Pen.Width = 2
+          Pointer.Style = psCircle
+          Pointer.VertSize = 6
+          Pointer.Visible = True
+          ShowPoints = True
+        end
+      end
+      object PanelChartControls: TPanel
+        Left = 0
+        Height = 42
+        Top = 358
+        Width = 705
+        Align = alBottom
+        ClientHeight = 42
+        ClientWidth = 705
+        TabOrder = 1
+        object Label1: TLabel
+          Left = 0
+          Height = 15
+          Top = 14
+          Width = 55
+          Caption = 'Frequency'
+        end
+        object EditFrequency: TEdit
+          Left = 64
+          Height = 23
+          Top = 8
+          Width = 112
+          ReadOnly = True
+          TabOrder = 0
+        end
+        object EditPower: TEdit
+          Left = 416
+          Height = 23
+          Top = 8
+          Width = 112
+          ReadOnly = True
+          TabOrder = 2
+        end
+        object LabelPeriod: TLabel
+          Left = 192
+          Height = 15
+          Top = 14
+          Width = 34
+          Caption = 'Period'
+        end
+        object EditPeriod: TEdit
+          Left = 240
+          Height = 23
+          Top = 8
+          Width = 112
+          ReadOnly = True
+          TabOrder = 1
+        end
+        object LabelPower: TLabel
+          Left = 368
+          Height = 15
+          Top = 14
+          Width = 33
+          Caption = 'Power'
         end
       end
     end
     object TabSheetTable: TTabSheet
       Caption = 'Table'
-      ClientHeight = 441
+      ClientHeight = 400
       ClientWidth = 705
       object DrawGrid1: TDrawGrid
         Left = 0
-        Height = 441
+        Height = 400
         Top = 0
         Width = 705
         Align = alClient
@@ -72,24 +149,71 @@ object FormDFTDialog: TFormDFTDialog
         Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goSmoothScroll]
         PopupMenu = PopupMenuGrid
         TabOrder = 0
+        UseXORFeatures = True
       end
+    end
+  end
+  object PanelButtons: TPanel
+    Left = 0
+    Height = 41
+    Top = 428
+    Width = 713
+    Align = alBottom
+    ClientHeight = 41
+    ClientWidth = 713
+    TabOrder = 1
+    object ButtonClose: TButton
+      Left = 624
+      Height = 25
+      Top = 8
+      Width = 75
+      Anchors = [akTop, akRight]
+      Cancel = True
+      Caption = 'Close'
+      TabOrder = 0
+      OnClick = ButtonCloseClick
     end
   end
   object PopupMenuGrid: TPopupMenu
     Left = 128
     Top = 56
     object MenuItem1: TMenuItem
-      Action = ActionGridCopyAll
+      Action = ActionGridCopy
+    end
+    object MenuItem2: TMenuItem
+      Action = ActionGridSelectAll
     end
   end
   object ActionList: TActionList
+    OnUpdate = ActionListUpdate
     Left = 128
     Top = 128
-    object ActionGridCopyAll: TAction
+    object ActionGridCopy: TAction
       Category = 'Grid'
-      Caption = 'Copy &All'
-      OnExecute = ActionGridCopyAllExecute
-      ShortCut = 24643
+      Caption = '&Copy'
+      OnExecute = ActionGridCopyExecute
+      ShortCut = 16451
+    end
+    object ActionGridSelectAll: TAction
+      Category = 'Grid'
+      Caption = 'Select &All'
+      OnExecute = ActionGridSelectAllExecute
+      ShortCut = 16449
+    end
+  end
+  object ChartToolset1: TChartToolset
+    Left = 128
+    Top = 200
+    object ChartToolset1PanDragTool1: TPanDragTool
+      Shift = [ssRight]
+    end
+    object ChartToolset1ZoomDragTool1: TZoomDragTool
+      Shift = [ssCtrl, ssLeft]
+      Brush.Style = bsClear
+    end
+    object ChartToolset1DataPointClickTool1: TDataPointClickTool
+      Shift = [ssLeft]
+      OnAfterMouseDown = ChartToolset1DataPointClickTool1AfterMouseDown
     end
   end
 end

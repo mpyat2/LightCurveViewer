@@ -25,7 +25,6 @@ begin
   Application.Initialize;
   Application.CreateForm(TFormMain, FormMain);
   Application.CreateForm(TFormPhaseDialog, FormPhaseDialog);
-  Application.CreateForm(TFormDFTDialog, FormDFTDialog);
   Application.Run;
 end.
 

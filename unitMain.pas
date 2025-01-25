@@ -8,7 +8,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Menus, ActnList,
-  ComCtrls, TAGraph, TASources, TASeries, TACustomSource, DoLongOp;
+  ComCtrls, TAGraph, TASources, TASeries, TACustomSource, TATools, DoLongOp;
 
 type
 
@@ -29,6 +29,9 @@ type
     Chart1: TChart;
     Chart1LineSeriesModel: TLineSeries;
     Chart1LineSeriesData: TLineSeries;
+    ChartToolset1: TChartToolset;
+    ChartToolset1PanDragTool1: TPanDragTool;
+    ChartToolset1ZoomDragTool1: TZoomDragTool;
     ImageList1: TImageList;
     ListChartSourceModel: TListChartSource;
     ListChartSourceFoldedModel: TListChartSource;
@@ -252,8 +255,16 @@ begin
     FormPhaseDialog.CurrentEpoch := NaN;
     FormPhaseDialog.CurrentPeriod := NaN;
   end;
-  if Assigned(FormDFTDialog) then
-    FormDFTDialog.Close;
+  unitDFTparamDialog.SetCurrentFrequencyMin(NaN);
+  unitDFTparamDialog.SetCurrentFrequencyMax(NaN);
+  unitDFTparamDialog.SetCurrentFrequencyResolution(NaN);
+  unitDFTparamDialog.SetCurrentTrendDegree(0);
+  unitDFTparamDialog.SetCurrentTrigPolyDegree(1);
+  unitFitParamDialog.SetCurrentPeriod(NaN);
+  unitFitParamDialog.SetCurrentTrendDegree(0);
+  unitFitParamDialog.SetCurrentTrigPolyDegree(1);
+
+  CloseDFTdialog;
 end;
 
 procedure TFormMain.OpenFile(const AFileName: string);
@@ -498,7 +509,7 @@ begin
     end;
     if not GetDFTparams(params.FrequencyMin, params.FrequencyMax, params.FrequencyResolution, params.TrendDegree, params.TrigPolyDegree) then
       Exit;
-    FormDFTDialog.Hide;
+    CloseDFTdialog;
     params.Error := '';
     try
       DoLongOp.DoLongOperation(@DoDCDFT, @params, @DFTGlobalTerminate, 'Periodogram');
@@ -513,7 +524,7 @@ begin
       Exit;
     end;
     //ShowMessage('Done!');
-    FormDFTDialog.PlotData(params.frequencies, params.periods, params.power);
+    PlotDFTresult(params.frequencies, params.periods, params.power);
   end;
 end;
 
