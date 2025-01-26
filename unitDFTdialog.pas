@@ -214,12 +214,6 @@ end;
 
 procedure TFormDFTDialog.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-  //Chart1LineSeries2.Clear;
-  //Chart1LineSeries1.Clear;
-  //DrawGrid1.ClearSelections;
-  //DrawGrid1.RowCount := DrawGrid1.FixedRows + 1;
-  //DrawGrid1.Row := DrawGrid1.FixedRows;
-  //DrawGrid1.Col := DrawGrid1.FixedCols;
   CloseAction := caFree;
   FormDFTDialog := nil;
 end;

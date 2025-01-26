@@ -44,10 +44,10 @@ function GetGridSelectionAsText(Grid: TDrawGrid; GetGridCell: TGetGridCell): str
 
 implementation
 
-// to-do: get rid of the fixed-length TFloat21
+// to-do: get rid of the fixed-length TFloat51
 type
-  TFloat21 = array[0..20] of ArbFloat;
-  TFloat21Array = array of TFloat21;
+  TFloat51 = array[0..50] of ArbFloat;
+  TFloat51Array = array of TFloat51;
 
 procedure CalcError(const S: string);
 begin
@@ -59,8 +59,8 @@ procedure PolyFitSolution(const Xarray: TFloatArray;
                           nu: ArbFloat;
                           ATrendDegree: ArbInt;
                           ATrigPolyDegree: ArbInt;
-                          out a: TFloat21Array;
-                          out solution_vector: TFloat21);
+                          out a: TFloat51Array;
+                          out solution_vector: TFloat51);
 var
   ndata: ArbInt;
   angle: ArbFloat;
@@ -73,7 +73,7 @@ begin
   if (ATrigPolyDegree < 0) then
     CalcError('Trigonometric polynomial degree must be >= 0');
 
-  if (1 + ATrendDegree + ATrigPolyDegree * 2) > Length(TFloat21) then
+  if (1 + ATrendDegree + ATrigPolyDegree * 2) > Length(TFloat51) then
     CalcError('Too many parameters. Please reduce trend or trigonometric polynomial degree');
 
   if Length(Xarray) <> Length(Yarray) then
@@ -100,7 +100,7 @@ begin
   end;
 
   // solve for overdetermined matrices
-  slegls(a[0, 0], ndata, 1 + ATrendDegree + ATrigPolyDegree * 2, Length(TFloat21), Yarray[0], solution_vector[0], term);
+  slegls(a[0, 0], ndata, 1 + ATrendDegree + ATrigPolyDegree * 2, Length(TFloat51), Yarray[0], solution_vector[0], term);
   case term of
     1: ; // successful completion, the solution vector x is valid
     2: CalcError('"slegls" error: ' + IntToStr(term) + ': there is no unambiguous solution because the columns of the matrix are linearly dependant.');
@@ -116,7 +116,7 @@ begin
   Result := FloatToStr(V);
 end;
 
-function PolyFitSolutionToFormula(ATrendDegree: ArbInt; ATrigPolyDegree: ArbInt; nu: ArbFloat; const solution_vector: TFloat21): string;
+function PolyFitSolutionToFormula(ATrendDegree: ArbInt; ATrigPolyDegree: ArbInt; nu: ArbFloat; const solution_vector: TFloat51): string;
 var
   I, Idx: Integer;
   Sign: string;
@@ -153,8 +153,8 @@ procedure PolyFit(const Xarray: TFloatArray;
                   out trig_fit: TFloatArray);
 var
   ndata: ArbInt;
-  a: TFloat21Array; // to-do: get rid of the fixed-length TFloat21
-  solution_vector: TFloat21;
+  a: TFloat51Array; // to-do: get rid of the fixed-length TFloat51
+  solution_vector: TFloat51;
   angle: ArbFloat;
   term: ArbInt;
   I, II, Idx: ArbInt;
@@ -193,8 +193,8 @@ procedure PolyFit(const Xarray: TFloatArray;
                   out Formula: string);
 var
   ndata, nfit: ArbInt;
-  a: TFloat21Array; // to-do: get rid of the fixed-length TFloat21
-  solution_vector: TFloat21;
+  a: TFloat51Array; // to-do: get rid of the fixed-length TFloat21
+  solution_vector: TFloat51;
   angle, c, s: ArbFloat;
   x: ArbFloat;
   term: ArbInt;

@@ -129,7 +129,7 @@ begin
     if (Chart1LineSeriesData.Source <> nil) and (Chart1LineSeriesData.Source.Count > 0) then begin
       P := Chart1.ScreenToClient(Mouse.CursorPos);
       Pg := Chart1.ImageToGraph(P);
-      StatusBar1.Panels[0].Text := Format(' %f'^I^I' %f ', [Pg.X, Pg.Y]);
+      StatusBar1.Panels[0].Text := Format(' %g'^I' %g ', [Pg.X, Pg.Y]);
     end
     else
       StatusBar1.Panels[0].Text := '';
@@ -274,7 +274,7 @@ var
 begin
   CloseFile;
   try
-     ReadCSV(AFileName, X, Y);
+     ReadData(AFileName, X, Y);
   except
     on E: Exception do begin
       ShowMessage(E.Message);

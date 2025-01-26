@@ -7,9 +7,9 @@ unit dataio;
 interface
 
 uses
-  Classes, SysUtils, typ, csvdocument, common;
+  Classes, SysUtils, typ, common;
 
-procedure ReadCSV(const AFileName: string; out X: TFloatArray; out Y: TFloatArray; Delimiter: Char = #09);
+procedure ReadData(const AFileName: string; out X: TFloatArray; out Y: TFloatArray);
 
 implementation
 
@@ -21,30 +21,52 @@ begin
   Result := Code = 0;
 end;
 
-procedure ReadCSV(const AFileName: string; out X: TFloatArray; out Y: TFloatArray; Delimiter: Char = #09);
+// Reads a text file assuming it contains columns of the floating-point values.
+// Only the first two columns are taken into account.
+// The empty lines and lines starting with '#' are ignored.
+// The lines containing ASCII 127 character are ignored.
+// The lines contaning less than 2 floating-point values in the first two
+// columns are ignored.
+// The columns are assumed to be separated by tabs or spaces.
+procedure ReadData(const AFileName: string; out X: TFloatArray; out Y: TFloatArray);
 var
-  CSVDoc: TCSVDocument;
+  Lines, Line: TStrings;
+  S: string;
   FX, FY: ArbFloat;
   I, N: Integer;
 begin
-  CSVDoc := TCSVDocument.Create;
+  Lines := TStringList.Create;
   try
-    CSVDoc.Delimiter := Delimiter;
-    CSVDoc.LoadFromFile(AFileName);
-    SetLength(X, CSVDoc.RowCount);
-    SetLength(Y, CSVDoc.RowCount);
-    N := 0;
-    for I := 0 to CSVDoc.RowCount - 1 do begin
-      if StringToFloat(CSVDoc.Cells[0, I], FX) and StringToFloat(CSVDoc.Cells[1, I], FY) then begin
-        X[I] := FX;
-        Y[I] := FY;
-        Inc(N);
+    Lines.LoadFromFile(AFileName);
+    SetLength(X, Lines.Count);
+    SetLength(Y, Lines.Count);
+    Line := TStringList.Create;
+    try
+      Line.Delimiter := #127;
+      Line.QuoteChar := '"';
+      N := 0;
+      for I := 0 to Lines.Count - 1 do begin
+        S := Trim(Lines[I]);
+        if (S = '') or (S[1] = '#') or (Pos(#127, S) > 0) then
+          Break;
+        // DelimitedText treats repeating spaces (including tabs) as one delimiter.
+        // To workaround this, use a spercial character.
+        Line.DelimitedText := StringReplace(S, ^I, #127, [rfReplaceAll]);
+        if Line.Count > 1 then begin
+          if StringToFloat(Line[0], FX) and StringToFloat(Line[1], FY) then begin
+            X[N] := FX;
+            Y[N] := FY;
+            Inc(N);
+          end;
+        end;
       end;
+      SetLength(X, N);
+      SetLength(Y, N);
+    finally
+      FreeAndNil(Line);
     end;
-    SetLength(X, N);
-    SetLength(Y, N);
   finally
-    FreeAndNil(CSVDoc);
+    FreeAndNil(Lines);
   end;
 end;
 

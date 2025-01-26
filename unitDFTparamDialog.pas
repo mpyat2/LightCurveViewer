@@ -137,9 +137,9 @@ begin
     Exit;
   if not GetFieldValue(EditFrequencyResolution, 0, NaN, LabelFrequencyResolution.Caption, Resolution) then
     Exit;
-  if not GetFieldValue(EditTrendDegree, 0, 10, LabelTrendDegree.Caption, TrendDegree) then
+  if not GetFieldValue(EditTrendDegree, 0, 50, LabelTrendDegree.Caption, TrendDegree) then
     Exit;
-  if not GetFieldValue(EditTrigPolyDegree, 1, 5, LabelTrigPolyDegree.Caption, TrigPolyDegree) then
+  if not GetFieldValue(EditTrigPolyDegree, 1, 25, LabelTrigPolyDegree.Caption, TrigPolyDegree) then
     Exit;
   FFrequencyMin := MinF;
   FFrequencyMax := MaxF;
