@@ -7,7 +7,7 @@ unit dftThread;
 interface
 
 uses
-  Classes, SysUtils, unitDFT;
+  Classes, SysUtils, unitDFT, DoLongOp;
 
 type
 
@@ -16,20 +16,26 @@ type
   TDFTThread = class(TThread)
   private
     FParamsPtr: PDCDFTparameters;
+    FProgressCaptionProc: TProgressCaptionProc;
   protected
     procedure Execute; override;
   public
-    constructor Create(AParamsPtr: PDCDFTparameters; AOnTerminate: TNotifyEvent);
+    constructor Create(AParamsPtr: PDCDFTparameters;
+                       AOnTerminate: TNotifyEvent;
+                       ProgressCaptionProc: TProgressCaptionProc);
   end;
 
 
 implementation
 
-constructor TDFTThread.Create(AParamsPtr: PDCDFTparameters; AOnTerminate: TNotifyEvent);
+constructor TDFTThread.Create(AParamsPtr: PDCDFTparameters;
+                              AOnTerminate: TNotifyEvent;
+                              ProgressCaptionProc: TProgressCaptionProc);
 begin
   inherited Create(True);
   OnTerminate := AOnTerminate;
   FreeOnTerminate := True;
+  FProgressCaptionProc := ProgressCaptionProc;
   FParamsPtr := AParamsPtr;
 end;
 
@@ -40,6 +46,7 @@ begin
                FParamsPtr^.FrequencyMin, FParamsPtr^.FrequencyMax, FParamsPtr^.FrequencyResolution,
                FParamsPtr^.TrendDegree, FParamsPtr^.TrigPolyDegree,
                0,
+               FProgressCaptionProc,
                FParamsPtr^.frequencies, FParamsPtr^.periods, FParamsPtr^.power);
   except
     on E: Exception do begin

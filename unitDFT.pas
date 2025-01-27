@@ -7,7 +7,7 @@ unit unitDFT;
 interface
 
 uses
-  Windows, Classes, SysUtils, math, typ, common;
+  Windows, Classes, SysUtils, math, typ, common, DoLongOp;
 
 type
   PDCDFTparameters = ^TDCDFTparameters;
@@ -32,14 +32,31 @@ procedure dcdft_proc(
           TrendDegree: ArbInt;
           TrigPolyDegree: ArbInt;
           CmdLineNumberOfThreads: Integer;
+          ProgressCaptionProc: TProgressCaptionProc;
           out frequencies, periods, power: TFloatArray);
 
 procedure SetGlobalTerminateAllThreads(AValue: Boolean);
 
 implementation
 
+const
+  GlobalCounterIncrement = 1000;
+
 var
   GlobalTerminateAllThreads: Boolean = False;
+  GlobalCounter: Integer;
+  GlobalCounterCriticalSection: TCriticalSection;
+
+function IncrementGlobalCounter(N: Integer): Integer;
+begin
+  EnterCriticalSection(GlobalCounterCriticalSection);
+  try
+    GlobalCounter := GlobalCounter + N;
+    Result := GlobalCounter;
+  finally
+    LeaveCriticalSection(GlobalCounterCriticalSection);
+  end;
+end;
 
 procedure SetGlobalTerminateAllThreads(AValue: Boolean);
 begin
@@ -73,6 +90,9 @@ begin
 end;
 
 type
+
+  { TCalcThread }
+
   TCalcThread = class(TThread)
   private
     Ft, Fmag: TFloatArray;
@@ -84,6 +104,9 @@ type
     FTrigPolyDegree: ArbInt;
     Fpartial_frequencies, Fpartial_periods, Fpartial_power: TFloatArray;
     FExecuteCompleted: Boolean;
+    FTotalNfreq: Integer;
+    FProgressCaptionProc: TProgressCaptionProc;
+    FInfoMessage: string;
   private
     function GetFreq(I: ArbInt): ArbFloat;
     function GetPeriod(I: ArbInt): ArbFloat;
@@ -96,6 +119,7 @@ type
     property Period[I: ArbInt]: ArbFloat read GetPeriod;
     property Power[I: ArbInt]: ArbFloat read GetPower;
   private
+    procedure InfoMessageProc;
     procedure dcdft_proc_1;
   protected
     procedure Execute; override;
@@ -106,7 +130,9 @@ type
                        freq_step: ArbFloat;
                        n_freq: ArbInt;
                        trendDegree: ArbInt;
-                       trigPolyDegree: ArbInt);
+                       trigPolyDegree: ArbInt;
+                       TotalNfreq: Integer;
+                       ProgressCaptionProc: TProgressCaptionProc);
   end;
 
 function TCalcThread.GetFreq(I: ArbInt): ArbFloat;
@@ -130,7 +156,9 @@ constructor TCalcThread.Create(ThreadNo: Integer;
                                freq_step: ArbFloat;
                                n_freq: ArbInt;
                                trendDegree: ArbInt;
-                               trigPolyDegree: ArbInt);
+                               trigPolyDegree: ArbInt;
+                               TotalNfreq: Integer;
+                               ProgressCaptionProc: TProgressCaptionProc);
 begin
   inherited Create(True);
   FreeOnTerminate := False;  // after inherited Create!
@@ -148,6 +176,8 @@ begin
   FillChar(Fpartial_frequencies[0], Fn_freq * SizeOf(ArbFloat), 0);
   FillChar(Fpartial_periods[0], Fn_freq * SizeOf(ArbFloat), 0);
   FillChar(Fpartial_power[0], Fn_freq * SizeOf(ArbFloat), 0);
+  FProgressCaptionProc := ProgressCaptionProc;
+  FTotalNfreq := TotalNfreq;
   FExecuteCompleted := False;
 end;
 
@@ -158,10 +188,16 @@ begin
   except
     on E: Exception do begin
       GlobalTerminateAllThreads := True;
-      OutputDebugString(PChar('Thread #' + IntToStr(FThreadNo) + ' raised an error!'));
+      //OutputDebugString(PChar('Thread #' + IntToStr(FThreadNo) + ' raised an error!'));
       raise;
     end;
   end;
+end;
+
+procedure TCalcThread.InfoMessageProc;
+begin
+  if Assigned(FProgressCaptionProc) then
+    FProgressCaptionProc(FInfoMessage);
 end;
 
 procedure TCalcThread.dcdft_proc_1;
@@ -177,6 +213,7 @@ var
   times: TFloatArray;
   temp_mags: TFloatArray;
   fit: TFloatArray;
+  N, Nrest: Integer;
 begin
   ndata := Length(Ft);
   SetLength(times, ndata);
@@ -187,10 +224,11 @@ begin
     times[II] := Ft[II] - meanTime;
   end;
 
+  Nrest := Fn_freq;
   nu := Flowfreq;
   for I := 0 to Fn_freq - 1 do begin
     if Terminated or GlobalTerminateAllThreads then begin
-      OutputDebugString(PChar('Thread #' + IntToStr(FThreadNo) + ' terminated!'));
+      //OutputDebugString(PChar('Thread #' + IntToStr(FThreadNo) + ' terminated!'));
       Exit;
     end;
 
@@ -207,6 +245,13 @@ begin
       pwr := PopnVariance(temp_mags); // \sigma^2_{O-C}
 
       Fpartial_power[I] := pwr;
+
+      if (I + 1) mod GlobalCounterIncrement = 0 then begin
+        N := IncrementGlobalCounter(GlobalCounterIncrement);
+        Nrest := Nrest - GlobalCounterIncrement;
+        FInfoMessage := IntToStr(N) + ' / ' + IntToStr(FTotalNfreq);
+        Synchronize(@InfoMessageProc);
+      end;
     end
     else begin
       Fpartial_periods[I] := NaN;
@@ -214,7 +259,13 @@ begin
     end;
     nu := nu + Ffreq_step;
   end;
+
+  N := IncrementGlobalCounter(Nrest);
+  FInfoMessage := IntToStr(N) + ' / ' + IntToStr(FTotalNfreq);
+  Synchronize(@InfoMessageProc);
+
   FExecuteCompleted := True;
+  //OutputDebugString(PChar('Thread #' + IntToStr(FThreadNo) + ' finished!'));
 end;
 
 procedure dcdft_proc(
@@ -224,6 +275,7 @@ procedure dcdft_proc(
           TrendDegree: ArbInt;
           TrigPolyDegree: ArbInt;
           CmdLineNumberOfThreads: Integer;
+          ProgressCaptionProc: TProgressCaptionProc;
           out frequencies, periods, power: TFloatArray);
 var
   n_freq: ArbInt;
@@ -247,7 +299,7 @@ begin
   else
     NumberOfThreads := CmdLineNumberOfThreads;
 
-  OutputDebugString(PChar('Number of threads: ' + IntToStr(NumberOfThreads)));
+  //OutputDebugString(PChar('Number of threads: ' + IntToStr(NumberOfThreads)));
 
   StepsPerThread := (n_freq + 1) div NumberOfThreads;
   Remainder := (n_freq + 1) - StepsPerThread * NumberOfThreads;
@@ -256,16 +308,35 @@ begin
   SetLength(Threads, NumberOfThreads);
   for I := 0 to Length(Threads) - 1 do Threads[I] := nil; // not nesessary, already initialized
 
+  GlobalCounter := 0;
+  InitCriticalSection(GlobalCounterCriticalSection);
   try
-    for I := 0 to NumberOfThreads - 1 do begin
-      startfreq := lowfreq + StepsPerThread * I * freq_step;
-      StepsToDo := StepsPerThread;
-      if I = NumberOfThreads - 1 then
-        StepsToDo := StepsToDo + Remainder;
-      OutputDebugString(PChar('Thread ' + IntToStr(I) + '; steps: ' + IntToStr(StepsToDo)));
-      Threads[I] := TCalcThread.Create(I, t, mag, startfreq, freq_step, StepsToDo, TrendDegree, TrigPolyDegree);
-      // check for exception while creation (see FPC docs)
-      if Assigned(Threads[I].FatalException) then begin
+    try
+      for I := 0 to NumberOfThreads - 1 do begin
+        startfreq := lowfreq + StepsPerThread * I * freq_step;
+        StepsToDo := StepsPerThread;
+        if I = NumberOfThreads - 1 then
+          StepsToDo := StepsToDo + Remainder;
+        //OutputDebugString(PChar('Thread ' + IntToStr(I) + '; steps: ' + IntToStr(StepsToDo)));
+        Threads[I] := TCalcThread.Create(I, t, mag, startfreq, freq_step, StepsToDo, TrendDegree, TrigPolyDegree, n_freq + 1, ProgressCaptionProc);
+        // check for exception while creation (see FPC docs)
+        if Assigned(Threads[I].FatalException) then begin
+          if Assigned(Threads[I].FatalException) then begin
+            if Threads[I].FatalException is Exception then
+              CalcError(Exception(Threads[I].FatalException).Message)
+            else
+              CalcError('Unknown Exception');
+          end;
+        end;
+      end;
+
+      for I := 0 to NumberOfThreads - 1 do
+        Threads[I].Start;
+
+      for I := 0 to NumberOfThreads - 1 do
+        Threads[I].WaitFor;
+
+      for I := 0 to NumberOfThreads - 1 do begin
         if Assigned(Threads[I].FatalException) then begin
           if Threads[I].FatalException is Exception then
             CalcError(Exception(Threads[I].FatalException).Message)
@@ -273,59 +344,46 @@ begin
             CalcError('Unknown Exception');
         end;
       end;
-    end;
 
-    for I := 0 to NumberOfThreads - 1 do
-      Threads[I].Start;
+      if GlobalTerminateAllThreads then begin
+        Abort;
+      end;
 
-    for I := 0 to NumberOfThreads - 1 do
-      Threads[I].WaitFor;
+      for I := 0 to NumberOfThreads - 1 do begin
+        if not Threads[I].ExecuteCompleted then
+           CalcError('Unknown Error: not all threads are completed.');
+      end;
 
-    for I := 0 to NumberOfThreads - 1 do begin
-      if Assigned(Threads[I].FatalException) then begin
-        if Threads[I].FatalException is Exception then
-          CalcError(Exception(Threads[I].FatalException).Message)
-        else
-          CalcError('Unknown Exception');
+      for I := 0 to NumberOfThreads - 1 do begin
+        StepsToDo := Threads[I].An_freq;
+        for II := 0 to StepsToDo - 1 do begin
+           Idx := StepsPerThread * I + II;
+           frequencies[Idx] := Threads[I].Freq[II];
+           periods[Idx] := Threads[I].Period[II];
+           power[Idx] := Threads[I].Power[II];
+        end;
+      end;
+
+      ndata := Length(mag);
+      SetLength(temp_mags, ndata);
+      PolyFit(t, mag, 0.0, TrendDegree, 0, fit);
+      for I := 0 to ndata - 1 do begin
+        temp_mags[I] := mag[I] - fit[I];
+      end;
+
+      sigmaSquaredO := PopnVariance(temp_mags);
+
+      for I := 0 to n_freq do begin
+        power[I] := 1.0 - power[I] / sigmaSquaredO;
+      end;
+
+    finally
+      for I := Length(Threads) - 1 downto 0 do begin
+         FreeAndNil(Threads[I]);
       end;
     end;
-
-    if GlobalTerminateAllThreads then begin
-      Abort;
-    end;
-
-    for I := 0 to NumberOfThreads - 1 do begin
-      if not Threads[I].ExecuteCompleted then
-         CalcError('Unknown Error: not all threads are completed.');
-    end;
-
-    for I := 0 to NumberOfThreads - 1 do begin
-      StepsToDo := Threads[I].An_freq;
-      for II := 0 to StepsToDo - 1 do begin
-         Idx := StepsPerThread * I + II;
-         frequencies[Idx] := Threads[I].Freq[II];
-         periods[Idx] := Threads[I].Period[II];
-         power[Idx] := Threads[I].Power[II];
-      end;
-    end;
-
-    ndata := Length(mag);
-    SetLength(temp_mags, ndata);
-    PolyFit(t, mag, 0.0, TrendDegree, 0, fit);
-    for I := 0 to ndata - 1 do begin
-      temp_mags[I] := mag[I] - fit[I];
-    end;
-
-    sigmaSquaredO := PopnVariance(temp_mags);
-
-    for I := 0 to n_freq do begin
-      power[I] := 1.0 - power[I] / sigmaSquaredO;
-    end;
-
   finally
-    for I := Length(Threads) - 1 downto 0 do begin
-       FreeAndNil(Threads[I]);
-    end;
+    DoneCriticalSection(GlobalCounterCriticalSection);
   end;
 end;
 

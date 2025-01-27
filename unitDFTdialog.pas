@@ -57,7 +57,7 @@ type
 
   end;
 
-procedure PlotDFTresult(const frequencies, periods, power: TFloatArray);
+procedure PlotDFTresult(const Caption: string; const frequencies, periods, power: TFloatArray);
 procedure CloseDFTdialog;
 
 implementation
@@ -76,12 +76,13 @@ begin
     FormDFTDialog.Close;
 end;
 
-procedure PlotDFTresult(const frequencies, periods, power: TFloatArray);
+procedure PlotDFTresult(const Caption: string; const frequencies, periods, power: TFloatArray);
 var
   I: Integer;
 begin
   FormDFTDialog := TFormDFTDialog.Create(Application);
   try
+    FormDFTDialog.Caption := Caption;
     //Chart1LineSeries2.Clear;
     //Chart1LineSeries1.Clear;
     //DrawGrid1.ClearSelections;

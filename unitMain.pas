@@ -490,6 +490,8 @@ end;
 
 procedure TFormMain.Periodogram;
 var
+  DialogCaption: string;
+  t0: TDateTime;
   frequencies, periods, amp, power: TFloatArray;
   params: TDCDFTparameters;
   Item: PChartDataItem;
@@ -511,6 +513,7 @@ begin
       Exit;
     CloseDFTdialog;
     params.Error := '';
+    t0 := Now;
     try
       DoLongOp.DoLongOperation(@DoDCDFT, @params, @DFTGlobalTerminate, 'Periodogram');
     except
@@ -524,7 +527,9 @@ begin
       Exit;
     end;
     //ShowMessage('Done!');
-    PlotDFTresult(params.frequencies, params.periods, params.power);
+    DialogCaption := Format('Periodogram | Trend degree = %d; Trig. Polynomial Degree = %d | Time = %fs',
+                            [params.TrendDegree, params.TrigPolyDegree, (Now - t0) * 24 * 60 * 60]);
+    PlotDFTresult(DialogCaption, params.frequencies, params.periods, params.power);
   end;
 end;
 
@@ -544,7 +549,7 @@ var
 begin
   Result := 0;
   FDFTThreadTerminated := False;
-  DCDFTThread := TDFTThread.Create(PDCDFTparameters(params), @DCDFTThreadOnTerminate);
+  DCDFTThread := TDFTThread.Create(PDCDFTparameters(params), @DCDFTThreadOnTerminate, ProgressCaptionProc);
   if Assigned(DCDFTThread.FatalException) then
     raise DCDFTThread.FatalException;
   DCDFTThread.Start;
