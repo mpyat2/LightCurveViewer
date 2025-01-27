@@ -7,7 +7,7 @@ unit unitDFT;
 interface
 
 uses
-  Windows, Classes, SysUtils, math, typ, common, DoLongOp;
+  Windows, Classes, SysUtils, math, common, DoLongOp;
 
 type
   PDCDFTparameters = ^TDCDFTparameters;
@@ -27,10 +27,10 @@ type
 
 procedure dcdft_proc(
           const t, mag: TFloatArray;
-          lowfreq, hifreq: ArbFloat;
-          freq_step: ArbFloat;
-          TrendDegree: ArbInt;
-          TrigPolyDegree: ArbInt;
+          lowfreq, hifreq: Double;
+          freq_step: Double;
+          TrendDegree: Integer;
+          TrigPolyDegree: Integer;
           CmdLineNumberOfThreads: Integer;
           ProgressCaptionProc: TProgressCaptionProc;
           out frequencies, periods, power: TFloatArray);
@@ -97,27 +97,27 @@ type
   private
     Ft, Fmag: TFloatArray;
     FThreadNo: Integer;
-    Flowfreq: ArbFloat;
-    Ffreq_step: ArbFloat;
-    Fn_freq: ArbInt;
-    FTrendDegree: ArbInt;
-    FTrigPolyDegree: ArbInt;
+    Flowfreq: Double;
+    Ffreq_step: Double;
+    Fn_freq: Integer;
+    FTrendDegree: Integer;
+    FTrigPolyDegree: Integer;
     Fpartial_frequencies, Fpartial_periods, Fpartial_power: TFloatArray;
     FExecuteCompleted: Boolean;
     FTotalNfreq: Integer;
     FProgressCaptionProc: TProgressCaptionProc;
     FInfoMessage: string;
   private
-    function GetFreq(I: ArbInt): ArbFloat;
-    function GetPeriod(I: ArbInt): ArbFloat;
-    function GetPower(I: ArbInt): ArbFloat;
+    function GetFreq(I: Integer): Double;
+    function GetPeriod(I: Integer): Double;
+    function GetPower(I: Integer): Double;
   public
     property AThreadNo: Integer read FThreadNo;
     property ExecuteCompleted: Boolean read FExecuteCompleted;
-    property An_freq: ArbInt read Fn_freq;
-    property Freq[I: ArbInt]: ArbFloat read GetFreq;
-    property Period[I: ArbInt]: ArbFloat read GetPeriod;
-    property Power[I: ArbInt]: ArbFloat read GetPower;
+    property An_freq: Integer read Fn_freq;
+    property Freq[I: Integer]: Double read GetFreq;
+    property Period[I: Integer]: Double read GetPeriod;
+    property Power[I: Integer]: Double read GetPower;
   private
     procedure InfoMessageProc;
     procedure dcdft_proc_1;
@@ -126,37 +126,37 @@ type
   public
     constructor Create(ThreadNo: Integer;
                        const t, mag: TFloatArray;
-                       lowfreq: ArbFloat;
-                       freq_step: ArbFloat;
-                       n_freq: ArbInt;
-                       trendDegree: ArbInt;
-                       trigPolyDegree: ArbInt;
+                       lowfreq: Double;
+                       freq_step: Double;
+                       n_freq: Integer;
+                       trendDegree: Integer;
+                       trigPolyDegree: Integer;
                        TotalNfreq: Integer;
                        ProgressCaptionProc: TProgressCaptionProc);
   end;
 
-function TCalcThread.GetFreq(I: ArbInt): ArbFloat;
+function TCalcThread.GetFreq(I: Integer): Double;
 begin
   Result := Fpartial_frequencies[I];
 end;
 
-function TCalcThread.GetPeriod(I: ArbInt): ArbFloat;
+function TCalcThread.GetPeriod(I: Integer): Double;
 begin
   Result := Fpartial_periods[I];
 end;
 
-function TCalcThread.GetPower(I: ArbInt): ArbFloat;
+function TCalcThread.GetPower(I: Integer): Double;
 begin
   Result := Fpartial_power[I];
 end;
 
 constructor TCalcThread.Create(ThreadNo: Integer;
                                const t, mag: TFloatArray;
-                               lowfreq: ArbFloat;
-                               freq_step: ArbFloat;
-                               n_freq: ArbInt;
-                               trendDegree: ArbInt;
-                               trigPolyDegree: ArbInt;
+                               lowfreq: Double;
+                               freq_step: Double;
+                               n_freq: Integer;
+                               trendDegree: Integer;
+                               trigPolyDegree: Integer;
                                TotalNfreq: Integer;
                                ProgressCaptionProc: TProgressCaptionProc);
 begin
@@ -173,9 +173,9 @@ begin
   SetLength(Fpartial_frequencies, Fn_freq);
   SetLength(Fpartial_periods, Fn_freq);
   SetLength(Fpartial_power, Fn_freq);
-  FillChar(Fpartial_frequencies[0], Fn_freq * SizeOf(ArbFloat), 0);
-  FillChar(Fpartial_periods[0], Fn_freq * SizeOf(ArbFloat), 0);
-  FillChar(Fpartial_power[0], Fn_freq * SizeOf(ArbFloat), 0);
+  FillChar(Fpartial_frequencies[0], Fn_freq * SizeOf(Double), 0);
+  FillChar(Fpartial_periods[0], Fn_freq * SizeOf(Double), 0);
+  FillChar(Fpartial_power[0], Fn_freq * SizeOf(Double), 0);
   FProgressCaptionProc := ProgressCaptionProc;
   FTotalNfreq := TotalNfreq;
   FExecuteCompleted := False;
@@ -202,14 +202,11 @@ end;
 
 procedure TCalcThread.dcdft_proc_1;
 var
-  ndata: ArbInt;
-  nu: ArbFloat;
-  angle: ArbFloat;
-  term: ArbInt;
-  pwr: ArbFloat;
-  I, II, III, Idx: ArbInt;
-  meanTime: ArbFloat;
-  meanMag: ArbFloat;
+  ndata: Integer;
+  nu: Double;
+  pwr: Double;
+  I, II: Integer;
+  meanTime: Double;
   times: TFloatArray;
   temp_mags: TFloatArray;
   fit: TFloatArray;
@@ -219,7 +216,6 @@ begin
   SetLength(times, ndata);
   SetLength(temp_mags, ndata);
   meanTime := Mean(Ft);
-  meanMag := Mean(Fmag);
   for II := 0 to ndata - 1 do begin
     times[II] := Ft[II] - meanTime;
   end;
@@ -270,19 +266,19 @@ end;
 
 procedure dcdft_proc(
           const t, mag: TFloatArray;
-          lowfreq, hifreq: ArbFloat;
-          freq_step: ArbFloat;
-          TrendDegree: ArbInt;
-          TrigPolyDegree: ArbInt;
+          lowfreq, hifreq: Double;
+          freq_step: Double;
+          TrendDegree: Integer;
+          TrigPolyDegree: Integer;
           CmdLineNumberOfThreads: Integer;
           ProgressCaptionProc: TProgressCaptionProc;
           out frequencies, periods, power: TFloatArray);
 var
-  n_freq: ArbInt;
-  ndata: ArbInt;
+  n_freq: Integer;
+  ndata: Integer;
   fit: TFloatArray;
-  sigmaSquaredO: ArbFloat;
-  startfreq: ArbFloat;
+  sigmaSquaredO: Double;
+  startfreq: Double;
   temp_mags: TFloatArray;
   NumberOfThreads, StepsPerThread, Remainder, StepsToDo: integer;
   I, II, Idx: Integer;

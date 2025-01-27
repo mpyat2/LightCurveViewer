@@ -11,20 +11,20 @@ uses
 
 type
   PFloatArray = ^TFloatArray;
-  TFloatArray = array of ArbFloat;
+  TFloatArray = array of Double;
 
 procedure PolyFit(const Xarray: TFloatArray;
                   const Yarray: TFloatArray;
-                  nu: ArbFloat;
-                  ATrendDegree: ArbInt;
-                  ATrigPolyDegree: ArbInt;
+                  nu: Double;
+                  ATrendDegree: Integer;
+                  ATrigPolyDegree: Integer;
                   out fit: TFloatArray);
 
 procedure PolyFit(const Xarray: TFloatArray;
                   const Yarray: TFloatArray;
-                  nu: ArbFloat;
-                  ATrendDegree: ArbInt;
-                  ATrigPolyDegree: ArbInt;
+                  nu: Double;
+                  ATrendDegree: Integer;
+                  ATrigPolyDegree: Integer;
                   fitXmin, fitXmax, fitXstep: Double;
                   out Xfit: TFloatArray;
                   out Yfit: TFloatArray;
@@ -55,16 +55,16 @@ end;
 
 procedure PolyFitSolution(const Xarray: TFloatArray;
                           const Yarray: TFloatArray;
-                          nu: ArbFloat;
-                          ATrendDegree: ArbInt;
-                          ATrigPolyDegree: ArbInt;
+                          nu: Double;
+                          ATrendDegree: Integer;
+                          ATrigPolyDegree: Integer;
                           out a: TFloat51Array;
                           out solution_vector: TFloat51);
 var
-  ndata: ArbInt;
-  angle: ArbFloat;
+  ndata: Integer;
+  angle: Double;
   term: ArbInt;
-  I, II, Idx: ArbInt;
+  I, II, Idx: Integer;
 begin
   if (ATrendDegree < 0) then
     CalcError('Trend degree must be >= 0');
@@ -109,13 +109,13 @@ begin
   end;
 end;
 
-function FloatToStrMod(V: ArbFloat): string;
+function FloatToStrMod(V: Double): string;
 begin
   //Result := FloatToStrF(V, ffFixed, 0, 15);
   Result := FloatToStr(V);
 end;
 
-function PolyFitSolutionToFormula(ATrendDegree: ArbInt; ATrigPolyDegree: ArbInt; nu: ArbFloat; const solution_vector: TFloat51): string;
+function PolyFitSolutionToFormula(ATrendDegree: Integer; ATrigPolyDegree: Integer; nu: Double; const solution_vector: TFloat51): string;
 var
   I, Idx: Integer;
   Sign: string;
@@ -145,17 +145,15 @@ end;
 
 procedure PolyFit(const Xarray: TFloatArray;
                   const Yarray: TFloatArray;
-                  nu: ArbFloat;
-                  ATrendDegree: ArbInt;
-                  ATrigPolyDegree: ArbInt;
+                  nu: Double;
+                  ATrendDegree: Integer;
+                  ATrigPolyDegree: Integer;
                   out fit: TFloatArray);
 var
-  ndata: ArbInt;
+  ndata: Integer;
   a: TFloat51Array; // to-do: get rid of the fixed-length TFloat51
   solution_vector: TFloat51;
-  angle: ArbFloat;
-  term: ArbInt;
-  I, II, Idx: ArbInt;
+  I, II, Idx: Integer;
 begin
   PolyFitSolution(Xarray, Yarray, nu, ATrendDegree, ATrigPolyDegree, a, solution_vector);
 
@@ -177,25 +175,22 @@ end;
 
 procedure PolyFit(const Xarray: TFloatArray;
                   const Yarray: TFloatArray;
-                  nu: ArbFloat;
-                  ATrendDegree: ArbInt;
-                  ATrigPolyDegree: ArbInt;
+                  nu: Double;
+                  ATrendDegree: Integer;
+                  ATrigPolyDegree: Integer;
                   fitXmin, fitXmax, fitXstep: Double;
                   out Xfit: TFloatArray;
                   out Yfit: TFloatArray;
                   out Formula: string);
 var
-  ndata, nfit: ArbInt;
+  nfit: Integer;
   a: TFloat51Array; // to-do: get rid of the fixed-length TFloat21
   solution_vector: TFloat51;
-  angle, c, s: ArbFloat;
-  x: ArbFloat;
-  term: ArbInt;
-  I, II, Idx: ArbInt;
+  angle, c, s: Double;
+  x: Double;
+  I, II, Idx: Integer;
 begin
   PolyFitSolution(Xarray, Yarray, nu, ATrendDegree, ATrigPolyDegree, a, solution_vector);
-
-  ndata := Length(Xarray);
 
   nfit := Ceil((fitXmax - fitXmin) / fitXstep);
   SetLength(Xfit, nfit);

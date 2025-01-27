@@ -7,13 +7,13 @@ unit dataio;
 interface
 
 uses
-  Classes, SysUtils, typ, common;
+  Classes, SysUtils, common;
 
 procedure ReadData(const AFileName: string; out X: TFloatArray; out Y: TFloatArray);
 
 implementation
 
-function StringToFloat(const S: string; out F: ArbFloat): Boolean;
+function StringToFloat(const S: string; out F: Double): Boolean;
 var
   Code: Integer;
 begin
@@ -32,7 +32,7 @@ procedure ReadData(const AFileName: string; out X: TFloatArray; out Y: TFloatArr
 var
   Lines, Line: TStrings;
   S: string;
-  FX, FY: ArbFloat;
+  FX, FY: Double;
   I, N: Integer;
 begin
   Lines := TStringList.Create;

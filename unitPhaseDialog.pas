@@ -26,7 +26,6 @@ type
     LabelEpoch: TLabel;
     procedure ButtonApplyClick(Sender: TObject);
     procedure ButtonOKClick(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
     function GetEpoch: Double;
@@ -36,23 +35,47 @@ type
   private
     FApplyPhasePlotParams: TApplyPhasePlotParams;
     FParamOk: Boolean;
-    FCurrentEpoch: Double;
-    FCurrentPeriod: Double;
-  public
-    property CurrentEpoch: Double read FCurrentEpoch write FCurrentEpoch;
-    property CurrentPeriod: Double read FCurrentPeriod write FCurrentPeriod;
   end;
-
-var
-  FormPhaseDialog: TFormPhaseDialog;
 
 function CalculatePhase(T, Period, Epoch: Double): Double; inline;
 
 procedure PhasePlot(ApplyPhasePlotParamsProc: TApplyPhasePlotParams);
 
+procedure SetCurrentEpoch(E: Double);
+
+procedure SetCurrentPeriod(P: Double);
+
+function GetCurrentEpoch: Double;
+
+function GetCurrentPeriod: Double;
+
 implementation
 
 {$R *.lfm}
+
+var
+  CurrentEpoch: Double = NaN;
+  CurrentPeriod: Double = NaN;
+
+procedure SetCurrentEpoch(E: Double);
+begin
+  CurrentEpoch := E;
+end;
+
+procedure SetCurrentPeriod(P: Double);
+begin
+  CurrentPeriod := P;
+end;
+
+function GetCurrentEpoch: Double;
+begin
+  Result := CurrentEpoch;
+end;
+
+function GetCurrentPeriod: Double;
+begin
+  Result := CurrentPeriod;
+end;
 
 function CalculatePhase(T, Period, Epoch: Double): Double; inline;
 var
@@ -64,24 +87,23 @@ begin
 end;
 
 procedure PhasePlot(ApplyPhasePlotParamsProc: TApplyPhasePlotParams);
+var
+  F: TFormPhaseDialog;
 begin
-  FormPhaseDialog.FApplyPhasePlotParams := ApplyPhasePlotParamsProc;
-  FormPhaseDialog.SetEpoch(FormPhaseDialog.CurrentEpoch);
-  FormPhaseDialog.SetPeriod(FormPhaseDialog.CurrentPeriod);
-  FormPhaseDialog.ShowModal;
+  F := TFormPhaseDialog.Create(Application);
+  try
+    F.FApplyPhasePlotParams := ApplyPhasePlotParamsProc;
+    F.SetEpoch(CurrentEpoch);
+    F.SetPeriod(CurrentPeriod);
+    F.ShowModal;
+  finally
+    FreeAndNil(F);
+  end;
 end;
 
 { TFormPhaseDialog }
 
-procedure TFormPhaseDialog.FormCreate(Sender: TObject);
-begin
-  FCurrentEpoch := math.NaN;
-  FCurrentPeriod := math.NaN;
-end;
-
 procedure TFormPhaseDialog.ButtonOKClick(Sender: TObject);
-var
-  V: Double;
 begin
   ModalResult := mrNone;
   ButtonApplyClick(Sender);

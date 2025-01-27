@@ -103,7 +103,7 @@ implementation
 {$R *.lfm}
 
 uses
-  Windows, math, typ, TAChartUtils, common, unitPhaseDialog, unitFitParamDialog,
+  Windows, math, TAChartUtils, common, unitPhaseDialog, unitFitParamDialog,
   unitDFTparamDialog, unitDFTdialog, unitDFT, unitTableDialog, unitInfoDialog,
   dftThread, dataio;
 
@@ -251,10 +251,8 @@ begin
   ListChartSourceModel.Clear;
   ListChartSourceFoldedModel.Clear;
   SetAxisBoundaries(-1, 1, -1, 1, True, True);
-  if Assigned(FormPhaseDialog) then begin
-    FormPhaseDialog.CurrentEpoch := NaN;
-    FormPhaseDialog.CurrentPeriod := NaN;
-  end;
+  unitPhaseDialog.SetCurrentEpoch(NaN);
+  unitPhaseDialog.SetCurrentPeriod(NaN);
   unitDFTparamDialog.SetCurrentFrequencyMin(NaN);
   unitDFTparamDialog.SetCurrentFrequencyMax(NaN);
   unitDFTparamDialog.SetCurrentFrequencyResolution(NaN);
@@ -286,7 +284,7 @@ begin
     Exit;
   end;
   FFileName := AFileName;
-  FormPhaseDialog.CurrentEpoch := (MaxValue(X) + MinValue(X)) / 2.0;
+  unitPhaseDialog.SetCurrentEpoch((MaxValue(X) + MinValue(X)) / 2.0);
   for I := 0 to Length(X) - 1 do begin
     ListChartSourceData.Add(X[I], Y[I]);
   end;
@@ -312,8 +310,8 @@ end;
 
 procedure TFormMain.PlotFolded;
 begin
-  StatusBar1.Panels[0].Text := '';
-  StatusBar1.Panels[1].Text := '';
+  //StatusBar1.Panels[0].Text := '';
+  //StatusBar1.Panels[1].Text := '';
   PhasePlot(@CalcAndPlotFoldedProc);
 end;
 
@@ -342,7 +340,7 @@ begin
   Chart1LineSeriesData.Source := ListChartSourceFoldedData;
   if ListChartSourceFoldedModel.Count > 0 then
     Chart1LineSeriesModel.Source := ListChartSourceFoldedModel;
-  StatusBar1.Panels[1].Text := ' P= ' + FloatToStr(FormPhaseDialog.CurrentPeriod) + ^I' E= ' + FloatToStr(FormPhaseDialog.CurrentEpoch) + ' ';
+  StatusBar1.Panels[1].Text := ' P= ' + FloatToStr(unitPhaseDialog.GetCurrentPeriod) + ^I' E= ' + FloatToStr(unitPhaseDialog.GetCurrentEpoch) + ' ';
 end;
 
 procedure TFormMain.CalculateModelPhasePlot;
@@ -351,8 +349,8 @@ var
   Item: PChartDataItem;
   Period, Epoch, X, Y, Phase: Double;
 begin
-  Period := FormPhaseDialog.CurrentPeriod;
-  Epoch := FormPhaseDialog.CurrentEpoch;
+  Period := unitPhaseDialog.GetCurrentPeriod;
+  Epoch := unitPhaseDialog.GetCurrentEpoch;
   ListChartSourceFoldedModel.Clear;
   if IsNaN(Period) or IsNaN(Epoch) then
     Exit;
@@ -373,9 +371,11 @@ var
   Item: PChartDataItem;
   Period, Epoch, X, Y, Phase: Double;
 begin
+  StatusBar1.Panels[0].Text := '';
+  StatusBar1.Panels[1].Text := '';
   if (ListChartSourceData.Count > 0) then begin
-    Period := FormPhaseDialog.CurrentPeriod;
-    Epoch := FormPhaseDialog.CurrentEpoch;
+    Period := unitPhaseDialog.GetCurrentPeriod;
+    Epoch := unitPhaseDialog.GetCurrentEpoch;
     ListChartSourceFoldedData.Clear;
     ListChartSourceFoldedModel.Clear;
     for I := 0 to ListChartSourceData.Count - 1 do begin
@@ -393,7 +393,7 @@ end;
 
 procedure TFormMain.SetAxisBoundaries(Xmin, Xmax, Ymin, Ymax: Double; ExpandX, ExpandY: Boolean);
 var
-  MinV, MaxV, Extent: ArbFloat;
+  MinV, MaxV, Extent: Double;
 begin
   MinV := Xmin;
   MaxV := Xmax;
@@ -435,11 +435,9 @@ var
   Frequency: Double;
   TrendDegree: Integer;
   TrigPolyDegree: Integer;
-  trend, trig_fit: TFloatArray;
-  meanTime: ArbFloat;
-  fitXmin, fitXmax, fitXstep: ArbFloat;
+  meanTime: Double;
+  fitXmin, fitXmax, fitXstep: Double;
   Xfit, Yfit: TFloatArray;
-  Formula: string;
   Item: PChartDataItem;
   I: Integer;
 begin
@@ -492,7 +490,6 @@ procedure TFormMain.Periodogram;
 var
   DialogCaption: string;
   t0: TDateTime;
-  frequencies, periods, amp, power: TFloatArray;
   params: TDCDFTparameters;
   Item: PChartDataItem;
   I: Integer;

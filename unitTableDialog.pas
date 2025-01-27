@@ -119,7 +119,6 @@ end;
 procedure TFormTable.GridDrawCell(Sender: TObject; aCol, aRow: Integer; aRect: TRect; aState: TGridDrawState);
 var
   GridCanvas: TCanvas;
-  S: string;
 begin
   GridCanvas := DrawGrid1.Canvas;
   GridCanvas.TextRect(aRect, aRect.Left + 2, aRect.Top + 2, GetGridCell(aCol, aRow));

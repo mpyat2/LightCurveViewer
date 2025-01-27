@@ -24,7 +24,6 @@ begin
   Application.Scaled:=True;
   Application.Initialize;
   Application.CreateForm(TFormMain, FormMain);
-  Application.CreateForm(TFormPhaseDialog, FormPhaseDialog);
   Application.Run;
 end.
 
