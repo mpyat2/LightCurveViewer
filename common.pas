@@ -18,8 +18,7 @@ procedure PolyFit(const Xarray: TFloatArray;
                   nu: ArbFloat;
                   ATrendDegree: ArbInt;
                   ATrigPolyDegree: ArbInt;
-                  out trend: TFloatArray;
-                  out trig_fit: TFloatArray);
+                  out fit: TFloatArray);
 
 procedure PolyFit(const Xarray: TFloatArray;
                   const Yarray: TFloatArray;
@@ -149,8 +148,7 @@ procedure PolyFit(const Xarray: TFloatArray;
                   nu: ArbFloat;
                   ATrendDegree: ArbInt;
                   ATrigPolyDegree: ArbInt;
-                  out trend: TFloatArray;
-                  out trig_fit: TFloatArray);
+                  out fit: TFloatArray);
 var
   ndata: ArbInt;
   a: TFloat51Array; // to-do: get rid of the fixed-length TFloat51
@@ -163,21 +161,16 @@ begin
 
   ndata := Length(Xarray);
 
-  SetLength(trig_fit, ndata);
-  SetLength(trend, ndata);
+  SetLength(fit, ndata);
 
   for I := 0 to ndata - 1 do begin
-    trig_fit[I] := 0.0;
+    fit[I] := 0.0;
+    for II := 0 to ATrendDegree do begin
+      fit[I] := fit[I] + solution_vector[II] * a[I][II];
+    end;
     for II := 1 to ATrigPolyDegree do begin
       Idx := 1 + ATrendDegree + 2 * (II - 1);
-      trig_fit[I] := trig_fit[I] + solution_vector[Idx] * a[I][Idx] + solution_vector[Idx + 1] * a[I][Idx + 1];
-    end;
-  end;
-
-  for I := 0 to ndata - 1 do begin
-    trend[I] := 0.0;
-    for II := 0 to ATrendDegree do begin
-      trend[I] := trend[I] + solution_vector[II] * a[I][II];
+      fit[I] := fit[I] + solution_vector[Idx] * a[I][Idx] + solution_vector[Idx + 1] * a[I][Idx + 1];
     end;
   end;
 end;

@@ -176,8 +176,7 @@ var
   meanMag: ArbFloat;
   times: TFloatArray;
   temp_mags: TFloatArray;
-  trend: TFloatArray;
-  trig_fit: TFloatArray;
+  fit: TFloatArray;
 begin
   ndata := Length(Ft);
   SetLength(times, ndata);
@@ -199,16 +198,14 @@ begin
       Fpartial_frequencies[I] := nu;
       Fpartial_periods[I] := 1 / nu;
 
-      PolyFit(times, Fmag, nu, FTrendDegree, FTrigPolyDegree, trend, trig_fit);
-
-      // Get the power of the trial frequency
-      pwr := PopnVariance(trig_fit);
+      PolyFit(times, Fmag, nu, FTrendDegree, FTrigPolyDegree, fit);
 
       for II := 0 to ndata - 1 do begin
-        temp_mags[II] := Fmag[II] - trend[II];
+        temp_mags[II] := Fmag[II] - fit[II];
       end;
 
-      pwr := pwr / PopnVariance(temp_mags);
+      pwr := PopnVariance(temp_mags); // \sigma^2_{O-C}
+
       Fpartial_power[I] := pwr;
     end
     else begin
@@ -231,8 +228,10 @@ procedure dcdft_proc(
 var
   n_freq: ArbInt;
   ndata: ArbInt;
-  //mag_var: ArbFloat;
+  fit: TFloatArray;
+  sigmaSquaredO: ArbFloat;
   startfreq: ArbFloat;
+  temp_mags: TFloatArray;
   NumberOfThreads, StepsPerThread, Remainder, StepsToDo: integer;
   I, II, Idx: Integer;
   Threads: array of TCalcThread;
@@ -310,12 +309,18 @@ begin
       end;
     end;
 
-    //ndata := Length(t);
-    //mag_var := PopnVariance(mag);
+    ndata := Length(mag);
+    SetLength(temp_mags, ndata);
+    PolyFit(t, mag, 0.0, TrendDegree, 0, fit);
+    for I := 0 to ndata - 1 do begin
+      temp_mags[I] := mag[I] - fit[I];
+    end;
 
-    //for I := 0 to n_freq do begin
-    //  power[I] := power[I] / mag_var;
-    //end;
+    sigmaSquaredO := PopnVariance(temp_mags);
+
+    for I := 0 to n_freq do begin
+      power[I] := 1.0 - power[I] / sigmaSquaredO;
+    end;
 
   finally
     for I := Length(Threads) - 1 downto 0 do begin

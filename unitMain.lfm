@@ -224,7 +224,7 @@ object FormMain: TFormMain
   object OpenDialog1: TOpenDialog
     Title = ''
     DefaultExt = '.tsv'
-    Filter = 'Tab-separated text files (*.tsv)|*.tsv|All files (*.*)|*.*'
+    Filter = 'Text files (*.tsv,*.dat,*.txt)|*.tsv;*.dat;*.txt|All files (*.*)|*.*'
     Options = [ofFileMustExist, ofEnableSizing, ofViewDetail]
     Left = 80
     Top = 232
