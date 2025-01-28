@@ -43,11 +43,6 @@ function GetGridSelectionAsText(Grid: TDrawGrid; GetGridCell: TGetGridCell): str
 
 implementation
 
-// to-do: get rid of the fixed-length TFloat51
-type
-  TFloat51 = array[0..50] of ArbFloat;
-  TFloat51Array = array of TFloat51;
-
 procedure CalcError(const S: string);
 begin
   raise Exception.Create(S);
@@ -58,48 +53,53 @@ procedure PolyFitSolution(const Xarray: TFloatArray;
                           nu: Double;
                           ATrendDegree: Integer;
                           ATrigPolyDegree: Integer;
-                          out a: TFloat51Array;
-                          out solution_vector: TFloat51);
+                          out a: TFloatArray;
+                          out solution_vector: TFloatArray);
 var
   ndata: Integer;
   angle: Double;
   term: ArbInt;
   I, II, Idx: Integer;
+  NofParameters: Integer;
 begin
+  if Length(Xarray) <> Length(Yarray) then
+    CalcError('X and Y arrays must be of equal length');
+
   if (ATrendDegree < 0) then
     CalcError('Trend degree must be >= 0');
 
   if (ATrigPolyDegree < 0) then
     CalcError('Trigonometric polynomial degree must be >= 0');
 
-  if (1 + ATrendDegree + ATrigPolyDegree * 2) > Length(TFloat51) then
+  NofParameters := (1 + ATrendDegree + ATrigPolyDegree * 2);
+
+  if NofParameters > 51 then
     CalcError('Too many parameters. Please reduce trend or trigonometric polynomial degree');
 
-  if Length(Xarray) <> Length(Yarray) then
-    CalcError('X and Y arrays must be of equal length');
-
   ndata := Length(Xarray);
-  SetLength(a, ndata);
+  SetLength(a, ndata * NofParameters);
+  SetLength(solution_vector, NofParameters);
 
   // Trend
   // to-do: for the periodogram: calculate the trend basic functions once and pass them to the procedure.
   for I := 0 to ndata - 1 do begin
     for II := 0 to ATrendDegree do begin
-      a[I][II] := math.Power(Xarray[I], II);
+      Idx := I * NofParameters + II;
+      a[Idx] := math.Power(Xarray[I], II);
     end;
   end;
 
   for I := 0 to ndata - 1 do begin
     angle := 2 * Pi * nu * Xarray[I];
     for II := 1 to ATrigPolyDegree do begin
-      Idx := 1 + ATrendDegree + 2 * (II - 1);
-      a[I][Idx]     := Cos(II * angle);
-      a[I][Idx + 1] := Sin(II * angle);
+      Idx := I * NofParameters + 1 + ATrendDegree + 2 * (II - 1);
+      a[Idx]     := Cos(II * angle);
+      a[Idx + 1] := Sin(II * angle);
     end;
   end;
 
   // solve for overdetermined matrices
-  slegls(a[0, 0], ndata, 1 + ATrendDegree + ATrigPolyDegree * 2, Length(TFloat51), Yarray[0], solution_vector[0], term);
+  slegls(a[0], ndata, 1 + ATrendDegree + ATrigPolyDegree * 2, NofParameters, Yarray[0], solution_vector[0], term);
   case term of
     1: ; // successful completion, the solution vector x is valid
     2: CalcError('"slegls" error: ' + IntToStr(term) + ': there is no unambiguous solution because the columns of the matrix are linearly dependant.');
@@ -115,7 +115,7 @@ begin
   Result := FloatToStr(V);
 end;
 
-function PolyFitSolutionToFormula(ATrendDegree: Integer; ATrigPolyDegree: Integer; nu: Double; const solution_vector: TFloat51): string;
+function PolyFitSolutionToFormula(ATrendDegree: Integer; ATrigPolyDegree: Integer; nu: Double; const solution_vector: TFloatArray): string;
 var
   I, Idx: Integer;
   Sign: string;
@@ -151,11 +151,13 @@ procedure PolyFit(const Xarray: TFloatArray;
                   out fit: TFloatArray);
 var
   ndata: Integer;
-  a: TFloat51Array; // to-do: get rid of the fixed-length TFloat51
-  solution_vector: TFloat51;
-  I, II, Idx: Integer;
+  a: TFloatArray;
+  solution_vector: TFloatArray;
+  I, II, Idx, Idx2: Integer;
+  NofParameters: Integer;
 begin
   PolyFitSolution(Xarray, Yarray, nu, ATrendDegree, ATrigPolyDegree, a, solution_vector);
+  NofParameters := (1 + ATrendDegree + ATrigPolyDegree * 2);
 
   ndata := Length(Xarray);
 
@@ -164,11 +166,13 @@ begin
   for I := 0 to ndata - 1 do begin
     fit[I] := 0.0;
     for II := 0 to ATrendDegree do begin
-      fit[I] := fit[I] + solution_vector[II] * a[I][II];
+      Idx := I * NofParameters + II;
+      fit[I] := fit[I] + solution_vector[II] * a[Idx];
     end;
     for II := 1 to ATrigPolyDegree do begin
       Idx := 1 + ATrendDegree + 2 * (II - 1);
-      fit[I] := fit[I] + solution_vector[Idx] * a[I][Idx] + solution_vector[Idx + 1] * a[I][Idx + 1];
+      Idx2 := I * NofParameters + Idx;
+      fit[I] := fit[I] + solution_vector[Idx] * a[Idx2] + solution_vector[Idx + 1] * a[Idx2 + 1];
     end;
   end;
 end;
@@ -184,8 +188,8 @@ procedure PolyFit(const Xarray: TFloatArray;
                   out Formula: string);
 var
   nfit: Integer;
-  a: TFloat51Array; // to-do: get rid of the fixed-length TFloat21
-  solution_vector: TFloat51;
+  a: TFloatArray;
+  solution_vector: TFloatArray;
   angle, c, s: Double;
   x: Double;
   I, II, Idx: Integer;
