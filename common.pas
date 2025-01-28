@@ -11,14 +11,17 @@ uses
 
 type
   PFloatArray = ^TFloatArray;
-  TFloatArray = array of Double;
+  TFloatArray = array of ArbFloat;
 
+// It this vestion of PolyFit, the input array (a) must be allocated and
+// initialized. fit must be allocated.
 procedure PolyFit(const Xarray: TFloatArray;
                   const Yarray: TFloatArray;
                   nu: Double;
                   ATrendDegree: Integer;
                   ATrigPolyDegree: Integer;
-                  out fit: TFloatArray);
+                  const a: TFloatArray;
+                  var fit: TFloatArray);
 
 procedure PolyFit(const Xarray: TFloatArray;
                   const Yarray: TFloatArray;
@@ -48,58 +51,22 @@ begin
   raise Exception.Create(S);
 end;
 
+
+// The input array (a) must be allocated and initialized.
 procedure PolyFitSolution(const Xarray: TFloatArray;
                           const Yarray: TFloatArray;
-                          nu: Double;
-                          ATrendDegree: Integer;
-                          ATrigPolyDegree: Integer;
-                          out a: TFloatArray;
+                          NofParameters: Integer;
+                          const a: TFloatArray;
                           out solution_vector: TFloatArray);
 var
   ndata: Integer;
-  angle: Double;
   term: ArbInt;
   I, II, Idx: Integer;
-  NofParameters: Integer;
 begin
-  if Length(Xarray) <> Length(Yarray) then
-    CalcError('X and Y arrays must be of equal length');
-
-  if (ATrendDegree < 0) then
-    CalcError('Trend degree must be >= 0');
-
-  if (ATrigPolyDegree < 0) then
-    CalcError('Trigonometric polynomial degree must be >= 0');
-
-  NofParameters := (1 + ATrendDegree + ATrigPolyDegree * 2);
-
-  if NofParameters > 51 then
-    CalcError('Too many parameters. Please reduce trend or trigonometric polynomial degree');
-
   ndata := Length(Xarray);
-  SetLength(a, ndata * NofParameters);
   SetLength(solution_vector, NofParameters);
-
-  // Trend
-  // to-do: for the periodogram: calculate the trend basic functions once and pass them to the procedure.
-  for I := 0 to ndata - 1 do begin
-    for II := 0 to ATrendDegree do begin
-      Idx := I * NofParameters + II;
-      a[Idx] := math.Power(Xarray[I], II);
-    end;
-  end;
-
-  for I := 0 to ndata - 1 do begin
-    angle := 2 * Pi * nu * Xarray[I];
-    for II := 1 to ATrigPolyDegree do begin
-      Idx := I * NofParameters + 1 + ATrendDegree + 2 * (II - 1);
-      a[Idx]     := Cos(II * angle);
-      a[Idx + 1] := Sin(II * angle);
-    end;
-  end;
-
   // solve for overdetermined matrices
-  slegls(a[0], ndata, 1 + ATrendDegree + ATrigPolyDegree * 2, NofParameters, Yarray[0], solution_vector[0], term);
+  slegls(a[0], ndata, NofParameters, NofParameters, Yarray[0], solution_vector[0], term);
   case term of
     1: ; // successful completion, the solution vector x is valid
     2: CalcError('"slegls" error: ' + IntToStr(term) + ': there is no unambiguous solution because the columns of the matrix are linearly dependant.');
@@ -143,25 +110,26 @@ begin
   end;
 end;
 
+// It this vestion of PolyFit, the input array (a) must be allocated and
+// initialized. fit must be allocated.
 procedure PolyFit(const Xarray: TFloatArray;
                   const Yarray: TFloatArray;
                   nu: Double;
                   ATrendDegree: Integer;
                   ATrigPolyDegree: Integer;
-                  out fit: TFloatArray);
+                  const a: TFloatArray;
+                  var fit: TFloatArray);
 var
   ndata: Integer;
-  a: TFloatArray;
+  angle: Double;
   solution_vector: TFloatArray;
   I, II, Idx, Idx2: Integer;
   NofParameters: Integer;
 begin
-  PolyFitSolution(Xarray, Yarray, nu, ATrendDegree, ATrigPolyDegree, a, solution_vector);
-  NofParameters := (1 + ATrendDegree + ATrigPolyDegree * 2);
+  NofParameters := 1 + ATrendDegree + ATrigPolyDegree * 2;
+  PolyFitSolution(Xarray, Yarray, NofParameters, a, solution_vector);
 
   ndata := Length(Xarray);
-
-  SetLength(fit, ndata);
 
   for I := 0 to ndata - 1 do begin
     fit[I] := 0.0;
@@ -193,8 +161,43 @@ var
   angle, c, s: Double;
   x: Double;
   I, II, Idx: Integer;
+  NofParameters: Integer;
+  ndata: Integer;
 begin
-  PolyFitSolution(Xarray, Yarray, nu, ATrendDegree, ATrigPolyDegree, a, solution_vector);
+  if Length(Xarray) <> Length(Yarray) then
+    CalcError('X and Y arrays myst be of equal length');
+
+  if (ATrendDegree < 0) then
+    CalcError('Trend degree must be >= 0');
+
+  if (ATrigPolyDegree < 0) then
+    CalcError('Trigonometric polynomial degree must be >= 0');
+
+  NofParameters := 1 + ATrendDegree + ATrigPolyDegree * 2;
+
+  if NofParameters > 51 then
+    CalcError('Too many parameters. Please reduce trend or trigonometric polynomial degree');
+
+  ndata := Length(Xarray);
+  SetLength(a, ndata * NofParameters);
+
+  // Trend
+  for I := 0 to ndata - 1 do begin
+    for II := 0 to ATrendDegree do begin
+      Idx := I * NofParameters + II;
+      a[Idx] := math.Power(Xarray[I], II);
+    end;
+  end;
+  // Trigonometric polinomial
+  for I := 0 to ndata - 1 do begin
+    angle := 2 * Pi * nu * Xarray[I];
+    for II := 1 to ATrigPolyDegree do begin
+      Idx := I * NofParameters + 1 + ATrendDegree + 2 * (II - 1);
+      a[Idx]     := Cos(II * angle);
+      a[Idx + 1] := Sin(II * angle);
+    end;
+  end;
+  PolyFitSolution(Xarray, Yarray, NofParameters, a, solution_vector);
 
   nfit := Ceil((fitXmax - fitXmin) / fitXstep);
   SetLength(Xfit, nfit);

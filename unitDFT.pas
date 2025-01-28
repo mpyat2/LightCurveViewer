@@ -205,13 +205,19 @@ var
   ndata: Integer;
   nu: Double;
   pwr: Double;
-  I, II: Integer;
+  I, II, III, Idx: Integer;
   meanTime: Double;
   times: TFloatArray;
   temp_mags: TFloatArray;
   fit: TFloatArray;
   N, Nrest: Integer;
+  NofParameters: Integer;
+  angle: Double;
+  a: TFloatArray;
 begin
+  if Length(Ft) <> Length(FMag) then
+    CalcError('X and Y arrays myst be of equal length');
+
   ndata := Length(Ft);
   SetLength(times, ndata);
   SetLength(temp_mags, ndata);
@@ -219,6 +225,29 @@ begin
   for II := 0 to ndata - 1 do begin
     times[II] := Ft[II] - meanTime;
   end;
+
+  if (FTrendDegree < 0) then
+    CalcError('Trend degree must be >= 0');
+
+  if (FTrigPolyDegree < 0) then
+    CalcError('Trigonometric polynomial degree must be >= 0');
+
+  NofParameters := 1 + FTrendDegree + FTrigPolyDegree * 2;
+
+  if NofParameters > 51 then
+    CalcError('Too many parameters. Please reduce trend or trigonometric polynomial degree');
+
+  SetLength(a, ndata * NofParameters);
+
+  // Trend: one-time initialization
+  for I := 0 to ndata - 1 do begin
+    for II := 0 to FTrendDegree do begin
+      Idx := I * NofParameters + II;
+      a[Idx] := math.Power(times[I], II);
+    end;
+  end;
+
+  SetLength(fit, ndata);
 
   Nrest := Fn_freq;
   nu := Flowfreq;
@@ -232,7 +261,17 @@ begin
       Fpartial_frequencies[I] := nu;
       Fpartial_periods[I] := 1 / nu;
 
-      PolyFit(times, Fmag, nu, FTrendDegree, FTrigPolyDegree, fit);
+      // Trigonometric polinomial
+      for II := 0 to ndata - 1 do begin
+        angle := 2 * Pi * nu * times[II];
+        for III := 1 to FTrigPolyDegree do begin
+          Idx := II * NofParameters + 1 + FTrendDegree + 2 * (III - 1);
+          a[Idx]     := Cos(III * angle);
+          a[Idx + 1] := Sin(III * angle);
+        end;
+      end;
+
+      PolyFit(times, Fmag, nu, FTrendDegree, FTrigPolyDegree, a, fit);
 
       for II := 0 to ndata - 1 do begin
         temp_mags[II] := Fmag[II] - fit[II];
@@ -276,6 +315,9 @@ procedure dcdft_proc(
 var
   n_freq: Integer;
   ndata: Integer;
+  a: TFloatArray;
+  meanTime: Double;
+  times: TFloatArray;
   fit: TFloatArray;
   sigmaSquaredO: Double;
   startfreq: Double;
@@ -360,9 +402,25 @@ begin
         end;
       end;
 
+      // Trend
       ndata := Length(mag);
+      SetLength(times, ndata);
       SetLength(temp_mags, ndata);
-      PolyFit(t, mag, 0.0, TrendDegree, 0, fit);
+      meanTime := Mean(t);
+      for I := 0 to ndata - 1 do begin
+        times[I] := t[I] - meanTime;
+      end;
+      SetLength(a, ndata * (1 + TrendDegree));
+      for I := 0 to ndata - 1 do begin
+        for II := 0 to TrendDegree do begin
+          Idx := I * (1 + TrendDegree) + II;
+          a[Idx] := math.Power(times[I], II);
+        end;
+      end;
+
+      SetLength(fit, ndata);
+      PolyFit(t, mag, 0.0, TrendDegree, 0, a, fit);
+
       for I := 0 to ndata - 1 do begin
         temp_mags[I] := mag[I] - fit[I];
       end;
