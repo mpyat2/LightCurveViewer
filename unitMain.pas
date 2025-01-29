@@ -8,15 +8,15 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Menus, ActnList,
-  ComCtrls, TAGraph, TASources, TASeries, TACustomSource, TATools, DoLongOp;
+  ComCtrls, TAGraph, TASources, TASeries, TACustomSource, TATools, DoLongOp,
+  common;
 
 type
 
   { TFormMain }
 
   TFormMain = class(TForm)
-    ActionFitInfo: TAction;
-    ActionModelAsTable: TAction;
+    ActionModelInfo: TAction;
     ActionPolyFit: TAction;
     ActionPeriodogram: TAction;
     ActionPhasePlotSimple: TAction;
@@ -42,7 +42,6 @@ type
     MenuItem1: TMenuItem;
     MenuItem2: TMenuItem;
     MenuItem3: TMenuItem;
-    MenuItemModelInfo: TMenuItem;
     Separator1: TMenuItem;
     MenuItemPolyFit: TMenuItem;
     MenuItemTools: TMenuItem;
@@ -59,10 +58,9 @@ type
     ToolButton3: TToolButton;
     ToolButton4: TToolButton;
     ToolButton5: TToolButton;
-    procedure ActionFitInfoExecute(Sender: TObject);
     procedure ActionInvertedYExecute(Sender: TObject);
     procedure ActionList1Update(AAction: TBasicAction; var Handled: Boolean);
-    procedure ActionModelAsTableExecute(Sender: TObject);
+    procedure ActionModelInfoExecute(Sender: TObject);
     procedure ActionOpenExecute(Sender: TObject);
     procedure ActionExitExecute(Sender: TObject);
     procedure ActionPeriodogramExecute(Sender: TObject);
@@ -77,6 +75,8 @@ type
     FPeriodogramFirstRun: Boolean;
     FDFTThreadTerminated: Boolean;
     FFitFormula: string;
+    FFitAtPoints: array[0..2] of TFloatArray;
+    procedure UpdateTitle;
     procedure CloseFile;
     procedure OpenFile(const AFileName: string);
     procedure PlotData;
@@ -103,8 +103,8 @@ implementation
 {$R *.lfm}
 
 uses
-  Windows, math, TAChartUtils, common, unitPhaseDialog, unitFitParamDialog,
-  unitDFTparamDialog, unitDFTdialog, unitDFT, unitTableDialog, unitInfoDialog,
+  Windows, math, TAChartUtils, unitPhaseDialog, unitFitParamDialog,
+  unitDFTparamDialog, unitDFTdialog, unitDFT, unitTableDialog, unitModelInfoDialog,
   dftThread, dataio;
 
 { TFormMain }
@@ -178,11 +178,6 @@ begin
   Chart1.AxisList[0].Inverted := not Chart1.AxisList[0].Inverted;
 end;
 
-procedure TFormMain.ActionFitInfoExecute(Sender: TObject);
-begin
-  ShowInfo(FFitFormula, 'Approximation');
-end;
-
 procedure TFormMain.ActionList1Update(AAction: TBasicAction; var Handled: Boolean);
 begin
   if AAction = ActionInvertedY then begin
@@ -212,37 +207,47 @@ begin
     (AAction as TAction).Enabled := ListChartSourceData.Count > 0;
   end
   else
-  if AAction = ActionModelAsTable then begin
+  if AAction = ActionModelInfo then begin
     (AAction as TAction).Enabled := ListChartSourceModel.Count > 0;
-  end
-  else
-  if AAction = ActionFitInfo then begin
-    (AAction as TAction).Enabled := FFitFormula <> '';
   end;
 end;
 
-procedure TFormMain.ActionModelAsTableExecute(Sender: TObject);
+procedure TFormMain.ActionModelInfoExecute(Sender: TObject);
 var
-  X, Y: TFloatArray;
+  X1, Y1: TFloatArray;
   Item: PChartDataItem;
   I: Integer;
 begin
   if ListChartSourceModel.Count > 0 then begin
-    SetLength(X, ListChartSourceModel.Count);
-    SetLength(Y, ListChartSourceModel.Count);
+    SetLength(X1, ListChartSourceModel.Count);
+    SetLength(Y1, ListChartSourceModel.Count);
     for I := 0 to ListChartSourceModel.Count - 1 do begin
       Item := ListChartSourceModel.Item[I];
-      X[I] := Item^.X;
-      Y[I] := Item^.Y;
+      X1[I] := Item^.X;
+      Y1[I] := Item^.Y;
     end;
-    ShowTable(X, Y, 'Time', 'Model');
+    ShowModelInfo('Not implemented',
+                  FFitFormula,
+                  X1, Y1,
+                  FFitAtPoints[0], FFitAtPoints[1], FFitAtPoints[2]);
   end;
+end;
+
+procedure TFormMain.UpdateTitle;
+begin
+  Caption := 'LCV';
+  if FFileName <> '' then
+    Caption := ExtractFileName(FFileName) + ' - ' + Caption;
 end;
 
 procedure TFormMain.CloseFile;
 begin
   FFileName := '';
+  UpdateTitle;
   FFitFormula := '';
+  FFitAtPoints[0] := nil;
+  FFitAtPoints[1] := nil;
+  FFitAtPoints[2] := nil;
   FPeriodogramFirstRun := True;
   Chart1LineSeriesData.Source := nil;
   Chart1LineSeriesModel.Source := nil;
@@ -259,9 +264,8 @@ begin
   unitDFTparamDialog.SetCurrentTrendDegree(0);
   unitDFTparamDialog.SetCurrentTrigPolyDegree(1);
   unitFitParamDialog.SetCurrentPeriod(NaN);
-  unitFitParamDialog.SetCurrentTrendDegree(0);
-  unitFitParamDialog.SetCurrentTrigPolyDegree(1);
-
+  unitFitParamDialog.SetCurrentTrendDegree(1);
+  unitFitParamDialog.SetCurrentTrigPolyDegree(0);
   CloseDFTdialog;
 end;
 
@@ -284,6 +288,7 @@ begin
     Exit;
   end;
   FFileName := AFileName;
+  UpdateTitle;
   unitPhaseDialog.SetCurrentEpoch((MaxValue(X) + MinValue(X)) / 2.0);
   for I := 0 to Length(X) - 1 do begin
     ListChartSourceData.Add(X[I], Y[I]);
@@ -442,6 +447,9 @@ var
   I: Integer;
 begin
   FFitFormula := '';
+  FFitAtPoints[0] := nil;
+  FFitAtPoints[1] := nil;
+  FFitAtPoints[2] := nil;
   if ListChartSourceData.Count > 0 then begin
     if not GetFitParams(Frequency, TrendDegree, TrigPolyDegree) then
       Exit;
@@ -461,14 +469,22 @@ begin
     fitXmax := MaxValue(X);
     fitXstep := (fitXmax - fitXmin) / (ListChartSourceData.Count * 3);
     try
-      PolyFit(X, Y, Frequency, TrendDegree, TrigPolyDegree, fitXmin, fitXmax, fitXstep, Xfit, Yfit, FFitFormula);
-      FFitFormula := 'timeZeroPoint is ' + FloatToStr(meanTime) + ^M^J^M^J + 'f(t: real): real {' + ^M^J + FFitFormula + '}';
+      PolyFit(X, Y, Frequency, TrendDegree, TrigPolyDegree, fitXmin, fitXmax, fitXstep, Xfit, Yfit, FFitAtPoints[1], FFitFormula);
     except
       on E: Exception do begin
         ShowMessage('Error: '^M^J + E.Message);
         Exit;
       end;
     end;
+    SetLength(FFitAtPoints[0], Length(X));
+    for I := 0 to Length(X) - 1 do begin
+      FFitAtPoints[0][I] := X[I] + meanTime;
+    end;
+    SetLength(FFitAtPoints[2], Length(X));
+    for I := 0 to Length(X) - 1 do begin
+      FFitAtPoints[2][I] := Y[I];
+    end;
+    FFitFormula := 'timeZeroPoint is ' + FloatToStr(meanTime) + ^M^J^M^J + 'f(t: real): real {' + ^M^J + FFitFormula + '}';
     ListChartSourceModel.Clear;
     ListChartSourceFoldedModel.Clear;
     for I := 0 to Length(Xfit) - 1 do begin

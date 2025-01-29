@@ -140,7 +140,7 @@
         <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
-        <Filename Value="unitInfoDialog.pas"/>
+        <Filename Value="unitModelInfoDialog.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FormInfo"/>
         <HasResources Value="True"/>

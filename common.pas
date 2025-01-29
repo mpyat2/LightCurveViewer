@@ -31,6 +31,7 @@ procedure PolyFit(const Xarray: TFloatArray;
                   fitXmin, fitXmax, fitXstep: Double;
                   out Xfit: TFloatArray;
                   out Yfit: TFloatArray;
+                  out FitAtPoints: TFloatArray;
                   out Formula: string);
 
 procedure CalcError(const S: string);
@@ -40,7 +41,7 @@ function GetFieldValue(const Field: TEdit; Min, Max: Double; const FieldName: st
 function GetFieldValue(const Field: TEdit; Min, Max: Integer; const FieldName: string; out V: integer): Boolean;
 
 type
-  TGetGridCell = function(C, R: Integer): string of object;
+  TGetGridCell = function(Grid: TDrawGrid; C, R: Integer): string of object;
 
 function GetGridSelectionAsText(Grid: TDrawGrid; GetGridCell: TGetGridCell): string;
 
@@ -110,6 +111,29 @@ begin
   end;
 end;
 
+procedure CalculateFitAtPoits(const a: TFloatArray;
+                              const solution_vector: TFloatArray;
+                              ATrendDegree, ATrigPolyDegree: Integer;
+                              var fit: TFloatArray);
+var
+  I, II, Idx, Idx2: Integer;
+  NofParameters: Integer;
+begin
+  NofParameters := 1 + ATrendDegree + ATrigPolyDegree * 2;
+  for I := 0 to Length(fit) - 1 do begin
+    fit[I] := 0.0;
+    for II := 0 to ATrendDegree do begin
+      Idx := I * NofParameters + II;
+      fit[I] := fit[I] + solution_vector[II] * a[Idx];
+    end;
+    for II := 1 to ATrigPolyDegree do begin
+      Idx := 1 + ATrendDegree + 2 * (II - 1);
+      Idx2 := I * NofParameters + Idx;
+      fit[I] := fit[I] + solution_vector[Idx] * a[Idx2] + solution_vector[Idx + 1] * a[Idx2 + 1];
+    end;
+  end;
+end;
+
 // It this vestion of PolyFit, the input array (a) must be allocated and
 // initialized. fit must be allocated.
 procedure PolyFit(const Xarray: TFloatArray;
@@ -128,21 +152,7 @@ var
 begin
   NofParameters := 1 + ATrendDegree + ATrigPolyDegree * 2;
   PolyFitSolution(Xarray, Yarray, NofParameters, a, solution_vector);
-
-  ndata := Length(Xarray);
-
-  for I := 0 to ndata - 1 do begin
-    fit[I] := 0.0;
-    for II := 0 to ATrendDegree do begin
-      Idx := I * NofParameters + II;
-      fit[I] := fit[I] + solution_vector[II] * a[Idx];
-    end;
-    for II := 1 to ATrigPolyDegree do begin
-      Idx := 1 + ATrendDegree + 2 * (II - 1);
-      Idx2 := I * NofParameters + Idx;
-      fit[I] := fit[I] + solution_vector[Idx] * a[Idx2] + solution_vector[Idx + 1] * a[Idx2 + 1];
-    end;
-  end;
+  CalculateFitAtPoits(a, solution_vector, ATrendDegree, ATrigPolyDegree, fit);
 end;
 
 procedure PolyFit(const Xarray: TFloatArray;
@@ -153,6 +163,7 @@ procedure PolyFit(const Xarray: TFloatArray;
                   fitXmin, fitXmax, fitXstep: Double;
                   out Xfit: TFloatArray;
                   out Yfit: TFloatArray;
+                  out FitAtPoints: TFloatArray;
                   out Formula: string);
 var
   nfit: Integer;
@@ -198,6 +209,8 @@ begin
     end;
   end;
   PolyFitSolution(Xarray, Yarray, NofParameters, a, solution_vector);
+  SetLength(FitAtPoints, ndata);
+  CalculateFitAtPoits(a, solution_vector, ATrendDegree, ATrigPolyDegree, FitAtPoints);
 
   nfit := Ceil((fitXmax - fitXmin) / fitXstep);
   SetLength(Xfit, nfit);
@@ -287,7 +300,7 @@ begin
   for R := Selection.Top to Selection.Bottom do begin
     S2 := '';
     for C := Selection.Left to Selection.Right do begin
-      S2 := S2 + GetGridCell(C, R);
+      S2 := S2 + GetGridCell(Grid, C, R);
       if C < Selection.Right then
         S2 := S2 + ^I;
     end;

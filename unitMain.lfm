@@ -138,10 +138,7 @@ object FormMain: TFormMain
         Caption = '-'
       end
       object MenuItem3: TMenuItem
-        Action = ActionModelAsTable
-      end
-      object MenuItemModelInfo: TMenuItem
-        Action = ActionFitInfo
+        Action = ActionModelInfo
       end
     end
     object MenuItemTools: TMenuItem
@@ -210,15 +207,11 @@ object FormMain: TFormMain
       Caption = 'Polynomial &Approximation...'
       OnExecute = ActionPolyFitExecute
     end
-    object ActionModelAsTable: TAction
+    object ActionModelInfo: TAction
       Category = 'View'
-      Caption = 'Show Model Points...'
-      OnExecute = ActionModelAsTableExecute
-    end
-    object ActionFitInfo: TAction
-      Category = 'View'
-      Caption = '&Model Info'
-      OnExecute = ActionFitInfoExecute
+      Caption = 'Approximation Info...'
+      Hint = 'Show Approximation Info'
+      OnExecute = ActionModelInfoExecute
     end
   end
   object OpenDialog1: TOpenDialog

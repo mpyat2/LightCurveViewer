@@ -51,7 +51,7 @@ type
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
   private
-    function GetGridCell(C, R: Integer): string;
+    function GetGridCell(Grid: TDrawGrid; C, R: Integer): string;
     procedure GridDrawCell(Sender: TObject; aCol, aRow: Integer; aRect: TRect; aState: TGridDrawState);
   public
 
@@ -177,7 +177,7 @@ begin
   Chart1LineSeries2.AddXY(Item^.X, Item^.Y);
 end;
 
-function TFormDFTDialog.GetGridCell(C, R: Integer): string;
+function TFormDFTDialog.GetGridCell(Grid: TDrawGrid; C, R: Integer): string;
 var
   V: Double;
 begin
@@ -210,7 +210,7 @@ var
   GridCanvas: TCanvas;
 begin
   GridCanvas := DrawGrid1.Canvas;
-  GridCanvas.TextRect(aRect, aRect.Left + 2, aRect.Top + 2, GetGridCell(aCol, aRow));
+  GridCanvas.TextRect(aRect, aRect.Left + 2, aRect.Top + 2, GetGridCell(DrawGrid1, aCol, aRow));
 end;
 
 procedure TFormDFTDialog.FormClose(Sender: TObject; var CloseAction: TCloseAction);

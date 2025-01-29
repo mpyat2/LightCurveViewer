@@ -2,6 +2,8 @@ unit unitTableDialog;
 
 {$mode ObjFPC}{$H+}
 
+{$include LCV.inc}
+
 interface
 
 uses
@@ -27,7 +29,7 @@ type
     FX: TFloatArray;
     FY: TFloatArray;
     FXname, FYname: string;
-    function GetGridCell(C, R: Integer): string;
+    function GetGridCell(Grid: TDrawGrid; C, R: Integer): string;
     procedure GridDrawCell(Sender: TObject; aCol, aRow: Integer; aRect: TRect; aState: TGridDrawState);
   public
 
@@ -92,7 +94,7 @@ begin
   DrawGrid1.Selection := Selection;
 end;
 
-function TFormTable.GetGridCell(C, R: Integer): string;
+function TFormTable.GetGridCell(Grid: TDrawGrid; C, R: Integer): string;
 var
   Idx: Integer;
 begin
@@ -121,7 +123,7 @@ var
   GridCanvas: TCanvas;
 begin
   GridCanvas := DrawGrid1.Canvas;
-  GridCanvas.TextRect(aRect, aRect.Left + 2, aRect.Top + 2, GetGridCell(aCol, aRow));
+  GridCanvas.TextRect(aRect, aRect.Left + 2, aRect.Top + 2, GetGridCell(DrawGrid1, aCol, aRow));
 end;
 
 

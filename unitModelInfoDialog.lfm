@@ -1,0 +1,147 @@
+object FormInfo: TFormInfo
+  Left = 783
+  Height = 480
+  Top = 339
+  Width = 840
+  BorderIcons = [biSystemMenu, biMaximize]
+  Caption = 'Approximation'
+  ClientHeight = 480
+  ClientWidth = 840
+  OnCreate = FormCreate
+  Position = poMainFormCenter
+  LCLVersion = '3.2.0.0'
+  object PanelButtons: TPanel
+    Left = 0
+    Height = 45
+    Top = 435
+    Width = 840
+    Align = alBottom
+    ClientHeight = 45
+    ClientWidth = 840
+    TabOrder = 0
+    object ButtonClose: TButton
+      Left = 745
+      Height = 25
+      Top = 8
+      Width = 75
+      Anchors = [akTop, akRight]
+      Cancel = True
+      Caption = 'Close'
+      Default = True
+      ModalResult = 2
+      TabOrder = 0
+    end
+  end
+  object PageControl1: TPageControl
+    Left = 0
+    Height = 435
+    Top = 0
+    Width = 840
+    ActivePage = TabSheetInfo
+    Align = alClient
+    TabIndex = 0
+    TabOrder = 1
+    object TabSheetInfo: TTabSheet
+      Caption = 'Model Info'
+      ClientHeight = 407
+      ClientWidth = 832
+      object MemoInfo: TMemo
+        Left = 0
+        Height = 407
+        Top = 0
+        Width = 832
+        Align = alClient
+        Font.Name = 'Courier New'
+        ParentFont = False
+        ReadOnly = True
+        ScrollBars = ssBoth
+        TabOrder = 0
+        WantReturns = False
+        WordWrap = False
+      end
+    end
+    object TabSheetFormula: TTabSheet
+      Caption = 'Formula'
+      ClientHeight = 407
+      ClientWidth = 832
+      object MemoFormula: TMemo
+        Left = 0
+        Height = 407
+        Top = 0
+        Width = 832
+        Align = alClient
+        Font.Name = 'Courier New'
+        ParentFont = False
+        ReadOnly = True
+        ScrollBars = ssBoth
+        TabOrder = 0
+        WantReturns = False
+        WordWrap = False
+      end
+    end
+    object TabSheetModelData: TTabSheet
+      Caption = 'Table'
+      ClientHeight = 407
+      ClientWidth = 832
+      object DrawGridModelData: TDrawGrid
+        Left = 0
+        Height = 407
+        Top = 0
+        Width = 832
+        Align = alClient
+        ColCount = 2
+        DefaultColWidth = 200
+        ExtendedSelect = False
+        FixedCols = 0
+        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goSmoothScroll]
+        PopupMenu = PopupMenu1
+        TabOrder = 0
+        UseXORFeatures = True
+      end
+    end
+    object TabSheetModelPoints: TTabSheet
+      Caption = 'Model at Observation Points'
+      ClientHeight = 407
+      ClientWidth = 832
+      object DrawGridModelPoints: TDrawGrid
+        Left = 0
+        Height = 407
+        Top = 0
+        Width = 832
+        Align = alClient
+        ColCount = 4
+        DefaultColWidth = 200
+        ExtendedSelect = False
+        FixedCols = 0
+        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goSmoothScroll]
+        PopupMenu = PopupMenu1
+        TabOrder = 0
+        UseXORFeatures = True
+      end
+    end
+  end
+  object ActionList1: TActionList
+    Left = 38
+    Top = 47
+    object ActionCopyTable: TAction
+      Caption = '&Copy'
+      OnExecute = ActionCopyTableExecute
+      ShortCut = 16451
+    end
+    object ActionSelectAll: TAction
+      Caption = 'Select &All'
+      OnExecute = ActionSelectAllExecute
+      ShortCut = 16449
+    end
+  end
+  object PopupMenu1: TPopupMenu
+    Left = 35
+    Top = 152
+    object MenuItem1: TMenuItem
+      Action = ActionCopyTable
+    end
+    object MenuItem2: TMenuItem
+      Action = ActionSelectAll
+    end
+  end
+end
