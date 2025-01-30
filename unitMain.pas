@@ -75,6 +75,7 @@ type
     FPeriodogramFirstRun: Boolean;
     FDFTThreadTerminated: Boolean;
     FFitFormula: string;
+    FFitInfo: string;
     FFitAtPoints: array[0..2] of TFloatArray;
     procedure UpdateTitle;
     procedure CloseFile;
@@ -226,8 +227,7 @@ begin
       X1[I] := Item^.X;
       Y1[I] := Item^.Y;
     end;
-    ShowModelInfo('Not implemented',
-                  FFitFormula,
+    ShowModelInfo(FFitInfo, FFitFormula,
                   X1, Y1,
                   FFitAtPoints[0], FFitAtPoints[1], FFitAtPoints[2]);
   end;
@@ -241,10 +241,14 @@ begin
 end;
 
 procedure TFormMain.CloseFile;
+var
+  tempDArray: TDouble3Array = (NaN, NaN, NaN);
+  tempIArray: TInt3Array = (0, 0, 0);
 begin
   FFileName := '';
   UpdateTitle;
   FFitFormula := '';
+  FFitInfo := '';
   FFitAtPoints[0] := nil;
   FFitAtPoints[1] := nil;
   FFitAtPoints[2] := nil;
@@ -263,9 +267,9 @@ begin
   unitDFTparamDialog.SetCurrentFrequencyResolution(NaN);
   unitDFTparamDialog.SetCurrentTrendDegree(0);
   unitDFTparamDialog.SetCurrentTrigPolyDegree(1);
-  unitFitParamDialog.SetCurrentPeriod(NaN);
   unitFitParamDialog.SetCurrentTrendDegree(1);
-  unitFitParamDialog.SetCurrentTrigPolyDegree(0);
+  unitFitParamDialog.SetCurrentPeriods(tempDArray);
+  unitFitParamDialog.SetCurrentTrigPolyDegrees(tempIArray);
   CloseDFTdialog;
 end;
 
@@ -437,9 +441,9 @@ procedure TFormMain.DoPolyFit;
 var
   X: TFloatArray;
   Y: TFloatArray;
-  Frequency: Double;
   TrendDegree: Integer;
-  TrigPolyDegree: Integer;
+  TrigPolyDegrees: TInt3Array;
+  Frequencies: TDouble3Array;
   meanTime: Double;
   fitXmin, fitXmax, fitXstep: Double;
   Xfit, Yfit: TFloatArray;
@@ -447,11 +451,12 @@ var
   I: Integer;
 begin
   FFitFormula := '';
+  FFitInfo := '';
   FFitAtPoints[0] := nil;
   FFitAtPoints[1] := nil;
   FFitAtPoints[2] := nil;
   if ListChartSourceData.Count > 0 then begin
-    if not GetFitParams(Frequency, TrendDegree, TrigPolyDegree) then
+    if not GetFitParams(TrendDegree, TrigPolyDegrees, Frequencies) then
       Exit;
     Chart1LineSeriesModel.Source := nil;
     SetLength(X, ListChartSourceData.Count);
@@ -469,7 +474,7 @@ begin
     fitXmax := MaxValue(X);
     fitXstep := (fitXmax - fitXmin) / (ListChartSourceData.Count * 3);
     try
-      PolyFit(X, Y, Frequency, TrendDegree, TrigPolyDegree, fitXmin, fitXmax, fitXstep, Xfit, Yfit, FFitAtPoints[1], FFitFormula);
+      PolyFit(X, Y, TrendDegree, TrigPolyDegrees, Frequencies, fitXmin, fitXmax, fitXstep, Xfit, Yfit, FFitAtPoints[1], FFitFormula, FFitInfo);
     except
       on E: Exception do begin
         ShowMessage('Error: '^M^J + E.Message);
@@ -484,7 +489,14 @@ begin
     for I := 0 to Length(X) - 1 do begin
       FFitAtPoints[2][I] := Y[I];
     end;
-    FFitFormula := 'timeZeroPoint is ' + FloatToStr(meanTime) + ^M^J^M^J + 'f(t: real): real {' + ^M^J + FFitFormula + '}';
+    FFitFormula := 'timeZeroPoint = ' + FloatToStrLocaleIndependent(meanTime) + ^M^J^M^J + 'def f(t):' + ^M^J + ' return \' + ^M^J + FFitFormula + ^M^J;
+    FFitFormula := 'import math'^M^J + FFitFormula;
+    FFitFormula := 'import matplotlib.pyplot as plt'^M^J + FFitFormula;
+    FFitFormula := 'import numpy as np'^M^J^M^J + FFitFormula;
+    FFitFormula := '# Python'^M^J^M^J + FFitFormula;
+    FFitInfo := FFitInfo + ^M^J + 'timeZeroPoint = ' + FloatToStr(meanTime) + ^M^J;
+    FFitInfo := FFitInfo + ^M^J + '(O - C)^2 = ' + FloatToStr(CalcResidualSquared(FFitAtPoints[2], FFitAtPoints[1]));
+
     ListChartSourceModel.Clear;
     ListChartSourceFoldedModel.Clear;
     for I := 0 to Length(Xfit) - 1 do begin

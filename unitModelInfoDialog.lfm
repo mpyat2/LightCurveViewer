@@ -121,6 +121,7 @@ object FormInfo: TFormInfo
     end
   end
   object ActionList1: TActionList
+    OnUpdate = ActionList1Update
     Left = 38
     Top = 47
     object ActionCopyTable: TAction

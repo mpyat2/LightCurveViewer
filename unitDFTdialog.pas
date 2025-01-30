@@ -137,7 +137,7 @@ end;
 procedure TFormDFTDialog.ActionListUpdate(AAction: TBasicAction; var Handled: Boolean);
 begin
   if (AAction = ActionGridSelectAll) or (AAction = ActionGridCopy) then
-    (AAction as TAction).Enabled := DrawGrid1.Focused;
+    (AAction as TAction).Enabled := PageControl1.ActivePage = TabSheetTable;
 end;
 
 procedure TFormDFTDialog.ButtonCloseClick(Sender: TObject);

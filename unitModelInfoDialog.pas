@@ -33,6 +33,7 @@ type
     TabSheetFormula: TTabSheet;
     TabSheetModelData: TTabSheet;
     procedure ActionCopyTableExecute(Sender: TObject);
+    procedure ActionList1Update(AAction: TBasicAction; var Handled: Boolean);
     procedure ActionSelectAllExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
@@ -106,6 +107,13 @@ begin
     Screen.Cursor := CurrentCursor;
   end;
   //ShowMessage('Copied to Clipboard');
+end;
+
+procedure TFormInfo.ActionList1Update(AAction: TBasicAction; var Handled: Boolean);
+begin
+  if (AAction = ActionCopyTable) or (AACtion = ActionSelectAll) then begin
+    (AAction as TAction).Enabled := (PageControl1.ActivePage = TabSheetModelData) or (PageControl1.ActivePage = TabSheetModelPoints);
+  end;
 end;
 
 procedure TFormInfo.ActionSelectAllExecute(Sender: TObject);

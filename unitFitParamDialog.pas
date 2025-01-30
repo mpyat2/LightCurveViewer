@@ -7,89 +7,109 @@ unit unitFitParamDialog;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, common;
 
 type
 
   { TFormDFTparams }
 
+  { TFormFitparams }
+
   TFormFitparams = class(TForm)
     ButtonOk: TButton;
     ButtonCancel: TButton;
-    EditTrendDegree: TEdit;
-    EditTrigPolyDegree: TEdit;
-    EditPeriod: TEdit;
     LabelTrendDegree: TLabel;
-    LabelTrigPolyDegree: TLabel;
-    LabelPeriod: TLabel;
+    LabelTrigPoly: TLabel;
+    LabelPeriod1: TLabel;
+    LabelPeriod2: TLabel;
+    LabelPeriod3: TLabel;
+    LabelTrigDeg1: TLabel;
+    LabelTrigDeg2: TLabel;
+    LabelTrigDeg3: TLabel;
+    EditTrendDegree: TEdit;
+    EditPeriod1: TEdit;
+    EditPeriod2: TEdit;
+    EditPeriod3: TEdit;
+    EditTrigDeg1: TEdit;
+    EditTrigDeg2: TEdit;
+    EditTrigDeg3: TEdit;
     procedure ButtonOkClick(Sender: TObject);
   private
-    FPeriod: Double;
     FTrendDegree: Integer;
-    FTrigPolyDegree: Integer;
+    FPeriods: TDouble3Array;
+    FTrigPolyDegrees: TInt3Array;
   public
 
   end;
 
-procedure SetCurrentPeriod(AValue: Double);
-
 procedure SetCurrentTrendDegree(AValue: Integer);
 
-procedure SetCurrentTrigPolyDegree(AValue: Integer);
+procedure SetCurrentPeriods(const AValue: TDouble3Array);
 
-function GetFitParams(out AFrequency: Double; out ATrendDegree, ATrigPolyDegree: Integer): Boolean;
+procedure SetCurrentTrigPolyDegrees(const AValue: TInt3Array);
+
+function GetFitParams(out ATrendDegree: Integer; out ATrigPolyDegrees: TInt3Array; out AFrequencies: TDouble3Array): Boolean;
 
 implementation
 
 {$R *.lfm}
 
 uses
-  math, common;
+  math;
 
 var
-  CurrentPeriod: Double = NaN;
   CurrentTrendDegree: Integer = 1;
-  CurrentTrigPolyDegree: Integer = 0;
-
-procedure SetCurrentPeriod(AValue: Double);
-begin
-  CurrentPeriod := AValue;
-end;
+  CurrentPeriods: TDouble3Array = (NaN, NaN, NaN);
+  CurrentTrigPolyDegrees: TInt3Array = (0, 0, 0);
 
 procedure SetCurrentTrendDegree(AValue: Integer);
 begin
   CurrentTrendDegree := AValue;
 end;
 
-procedure SetCurrentTrigPolyDegree(AValue: Integer);
+procedure SetCurrentPeriods(const AValue: TDouble3Array);
 begin
-  CurrentTrigPolyDegree := AValue;
+  CurrentPeriods := AValue;
 end;
 
-function GetFitParams(out AFrequency: Double; out ATrendDegree, ATrigPolyDegree: Integer): Boolean;
+procedure SetCurrentTrigPolyDegrees(const AValue: TInt3Array);
+begin
+  CurrentTrigPolyDegrees := AValue;
+end;
+
+function GetFitParams(out ATrendDegree: Integer; out ATrigPolyDegrees: TInt3Array; out AFrequencies: TDouble3Array): Boolean;
 var
-  F: TFormFitparams;
+  Edit: TEdit;
+  F: TFormFitParams;
+  I: Integer;
 begin
   Result := False;
   F := TFormFitparams.Create(Application);
   try
-    F.EditPeriod.Text := '';
-    F.EditTrigPolyDegree.Text := '';
-    if not IsNan(CurrentPeriod) then F.EditPeriod.Text := FloatToStr(CurrentPeriod);
     F.EditTrendDegree.Text := IntToStr(CurrentTrendDegree);
-    F.EditTrigPolyDegree.Text := IntToStr(CurrentTrigPolyDegree);
+    for I := 0 to Length(CurrentPeriods) - 1 do begin
+      Edit := F.FindComponent('EditPeriod' + IntToStr(I+1)) as TEdit;
+      if not IsNan(CurrentPeriods[I]) then
+        Edit.Text := FloatToStr(CurrentPeriods[I])
+      else
+        Edit.Text := '';
+      Edit := F.FindComponent('EditTrigDeg' + IntToStr(I+1)) as TEdit;
+      Edit.Text := IntToStr(CurrentTrigPolyDegrees[I]);
+    end;
     F.ShowModal;
     if F.ModalResult <> mrOK then
       Exit;
-    CurrentPeriod := F.FPeriod;
     CurrentTrendDegree := F.FTrendDegree;
-    CurrentTrigPolyDegree := F.FTrigPolyDegree;
-    if CurrentTrigPolyDegree > 0 then
-      AFrequency := 1.0 / CurrentPeriod
-    else
-      AFrequency := NaN;
+    CurrentPeriods := F.FPeriods;
+    CurrentTrigPolyDegrees := F.FTrigPolyDegrees;
+    for I := 0 to Length(CurrentPeriods) - 1 do begin
+      if CurrentTrigPolyDegrees[I] > 0 then
+        AFrequencies[I] := 1.0 / CurrentPeriods[I]
+      else
+        AFrequencies[I] := NaN;
+    end;
     ATrendDegree := CurrentTrendDegree;
-    ATrigPolyDegree := CurrentTrigPolyDegree;
+    ATrigPolyDegrees := CurrentTrigPolyDegrees;
   finally
     FreeAndNil(F);
   end;
@@ -100,23 +120,35 @@ end;
 
 procedure TFormFitparams.ButtonOkClick(Sender: TObject);
 var
-  Period: Double;
-  TrendDegree, TrigPolyDegree: Integer;
+  Edit: TEdit;
+  Lab: TLabel;
+  Periods: TDouble3Array;
+  TrigPolyDegrees: TInt3Array;
+  TrendDegree: Integer;
+  I: Integer;
 begin
   ModalResult := mrNone;
   if not GetFieldValue(EditTrendDegree, 0, 50, LabelTrendDegree.Caption, TrendDegree) then
     Exit;
-  if not GetFieldValue(EditTrigPolyDegree, 0, 25, LabelTrigPolyDegree.Caption, TrigPolyDegree) then
-    Exit;
-  if (TrigPolyDegree > 0) then begin
-    if not GetFieldValue(EditPeriod, 0.000001, NaN, LabelPeriod.Caption, Period) then
-      Exit;
-  end
-  else
-    Period := NaN;
-  FPeriod := Period;
+  for I := 0 to Length(FPeriods) - 1 do begin
+    Edit := FindComponent('EditPeriod' + IntToStr(I+1)) as TEdit;
+    Lab := FindComponent('LabelPeriod' + IntToStr(I+1)) as TLabel;
+    if Trim(Edit.Text) <> '' then begin
+      if not GetFieldValue(Edit, 0.000001, NaN, Lab.Caption, Periods[I]) then
+        Exit;
+      Edit := FindComponent('EditTrigDeg' + IntToStr(I+1)) as TEdit;
+      Lab := FindComponent('LabelTrigDeg' + IntToStr(I+1)) as TLabel;
+      if not GetFieldValue(Edit, 0, 25, Lab.Caption, TrigPolyDegrees[I]) then
+        Exit;
+    end
+    else begin
+      Periods[I] := NaN;
+      TrigPolyDegrees[I] := 0;
+    end;
+  end;
   FTrendDegree := TrendDegree;
-  FTrigPolyDegree := TrigPolyDegree;
+  FPeriods := Periods;
+  FTrigPolyDegrees := TrigPolyDegrees;
   ModalResult := mrOK;
 end;
 
