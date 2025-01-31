@@ -7,7 +7,7 @@ unit unitDFTparamDialog;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, IniFiles;
 
 type
 
@@ -46,6 +46,12 @@ procedure SetCurrentFrequencyResolution(AValue: Double);
 procedure SetCurrentTrendDegree(AValue: Integer);
 
 procedure SetCurrentTrigPolyDegree(AValue: Integer);
+
+function IsResolutionDefined: Boolean;
+
+procedure SaveParameters(const Ini: TCustomIniFile; const Section: string);
+
+procedure LoadParameters(const Ini: TCustomIniFile; const Section: string);
 
 function GetDFTparams(out AFrequencyMin, AFrequencyMax, AFrequencyResolution: Double; out ATrendDegree, ATrigPolyDegree: Integer): Boolean;
 
@@ -86,6 +92,29 @@ end;
 procedure SetCurrentTrigPolyDegree(AValue: Integer);
 begin
   CurrentTrigPolyDegree := AValue;
+end;
+
+function IsResolutionDefined: Boolean;
+begin
+  Result := not IsNan(CurrentFrequencyResolution);
+end;
+
+procedure SaveParameters(const Ini: TCustomIniFile; const Section: string);
+begin
+  Ini.WriteFloat(Section, 'periodogram.freqmin', CurrentFrequencyMin);
+  Ini.WriteFloat(Section, 'periodogram.freqmax', CurrentFrequencyMax);
+  Ini.WriteFloat(Section, 'periodogram.resolution', CurrentFrequencyResolution);
+  Ini.WriteInteger(Section, 'periodogram.trenddegree', CurrentTrendDegree);
+  Ini.WriteInteger(Section, 'periodogram.trigpolydegree', CurrentTrigPolyDegree);
+end;
+
+procedure LoadParameters(const Ini: TCustomIniFile; const Section: string);
+begin
+  CurrentFrequencyMin := Ini.ReadFloat(Section, 'periodogram.freqmin', NaN);
+  CurrentFrequencyMax := Ini.ReadFloat(Section, 'periodogram.freqmax', NaN);
+  CurrentFrequencyResolution := Ini.ReadFloat(Section, 'periodogram.resolution', NaN);
+  CurrentTrendDegree := Ini.ReadInteger(Section, 'periodogram.trenddegree', 0);
+  CurrentTrigPolyDegree := Ini.ReadInteger(Section, 'periodogram.trigpolydegree', 1);
 end;
 
 function GetDFTparams(out AFrequencyMin, AFrequencyMax, AFrequencyResolution: Double; out ATrendDegree, ATrigPolyDegree: Integer): Boolean;

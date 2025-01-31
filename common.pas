@@ -41,6 +41,8 @@ function CalcResidualSquared(const Observations, Model: TFloatArray): Double;
 
 function FloatToStrLocaleIndependent(V: Double): string;
 
+function FloatToStrMod(V: Double): string;
+
 procedure CalcError(const S: string);
 
 function GetFieldValue(const Field: TEdit; Min, Max: Double; const FieldName: string; out V: Double): Boolean;
@@ -98,8 +100,24 @@ begin
 end;
 
 function FloatToStrLocaleIndependent(V: Double): string;
+var
+  F: TFormatSettings;
 begin
-  Str(V:0:15, Result);
+  GetLocaleFormatSettings(0409, F);
+  if Abs(V) > 0.0000001 then
+    Result := FloatToStrF(V, ffFixed, 0, 15, F)
+  else
+    Result := FloatToStr(V, F);
+end;
+
+function FloatToStrMod(V: Double): string;
+begin
+  if Abs(V) > 0.0000001 then
+    Result := FloatToStrF(V, ffFixed, 0, 15)
+  else
+    Result := FloatToStr(V);
+  if V >= 0 then
+    Result := ' ' + Result;
 end;
 
 procedure PolyFitSolutionToFormula(ATrendDegree: Integer;
@@ -111,7 +129,7 @@ procedure PolyFitSolutionToFormula(ATrendDegree: Integer;
 var
   I, N, Idx, Idx2: Integer;
   Sign: string;
-  S: string;
+  S, S2: string;
 begin
   Formula := '';
   Info := ' Coefficients'^M^J;
@@ -122,7 +140,7 @@ begin
     else
       Sign := ' + ';
     Formula := Formula + Sign + FloatToStrLocaleIndependent(Abs(solution_vector[I]));
-    Info := Info + Trim(Sign) + FloatToStrLocaleIndependent(Abs(solution_vector[I]));
+    Info := Info + FloatToStrMod(solution_vector[I]);
     if I > 0 then begin
       Formula := Formula + ' * (t-timeZeroPoint)**' + IntToStr(I);
       Info := Info + ' * (t-timeZeroPoint)^' + IntToStr(I);
@@ -137,12 +155,13 @@ begin
       for I := 1 to ATrigPolyDegrees[N] do begin
         Idx := Idx2 + 2 * (I - 1);
         S := '2*math.pi*' + FloatToStrLocaleIndependent(I * AFrequencies[N]) + '*(t-timeZeroPoint)';
+        S2 := '2*math.pi*' + FloatToStrMod(I * AFrequencies[N]) + '*(t-timeZeroPoint)';
         if solution_vector[Idx] < 0 then Sign := ' - ' else Sign := ' + ';
         Formula := Formula + Sign + FloatToStrLocaleIndependent(Abs(solution_vector[Idx]))     + ' * math.cos(' + S + ')';
-        Info := Info + Trim(Sign) + FloatToStrLocaleIndependent(Abs(solution_vector[Idx])) + ' * cos(' + S + ')' + ^M^J;
+        Info := Info + FloatToStrMod(solution_vector[Idx]) + ' * cos(' + S + ')' + ^M^J;
         if solution_vector[Idx + 1] < 0 then Sign := ' - ' else Sign := ' + ';
         Formula := Formula + Sign + FloatToStrLocaleIndependent(Abs(solution_vector[Idx + 1])) + ' * math.sin(' + S + ') \' + ^M^J;
-        Info := Info + Trim(Sign) + FloatToStrLocaleIndependent(Abs(solution_vector[Idx + 1])) + ' * sin(' + S + ')' + ^M^J;
+        Info := Info + FloatToStrMod(solution_vector[Idx + 1]) + ' * sin(' + S + ')' + ^M^J;
       end;
       Idx2 := Idx2 + 2 * ATrigPolyDegrees[N];
     end;

@@ -7,7 +7,8 @@ unit unitFitParamDialog;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, common;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, IniFiles,
+  common;
 
 type
 
@@ -48,6 +49,10 @@ procedure SetCurrentPeriods(const AValue: TDouble3Array);
 
 procedure SetCurrentTrigPolyDegrees(const AValue: TInt3Array);
 
+procedure SaveParameters(const Ini: TCustomIniFile; const Section: string);
+
+procedure LoadParameters(const Ini: TCustomIniFile; const Section: string);
+
 function GetFitParams(out ATrendDegree: Integer; out ATrigPolyDegrees: TInt3Array; out AFrequencies: TDouble3Array): Boolean;
 
 implementation
@@ -75,6 +80,28 @@ end;
 procedure SetCurrentTrigPolyDegrees(const AValue: TInt3Array);
 begin
   CurrentTrigPolyDegrees := AValue;
+end;
+
+procedure SaveParameters(const Ini: TCustomIniFile; const Section: string);
+var
+  I: Integer;
+begin
+  Ini.WriteInteger(Section, 'fit.trenddegree', CurrentTrendDegree);
+  for I := 0 to Length(CurrentPeriods) - 1 do
+    Ini.WriteFloat(Section, 'fit.period' + IntToStr(I + 1), CurrentPeriods[I]);
+  for I := 0 to Length(CurrentTrigPolyDegrees) - 1 do
+    Ini.WriteInteger(Section, 'fit.trigpolydegree' + IntToStr(I + 1), CurrentTrigPolyDegrees[I]);
+end;
+
+procedure LoadParameters(const Ini: TCustomIniFile; const Section: string);
+var
+  I: Integer;
+begin
+  CurrentTrendDegree := Ini.ReadInteger(Section, 'fit.trenddegree', 1);
+  for I := 0 to Length(CurrentPeriods) - 1 do
+    CurrentPeriods[I] := Ini.ReadFloat(Section, 'fit.period' + IntToStr(I + 1), NaN);
+  for I := 0 to Length(CurrentTrigPolyDegrees) - 1 do
+    CurrentTrigPolyDegrees[I] := Ini.ReadInteger(Section, 'fit.trigpolydegree' + IntToStr(I + 1), 0);
 end;
 
 function GetFitParams(out ATrendDegree: Integer; out ATrigPolyDegrees: TInt3Array; out AFrequencies: TDouble3Array): Boolean;

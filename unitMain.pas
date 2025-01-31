@@ -80,6 +80,8 @@ type
     procedure UpdateTitle;
     procedure CloseFile;
     procedure OpenFile(const AFileName: string);
+    procedure SaveDataSettings;
+    procedure LoadDataSettings;
     procedure PlotData;
     procedure PlotFolded;
     procedure PlotFoldedSimple;
@@ -106,7 +108,7 @@ implementation
 uses
   Windows, math, TAChartUtils, unitPhaseDialog, unitFitParamDialog,
   unitDFTparamDialog, unitDFTdialog, unitDFT, unitTableDialog, unitModelInfoDialog,
-  dftThread, dataio;
+  dftThread, dataio, inifiles;
 
 { TFormMain }
 
@@ -177,6 +179,7 @@ end;
 procedure TFormMain.ActionInvertedYExecute(Sender: TObject);
 begin
   Chart1.AxisList[0].Inverted := not Chart1.AxisList[0].Inverted;
+  SaveDataSettings;
 end;
 
 procedure TFormMain.ActionList1Update(AAction: TBasicAction; var Handled: Boolean);
@@ -297,7 +300,50 @@ begin
   for I := 0 to Length(X) - 1 do begin
     ListChartSourceData.Add(X[I], Y[I]);
   end;
+  LoadDataSettings;
   PlotData;
+end;
+
+procedure TFormMain.LoadDataSettings;
+var
+  Ini: TMemIniFile;
+begin
+  try
+    Ini := TMemIniFile.Create(FFileName + '.lcv.props');
+    try
+      unitFitParamDialog.LoadParameters(Ini, 'SETTINGS');
+      unitDFTparamDialog.LoadParameters(Ini, 'SETTINGS');
+      Chart1.AxisList[0].Inverted := Ini.ReadBool('SETTINGS', 'Yinverted', True);
+    finally
+      FreeAndNil(Ini);
+    end;
+  except
+    on E: Exception do begin
+      ShowMessage(E.Message);
+    end;
+  end;
+end;
+
+procedure TFormMain.SaveDataSettings;
+var
+  Ini: TMemIniFile;
+begin
+  try
+    Ini := TMemIniFile.Create(FFileName + '.lcv.props');
+    try
+      Ini.EraseSection('SETTINGS');
+      unitFitParamDialog.SaveParameters(Ini, 'SETTINGS');
+      unitDFTparamDialog.SaveParameters(Ini, 'SETTINGS');
+      Ini.WriteBool('SETTINGS', 'Yinverted', Chart1.AxisList[0].Inverted);
+      Ini.UpdateFile;
+    finally
+      FreeAndNil(Ini);
+    end;
+  except
+    on E: Exception do begin
+      ShowMessage(E.Message);
+    end;
+  end;
 end;
 
 procedure TFormMain.PlotData;
@@ -446,6 +492,7 @@ var
   Frequencies: TDouble3Array;
   meanTime: Double;
   fitXmin, fitXmax, fitXstep: Double;
+  nfit: Integer;
   Xfit, Yfit: TFloatArray;
   Item: PChartDataItem;
   I: Integer;
@@ -458,6 +505,7 @@ begin
   if ListChartSourceData.Count > 0 then begin
     if not GetFitParams(TrendDegree, TrigPolyDegrees, Frequencies) then
       Exit;
+    SaveDataSettings;
     Chart1LineSeriesModel.Source := nil;
     SetLength(X, ListChartSourceData.Count);
     SetLength(Y, ListChartSourceData.Count);
@@ -489,13 +537,24 @@ begin
     for I := 0 to Length(X) - 1 do begin
       FFitAtPoints[2][I] := Y[I];
     end;
-    FFitFormula := 'timeZeroPoint = ' + FloatToStrLocaleIndependent(meanTime) + ^M^J^M^J + 'def f(t):' + ^M^J + ' return \' + ^M^J + FFitFormula + ^M^J;
-    FFitFormula := 'import math'^M^J + FFitFormula;
-    FFitFormula := 'import matplotlib.pyplot as plt'^M^J + FFitFormula;
-    FFitFormula := 'import numpy as np'^M^J^M^J + FFitFormula;
-    FFitFormula := '# Python'^M^J^M^J + FFitFormula;
-    FFitInfo := FFitInfo + ^M^J + 'timeZeroPoint = ' + FloatToStr(meanTime) + ^M^J;
-    FFitInfo := FFitInfo + ^M^J + '(O - C)^2 = ' + FloatToStr(CalcResidualSquared(FFitAtPoints[2], FFitAtPoints[1]));
+    nfit := Ceil((fitXmax - fitXmin) / fitXstep);
+    FFitFormula := '# Python'^M^J^M^J +
+                   'import numpy as np'^M^J +
+                   'import math'^M^J +
+                   'import matplotlib.pyplot as plt'^M^J^M^J +
+                   'timeZeroPoint = ' + FloatToStrLocaleIndependent(meanTime) + ^M^J^M^J +
+                   'def f(t):' + ^M^J + ' return \' + ^M^J +
+                   FFitFormula + ^M^J^M^J +
+                   't_min = ' + FloatToStrLocaleIndependent(meanTime + fitXmin) + ^M^J +
+                   't_max = ' + FloatToStrLocaleIndependent(meanTime + fitXmin + nfit * fitXstep) + ^M^J +
+                   'n = ' + IntToStr(nfit + 1) + ^M^J +
+                   't = np.linspace(t_min, t_max, n)' + ^M^J +
+                   'v = np.array(list(map(f, t)))' + ^M^J +
+                   'plt.plot(t, v)' + ^M^J +
+                   'plt.show()' + ^M^J;
+
+    FFitInfo := FFitInfo + ^M^J + 'timeZeroPoint = ' + Trim(FloatToStrMod(meanTime)) + ^M^J;
+    FFitInfo := FFitInfo + ^M^J + '(O - C)^2 = ' + Trim(FloatToStrMod(CalcResidualSquared(FFitAtPoints[2], FFitAtPoints[1])));
 
     ListChartSourceModel.Clear;
     ListChartSourceFoldedModel.Clear;
@@ -531,11 +590,13 @@ begin
       params.Y[I] := Item^.Y;
     end;
     if FPeriodogramFirstRun then begin
-      unitdftparamdialog.SetCurrentFrequencyResolution(0.05 / (MaxValue(params.X) - MinValue(params.X)));
+      if not unitDftParamDialog.IsResolutionDefined then
+        unitDftParamDialog.SetCurrentFrequencyResolution(0.05 / (MaxValue(params.X) - MinValue(params.X)));
       FPeriodogramFirstRun := False;
     end;
     if not GetDFTparams(params.FrequencyMin, params.FrequencyMax, params.FrequencyResolution, params.TrendDegree, params.TrigPolyDegree) then
       Exit;
+    SaveDataSettings;
     CloseDFTdialog;
     params.Error := '';
     t0 := Now;
