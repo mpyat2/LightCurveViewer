@@ -313,6 +313,7 @@ begin
     try
       unitFitParamDialog.LoadParameters(Ini, 'SETTINGS');
       unitDFTparamDialog.LoadParameters(Ini, 'SETTINGS');
+      unitPhaseDialog.LoadParameters(Ini, 'SETTINGS');
       Chart1.AxisList[0].Inverted := Ini.ReadBool('SETTINGS', 'Yinverted', True);
     finally
       FreeAndNil(Ini);
@@ -334,6 +335,7 @@ begin
       Ini.EraseSection('SETTINGS');
       unitFitParamDialog.SaveParameters(Ini, 'SETTINGS');
       unitDFTparamDialog.SaveParameters(Ini, 'SETTINGS');
+      unitPhaseDialog.SaveParameters(Ini, 'SETTINGS');
       Ini.WriteBool('SETTINGS', 'Yinverted', Chart1.AxisList[0].Inverted);
       Ini.UpdateFile;
     finally
@@ -426,6 +428,7 @@ var
   Item: PChartDataItem;
   Period, Epoch, X, Y, Phase: Double;
 begin
+  SaveDataSettings;
   StatusBar1.Panels[0].Text := '';
   StatusBar1.Panels[1].Text := '';
   if (ListChartSourceData.Count > 0) then begin
@@ -497,15 +500,15 @@ var
   Item: PChartDataItem;
   I: Integer;
 begin
-  FFitFormula := '';
-  FFitInfo := '';
-  FFitAtPoints[0] := nil;
-  FFitAtPoints[1] := nil;
-  FFitAtPoints[2] := nil;
   if ListChartSourceData.Count > 0 then begin
     if not GetFitParams(TrendDegree, TrigPolyDegrees, Frequencies) then
       Exit;
     SaveDataSettings;
+    FFitFormula := '';
+    FFitInfo := '';
+    FFitAtPoints[0] := nil;
+    FFitAtPoints[1] := nil;
+    FFitAtPoints[2] := nil;
     Chart1LineSeriesModel.Source := nil;
     SetLength(X, ListChartSourceData.Count);
     SetLength(Y, ListChartSourceData.Count);

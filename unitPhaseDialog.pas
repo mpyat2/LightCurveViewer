@@ -7,7 +7,8 @@ unit unitPhaseDialog;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, math;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, IniFiles,
+  math;
 
 type
   TApplyPhasePlotParams = procedure of object;
@@ -40,6 +41,10 @@ type
 function CalculatePhase(T, Period, Epoch: Double): Double; inline;
 
 procedure PhasePlot(ApplyPhasePlotParamsProc: TApplyPhasePlotParams);
+
+procedure SaveParameters(const Ini: TCustomIniFile; const Section: string);
+
+procedure LoadParameters(const Ini: TCustomIniFile; const Section: string);
 
 procedure SetCurrentEpoch(E: Double);
 
@@ -99,6 +104,18 @@ begin
   finally
     FreeAndNil(F);
   end;
+end;
+
+procedure SaveParameters(const Ini: TCustomIniFile; const Section: string);
+begin
+  Ini.WriteFloat(Section, 'phaseplot.period', CurrentPeriod);
+  Ini.WriteFloat(Section, 'phaseplot.epoch', CurrentEpoch);
+end;
+
+procedure LoadParameters(const Ini: TCustomIniFile; const Section: string);
+begin
+  CurrentPeriod := Ini.ReadFloat(Section, 'phaseplot.period', CurrentPeriod);
+  CurrentEpoch := Ini.ReadFloat(Section, 'phaseplot.epoch', CurrentEpoch);
 end;
 
 { TFormPhaseDialog }
