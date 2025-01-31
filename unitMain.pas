@@ -493,6 +493,9 @@ var
   TrendDegree: Integer;
   TrigPolyDegrees: TInt3Array;
   Frequencies: TDouble3Array;
+  NofParameters: Integer;
+  n_points: Integer;
+  OCsquared: Double;
   meanTime: Double;
   fitXmin, fitXmax, fitXstep: Double;
   nfit: Integer;
@@ -518,7 +521,8 @@ begin
       Y[I] := Item^.Y;
     end;
     meanTime := Mean(X);
-    for I := 0 to Length(X) - 1 do begin
+    n_points := Length(X);
+    for I := 0 to n_points - 1 do begin
       X[I] := X[I] - meanTime;
     end;
     fitXmin := MinValue(X);
@@ -532,15 +536,23 @@ begin
         Exit;
       end;
     end;
-    SetLength(FFitAtPoints[0], Length(X));
-    for I := 0 to Length(X) - 1 do begin
+    SetLength(FFitAtPoints[0], n_points);
+    for I := 0 to n_points - 1 do begin
       FFitAtPoints[0][I] := X[I] + meanTime;
     end;
-    SetLength(FFitAtPoints[2], Length(X));
-    for I := 0 to Length(X) - 1 do begin
+    SetLength(FFitAtPoints[2], n_points);
+    for I := 0 to n_points - 1 do begin
       FFitAtPoints[2][I] := Y[I];
     end;
+
+    NofParameters := 1 + TrendDegree;
+      for I := 0 to Length(TrigPolyDegrees) - 1 do
+        NofParameters := NofParameters + TrigPolyDegrees[I] * 2;
+
     nfit := Ceil((fitXmax - fitXmin) / fitXstep);
+
+    OCsquared := CalcResidualSquared(FFitAtPoints[2], FFitAtPoints[1]);
+
     FFitFormula := '# Python'^M^J^M^J +
                    'import numpy as np'^M^J +
                    'import math'^M^J +
@@ -556,8 +568,11 @@ begin
                    'plt.plot(t, v)' + ^M^J +
                    'plt.show()' + ^M^J;
 
-    FFitInfo := FFitInfo + ^M^J + 'timeZeroPoint = ' + Trim(FloatToStrMod(meanTime)) + ^M^J;
-    FFitInfo := FFitInfo + ^M^J + '(O - C)^2 = ' + Trim(FloatToStrMod(CalcResidualSquared(FFitAtPoints[2], FFitAtPoints[1])));
+    FFitInfo := FFitInfo + ^M^J + 'timeZeroPoint = ' + Trim(FloatToStrMod(meanTime)) + ^M^J^M^J;
+    FFitInfo := FFitInfo + '(O - C)^2 = ' + Trim(FloatToStrMod(OCsquared)) + ^M^J^M^J;
+    FFitInfo := FFitInfo + 'Number of data points = ' + IntToStr(n_points) + ^M^J;
+    FFitInfo := FFitInfo + 'Number of parameters = ' + IntToStr(NofParameters) + ^M^J;
+    FFitInfo := FFitInfo + 'sigma = ' + Trim(FloatToStrMod(Power(OCsquared * Double(NofParameters) / Double(n_points) / Double(n_points - NofParameters), 0.5))) + ^M^J;
 
     ListChartSourceModel.Clear;
     ListChartSourceFoldedModel.Clear;

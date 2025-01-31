@@ -142,7 +142,7 @@ object FormMain: TFormMain
       end
     end
     object MenuItemTools: TMenuItem
-      Caption = '&Tools'
+      Caption = '&Analyses'
       object MenuItem2: TMenuItem
         Action = ActionPeriodogram
       end
