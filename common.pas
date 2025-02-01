@@ -19,7 +19,6 @@ type
 // initialized. fit must be allocated.
 procedure PolyFit(const Xarray: TFloatArray;
                   const Yarray: TFloatArray;
-                  nu: Double;
                   ATrendDegree: Integer;
                   ATrigPolyDegree: Integer;
                   const a: TFloatArray;
@@ -84,7 +83,6 @@ procedure PolyFitSolution(const Xarray: TFloatArray;
 var
   ndata: Integer;
   term: typ.ArbInt;
-  I, II, Idx: Integer;
 begin
   ndata := Length(Xarray);
   SetLength(solution_vector, NofParameters);
@@ -229,7 +227,6 @@ end;
 // initialized. fit must be allocated.
 procedure PolyFit(const Xarray: TFloatArray;
                   const Yarray: TFloatArray;
-                  nu: Double;
                   ATrendDegree: Integer;
                   ATrigPolyDegree: Integer;
                   const a: TFloatArray;
@@ -238,7 +235,6 @@ var
   ndata: Integer;
   angle: Double;
   solution_vector: TFloatArray;
-  I, II, Idx, Idx2: Integer;
   NofParameters: Integer;
 begin
   NofParameters := 1 + ATrendDegree + ATrigPolyDegree * 2;
