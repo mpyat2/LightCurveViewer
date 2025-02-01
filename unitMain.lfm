@@ -41,6 +41,8 @@ object FormMain: TFormMain
     )
     Toolset = ChartToolset1
     Align = alClient
+    OnMouseEnter = Chart1MouseEnter
+    OnMouseLeave = Chart1MouseLeave
     OnMouseMove = Chart1MouseMove
     object Chart1LineSeriesModel: TLineSeries
       LinePen.Color = clRed
@@ -116,8 +118,14 @@ object FormMain: TFormMain
     Top = 48
     object MenuFile: TMenuItem
       Caption = '&File'
-      object MenuItem1: TMenuItem
+      object MenuItemOpen: TMenuItem
         Action = ActionOpen
+      end
+      object MenuItemSaveVisible: TMenuItem
+        Action = ActionSaveVisible
+      end
+      object Separator2: TMenuItem
+        Caption = '-'
       end
       object MenuItemExit: TMenuItem
         Action = ActionExit
@@ -134,20 +142,29 @@ object FormMain: TFormMain
       object MenuItemPhasePlot: TMenuItem
         Action = ActionPhasePlot
       end
+      object MenuItemObservations: TMenuItem
+        Action = ActionObservations
+      end
       object Separator1: TMenuItem
         Caption = '-'
       end
-      object MenuItem3: TMenuItem
+      object MenuItemApproximationInfo: TMenuItem
         Action = ActionModelInfo
       end
     end
-    object MenuItemTools: TMenuItem
+    object MenuAnalyses: TMenuItem
       Caption = '&Analyses'
-      object MenuItem2: TMenuItem
+      object MenuItemPeriodogram: TMenuItem
         Action = ActionPeriodogram
       end
       object MenuItemPolyFit: TMenuItem
         Action = ActionPolyFit
+      end
+    end
+    object MenuHelp: TMenuItem
+      Caption = '&Help'
+      object MenuItemAbout: TMenuItem
+        Action = ActionAbout
       end
     end
   end
@@ -213,12 +230,27 @@ object FormMain: TFormMain
       Hint = 'Show Approximation Info'
       OnExecute = ActionModelInfoExecute
     end
+    object ActionAbout: TAction
+      Category = 'Help'
+      Caption = '&About...'
+      OnExecute = ActionAboutExecute
+    end
+    object ActionObservations: TAction
+      Category = 'View'
+      Caption = 'Show &Observations...'
+      OnExecute = ActionObservationsExecute
+    end
+    object ActionSaveVisible: TAction
+      Category = 'File'
+      Caption = 'Save Visible Data As...'
+      OnExecute = ActionSaveVisibleExecute
+    end
   end
   object OpenDialog1: TOpenDialog
     Title = ''
-    DefaultExt = '.tsv'
-    Filter = 'Text files (*.tsv,*.dat,*.txt)|*.tsv;*.dat;*.txt|All files (*.*)|*.*'
-    Options = [ofFileMustExist, ofEnableSizing, ofViewDetail]
+    DefaultExt = '.txt'
+    Filter = 'Text files (*.txt,*.tsv,*.dat)|*.txt;*.tsv;*.dat|All files (*.*)|*.*'
+    Options = [ofPathMustExist, ofFileMustExist, ofEnableSizing, ofViewDetail]
     Left = 80
     Top = 232
   end
@@ -275,5 +307,12 @@ object FormMain: TFormMain
     object ChartToolset1PanDragTool1: TPanDragTool
       Shift = [ssRight]
     end
+  end
+  object SaveDialog1: TSaveDialog
+    DefaultExt = '.txt'
+    Filter = 'Text files (*.txt,*.tsv,*.dat)|*.txt;*.tsv;*.dat|All files (*.*)|*.*'
+    Options = [ofOverwritePrompt, ofPathMustExist, ofEnableSizing, ofViewDetail]
+    Left = 79
+    Top = 300
   end
 end

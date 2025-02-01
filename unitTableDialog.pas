@@ -8,7 +8,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Grids, Menus, ActnList,
-  common;
+  ExtCtrls, StdCtrls, common;
 
 type
 
@@ -18,9 +18,11 @@ type
     ActionSelectAll: TAction;
     ActionAll: TAction;
     ActionList1: TActionList;
+    Button1: TButton;
     DrawGrid1: TDrawGrid;
     MenuItem1: TMenuItem;
     MenuItemCopy: TMenuItem;
+    Panel1: TPanel;
     PopupMenu1: TPopupMenu;
     procedure ActionAllExecute(Sender: TObject);
     procedure ActionSelectAllExecute(Sender: TObject);
@@ -68,6 +70,7 @@ end;
 procedure TFormTable.FormCreate(Sender: TObject);
 begin
   DrawGrid1.OnDrawCell := @GridDrawCell;
+  DrawGrid1.ColWidths[0] := 40;
 end;
 
 procedure TFormTable.ActionAllExecute(Sender: TObject);
@@ -113,7 +116,10 @@ begin
         Result := FloatToStr(FX[Idx])
       else
       if C = DrawGrid1.FixedCols + 1 then
-        Result := FloatToStr(FY[Idx]);
+        Result := FloatToStr(FY[Idx])
+      else
+      if C = DrawGrid1.FixedCols - 1 then
+        Result := Format('%8d', [Idx + 1]);
     end;
   end;
 end;

@@ -7,15 +7,18 @@ unit unitMain;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Menus, ActnList,
-  ComCtrls, TAGraph, TASources, TASeries, TACustomSource, TATools, DoLongOp,
-  common;
+  Classes, SysUtils, IniFiles, Forms, Controls, Graphics, Dialogs, Menus,
+  ActnList, ComCtrls, TAGraph, TASources, TASeries, TACustomSource, TATools,
+  DoLongOp, common;
 
 type
 
   { TFormMain }
 
   TFormMain = class(TForm)
+    ActionSaveVisible: TAction;
+    ActionObservations: TAction;
+    ActionAbout: TAction;
     ActionModelInfo: TAction;
     ActionPolyFit: TAction;
     ActionPeriodogram: TAction;
@@ -39,18 +42,24 @@ type
     ListChartSourceData: TListChartSource;
     MainMenu1: TMainMenu;
     MenuFile: TMenuItem;
-    MenuItem1: TMenuItem;
-    MenuItem2: TMenuItem;
-    MenuItem3: TMenuItem;
+    MenuItemSaveVisible: TMenuItem;
+    MenuItemOpen: TMenuItem;
+    MenuItemPeriodogram: TMenuItem;
+    MenuItemApproximationInfo: TMenuItem;
+    MenuHelp: TMenuItem;
+    MenuItemAbout: TMenuItem;
+    MenuItemObservations: TMenuItem;
+    SaveDialog1: TSaveDialog;
     Separator1: TMenuItem;
     MenuItemPolyFit: TMenuItem;
-    MenuItemTools: TMenuItem;
+    MenuAnalyses: TMenuItem;
     MenuItemRawData: TMenuItem;
     MenuItemPhasePlot: TMenuItem;
     MenuItemInvertedY: TMenuItem;
     MenuView: TMenuItem;
     MenuItemExit: TMenuItem;
     OpenDialog1: TOpenDialog;
+    Separator2: TMenuItem;
     StatusBar1: TStatusBar;
     ToolBar1: TToolBar;
     ToolButton1: TToolButton;
@@ -58,9 +67,11 @@ type
     ToolButton3: TToolButton;
     ToolButton4: TToolButton;
     ToolButton5: TToolButton;
-    procedure ActionInvertedYExecute(Sender: TObject);
     procedure ActionList1Update(AAction: TBasicAction; var Handled: Boolean);
+    procedure ActionAboutExecute(Sender: TObject);
+    procedure ActionInvertedYExecute(Sender: TObject);
     procedure ActionModelInfoExecute(Sender: TObject);
+    procedure ActionObservationsExecute(Sender: TObject);
     procedure ActionOpenExecute(Sender: TObject);
     procedure ActionExitExecute(Sender: TObject);
     procedure ActionPeriodogramExecute(Sender: TObject);
@@ -68,6 +79,9 @@ type
     procedure ActionPhasePlotSimpleExecute(Sender: TObject);
     procedure ActionPolyFitExecute(Sender: TObject);
     procedure ActionRawDataExecute(Sender: TObject);
+    procedure ActionSaveVisibleExecute(Sender: TObject);
+    procedure Chart1MouseEnter(Sender: TObject);
+    procedure Chart1MouseLeave(Sender: TObject);
     procedure Chart1MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure FormCreate(Sender: TObject);
   private
@@ -80,8 +94,10 @@ type
     procedure UpdateTitle;
     procedure CloseFile;
     procedure OpenFile(const AFileName: string);
+    procedure SaveFileAs(const AFileName: string; const X, Y: TFloatArray);
     procedure SaveDataSettings;
     procedure LoadDataSettings;
+    procedure SaveChartSettings(const Ini: TIniFile; const Section: string);
     procedure PlotData;
     procedure PlotFolded;
     procedure PlotFoldedSimple;
@@ -107,8 +123,8 @@ implementation
 
 uses
   Windows, math, TAChartUtils, unitPhaseDialog, unitFitParamDialog,
-  unitDFTparamDialog, unitDFTdialog, unitDFT, unitTableDialog, unitModelInfoDialog,
-  dftThread, dataio, inifiles;
+  unitDFTparamDialog, unitDFTdialog, unitDFT, unitTableDialog,
+  unitModelInfoDialog, dftThread, dataio, unitAbout;
 
 { TFormMain }
 
@@ -140,6 +156,16 @@ begin
     on E: Exception do
       StatusBar1.Panels[0].Text := '';
   end;
+end;
+
+procedure TFormMain.Chart1MouseEnter(Sender: TObject);
+begin
+  //
+end;
+
+procedure TFormMain.Chart1MouseLeave(Sender: TObject);
+begin
+  StatusBar1.Panels[0].Text := '';
 end;
 
 procedure TFormMain.ActionPeriodogramExecute(Sender: TObject);
@@ -176,10 +202,93 @@ begin
   end;
 end;
 
+procedure TFormMain.ActionSaveVisibleExecute(Sender: TObject);
+
+  function ValInRange(V: Double; Range1, Range2: Double): Boolean;
+  begin
+    Result := (V >= Min(Range1, Range2)) and (V <= Max(Range1, Range2));
+  end;
+
+var
+  X1, Y1: TFloatArray;
+  ItemX, ItemY: Double;
+  Item: PChartDataItem;
+  N, I: Integer;
+begin
+  if ListChartSourceData.Count > 0 then begin
+    SetLength(X1, ListChartSourceData.Count);
+    SetLength(Y1, ListChartSourceData.Count);
+    N := 0;
+    for I := 0 to ListChartSourceData.Count - 1 do begin
+      Item := ListChartSourceData.Item[I];
+      ItemX := Item^.X;
+      ItemY := Item^.Y;
+      if ValInRange(ItemX, Chart1.CurrentExtent.a.X, Chart1.CurrentExtent.b.X) and
+         ValInRange(ItemY, Chart1.CurrentExtent.a.Y, Chart1.CurrentExtent.b.Y) then
+      begin
+        X1[N] := ItemX;
+        Y1[N] := ItemY;
+        Inc(N);
+      end;
+    end;
+    SetLength(X1, N);
+    SetLength(Y1, N);
+    //ShowTable(X1, Y1, 'X', 'Y');
+    SaveDialog1.InitialDir := SaveDialog1.InitialDir;
+    SaveDialog1.FileName := '';
+    if SaveDialog1.Execute then begin
+      SaveFileAs(SaveDialog1.FileName, X1, Y1);
+    end;
+  end;
+end;
+
 procedure TFormMain.ActionInvertedYExecute(Sender: TObject);
 begin
   Chart1.AxisList[0].Inverted := not Chart1.AxisList[0].Inverted;
   SaveDataSettings;
+end;
+
+procedure TFormMain.ActionAboutExecute(Sender: TObject);
+begin
+  About;
+end;
+
+procedure TFormMain.ActionModelInfoExecute(Sender: TObject);
+var
+  X1, Y1: TFloatArray;
+  Item: PChartDataItem;
+  I: Integer;
+begin
+  if ListChartSourceModel.Count > 0 then begin
+    SetLength(X1, ListChartSourceModel.Count);
+    SetLength(Y1, ListChartSourceModel.Count);
+    for I := 0 to ListChartSourceModel.Count - 1 do begin
+      Item := ListChartSourceModel.Item[I];
+      X1[I] := Item^.X;
+      Y1[I] := Item^.Y;
+    end;
+    ShowModelInfo(FFitInfo, FFitFormula,
+                  X1, Y1,
+                  FFitAtPoints[0], FFitAtPoints[1], FFitAtPoints[2]);
+  end;
+end;
+
+procedure TFormMain.ActionObservationsExecute(Sender: TObject);
+var
+  X1, Y1: TFloatArray;
+  Item: PChartDataItem;
+  I: Integer;
+begin
+  if ListChartSourceData.Count > 0 then begin
+    SetLength(X1, ListChartSourceData.Count);
+    SetLength(Y1, ListChartSourceData.Count);
+    for I := 0 to ListChartSourceData.Count - 1 do begin
+      Item := ListChartSourceData.Item[I];
+      X1[I] := Item^.X;
+      Y1[I] := Item^.Y;
+    end;
+    ShowTable(X1, Y1, 'X', 'Y');
+  end;
 end;
 
 procedure TFormMain.ActionList1Update(AAction: TBasicAction; var Handled: Boolean);
@@ -213,26 +322,14 @@ begin
   else
   if AAction = ActionModelInfo then begin
     (AAction as TAction).Enabled := ListChartSourceModel.Count > 0;
-  end;
-end;
-
-procedure TFormMain.ActionModelInfoExecute(Sender: TObject);
-var
-  X1, Y1: TFloatArray;
-  Item: PChartDataItem;
-  I: Integer;
-begin
-  if ListChartSourceModel.Count > 0 then begin
-    SetLength(X1, ListChartSourceModel.Count);
-    SetLength(Y1, ListChartSourceModel.Count);
-    for I := 0 to ListChartSourceModel.Count - 1 do begin
-      Item := ListChartSourceModel.Item[I];
-      X1[I] := Item^.X;
-      Y1[I] := Item^.Y;
-    end;
-    ShowModelInfo(FFitInfo, FFitFormula,
-                  X1, Y1,
-                  FFitAtPoints[0], FFitAtPoints[1], FFitAtPoints[2]);
+  end
+  else
+  if AAction = ActionObservations then begin
+    (AAction as TAction).Enabled := ListChartSourceData.Count > 0;
+  end
+  else
+  if AAction = ActionSaveVisible then begin
+    (AAction as TAction).Enabled := ListChartSourceData.Count > 0;
   end;
 end;
 
@@ -283,7 +380,7 @@ var
 begin
   CloseFile;
   try
-     ReadData(AFileName, X, Y);
+    ReadData(AFileName, X, Y);
   except
     on E: Exception do begin
       ShowMessage(E.Message);
@@ -291,9 +388,14 @@ begin
     end;
   end;
   if Length(X) < 1 then begin
-    ShowMessage('No data read');
+    ShowMessage('No data read. Aborted.');
     Exit;
   end;
+  if Length(X) < 2 then begin
+    ShowMessage('Only one data point read. Aborted.');
+    Exit;
+  end;
+
   FFileName := AFileName;
   UpdateTitle;
   unitPhaseDialog.SetCurrentEpoch((MaxValue(X) + MinValue(X)) / 2.0);
@@ -302,6 +404,32 @@ begin
   end;
   LoadDataSettings;
   PlotData;
+end;
+
+procedure TFormMain.SaveFileAs(const AFileName: string; const X, Y: TFloatArray);
+var
+  PropsFileName: string;
+  Ini: TIniFile;
+begin
+  try
+    PropsFileName := AFileName + '.lcv.props';
+    WriteData(AFileName, X, Y);
+    if FileExists(PropsFileName) then begin
+      if not SysUtils.DeleteFile(PropsFileName) then
+        ShowMessage('Cannot delete ' + PropsFileName);
+    end;
+    Ini := TMemIniFile.Create(PropsFileName);
+    try
+      SaveChartSettings(Ini, 'SETTINGS');
+    finally
+      FreeAndNil(Ini);
+    end;
+  except
+    on E: Exception do begin
+      ShowMessage(E.Message);
+      Exit;
+    end;
+  end;
 end;
 
 procedure TFormMain.LoadDataSettings;
@@ -336,7 +464,7 @@ begin
       unitFitParamDialog.SaveParameters(Ini, 'SETTINGS');
       unitDFTparamDialog.SaveParameters(Ini, 'SETTINGS');
       unitPhaseDialog.SaveParameters(Ini, 'SETTINGS');
-      Ini.WriteBool('SETTINGS', 'Yinverted', Chart1.AxisList[0].Inverted);
+      SaveChartSettings(Ini, 'SETTINGS');
       Ini.UpdateFile;
     finally
       FreeAndNil(Ini);
@@ -346,6 +474,11 @@ begin
       ShowMessage(E.Message);
     end;
   end;
+end;
+
+procedure TFormMain.SaveChartSettings(const Ini: TIniFile; const Section: string);
+begin
+  Ini.WriteBool(Section, 'Yinverted', Chart1.AxisList[0].Inverted);
 end;
 
 procedure TFormMain.PlotData;
@@ -367,8 +500,6 @@ end;
 
 procedure TFormMain.PlotFolded;
 begin
-  //StatusBar1.Panels[0].Text := '';
-  //StatusBar1.Panels[1].Text := '';
   PhasePlot(@CalcAndPlotFoldedProc);
 end;
 
@@ -487,6 +618,22 @@ begin
 end;
 
 procedure TFormMain.DoPolyFit;
+
+  function FitStepFromFrequencies(Freq: TDouble3Array): Double;
+  var
+    I: Integer;
+    F: Double;
+  begin
+    Result := NaN;
+    F := NaN;
+    for I := 0 to Length(Freq) - 1 do begin
+      if IsNan(F) or (not IsNan(Freq[I]) and (Freq[I] > F)) then
+        F := Freq[I];
+    end;
+    if not IsNan(F) and (F > 0) then
+      Result := 1.0 / F * 0.01;
+  end;
+
 var
   X: TFloatArray;
   Y: TFloatArray;
@@ -525,9 +672,18 @@ begin
     for I := 0 to n_points - 1 do begin
       X[I] := X[I] - meanTime;
     end;
+
     fitXmin := MinValue(X);
     fitXmax := MaxValue(X);
-    fitXstep := (fitXmax - fitXmin) / (ListChartSourceData.Count * 3);
+    fitXstep := FitStepFromFrequencies(Frequencies);
+    if IsNan(fitXstep) then
+      fitXstep := (fitXmax - fitXmin) / (ListChartSourceData.Count * 3);
+    nfit := Ceil((fitXmax - fitXmin) / fitXstep);
+    if nfit > 100000 then begin
+      nfit := 100000;
+      fitXstep := (fitXmax - fitXmin) / nfit;
+    end;
+
     try
       PolyFit(X, Y, TrendDegree, TrigPolyDegrees, Frequencies, fitXmin, fitXmax, fitXstep, Xfit, Yfit, FFitAtPoints[1], FFitFormula, FFitInfo);
     except
@@ -548,8 +704,6 @@ begin
     NofParameters := 1 + TrendDegree;
       for I := 0 to Length(TrigPolyDegrees) - 1 do
         NofParameters := NofParameters + TrigPolyDegrees[I] * 2;
-
-    nfit := Ceil((fitXmax - fitXmin) / fitXstep);
 
     OCsquared := CalcResidualSquared(FFitAtPoints[2], FFitAtPoints[1]);
 

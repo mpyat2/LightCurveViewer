@@ -14,8 +14,7 @@ uses
   Interfaces, // this includes the LCL widgetset
   Forms, tachartlazaruspkg, unitMain, dataio, unitPhaseDialog, unitDFTdialog,
   unitDFTparamDialog, unitDFT, DoLongOp, dftThread, common,
-  unitFitParamDialog, unitTableDialog, unitModelInfoDialog
-  { you can add units after this };
+  unitFitParamDialog, unitTableDialog, unitModelInfoDialog, unitAbout;
 
 {$R *.res}
 
