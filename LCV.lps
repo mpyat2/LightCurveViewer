@@ -8,8 +8,7 @@
       <Unit>
         <Filename Value="LCV.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="5"/>
         <CursorPos X="37" Y="15"/>
         <UsageCount Value="203"/>
         <Loaded Value="True"/>
@@ -20,8 +19,8 @@
         <ComponentName Value="FormMain"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <TopLine Value="660"/>
-        <CursorPos X="5" Y="682"/>
+        <TopLine Value="613"/>
+        <CursorPos X="12" Y="622"/>
         <UsageCount Value="203"/>
         <Bookmarks Count="2">
           <Item0 X="3" Y="262" ID="2"/>
@@ -33,10 +32,11 @@
       <Unit>
         <Filename Value="dataio.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="49"/>
-        <CursorPos X="10" Y="73"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="59"/>
+        <CursorPos Y="65"/>
         <UsageCount Value="203"/>
+        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="unitPhaseDialog.pas"/>
@@ -74,7 +74,7 @@
       <Unit>
         <Filename Value="unitDFT.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="4"/>
         <TopLine Value="405"/>
         <CursorPos X="23" Y="422"/>
         <UsageCount Value="157"/>
@@ -102,7 +102,7 @@
       <Unit>
         <Filename Value="common.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="3"/>
         <TopLine Value="18"/>
         <CursorPos Y="22"/>
         <UsageCount Value="186"/>
@@ -132,10 +132,13 @@
         <ComponentName Value="FormTable"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="40"/>
-        <CursorPos X="41" Y="122"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="58"/>
+        <CursorPos X="31" Y="73"/>
         <UsageCount Value="157"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="unitModelInfoDialog.pas"/>
@@ -451,74 +454,6 @@
     <JumpHistory HistoryIndex="29">
       <Position>
         <Filename Value="unitMain.pas"/>
-        <Caret Line="681" TopLine="657"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="682" TopLine="657"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="676" TopLine="657"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="677" TopLine="657"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="678" TopLine="657"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="626" TopLine="608"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="627" TopLine="608"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="628" TopLine="608"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="629" TopLine="608"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="630" TopLine="608"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="631" TopLine="608"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="629" TopLine="608"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="630" TopLine="608"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="629" TopLine="608"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="630" TopLine="608"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="629" TopLine="608"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="633" TopLine="608"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
         <Caret Line="634" Column="30" TopLine="608"/>
       </Position>
       <Position>
@@ -567,6 +502,74 @@
       </Position>
       <Position>
         <Filename Value="LCV.lpr"/>
+      </Position>
+      <Position>
+        <Filename Value="unitMain.pas"/>
+        <Caret Line="684" Column="17" TopLine="663"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="65" TopLine="59"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="66" TopLine="59"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="67" TopLine="59"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="68" TopLine="59"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="69" TopLine="59"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="70" TopLine="59"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="71" TopLine="59"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="72" TopLine="59"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="73" TopLine="59"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="74" TopLine="59"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="75" TopLine="59"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="76" TopLine="59"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="77" TopLine="59"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="75" TopLine="59"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="90" TopLine="62"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="78" Column="21" TopLine="63"/>
       </Position>
     </JumpHistory>
     <RunParams>

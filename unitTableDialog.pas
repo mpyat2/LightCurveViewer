@@ -70,7 +70,7 @@ end;
 procedure TFormTable.FormCreate(Sender: TObject);
 begin
   DrawGrid1.OnDrawCell := @GridDrawCell;
-  DrawGrid1.ColWidths[0] := 40;
+  DrawGrid1.ColWidths[0] := 64;
 end;
 
 procedure TFormTable.ActionAllExecute(Sender: TObject);

@@ -75,7 +75,7 @@ begin
         for I := 0 to Lines.Count - 1 do begin
           S := Trim(Lines[I]);
           if (S = '') or (S[1] = '#') or (Pos(#127, S) > 0) then
-            Break;
+            Continue;
           // DelimitedText treats repeating spaces (including tabs) as one delimiter.
           // To workaround this, use a spercial character.
           Line.DelimitedText := StringReplace(S, ^I, #127, [rfReplaceAll]);
