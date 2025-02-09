@@ -37,6 +37,7 @@ type
     ChartToolset1: TChartToolset;
     ChartToolset1PanDragTool1: TPanDragTool;
     ChartToolset1ZoomDragTool1: TZoomDragTool;
+    ChartToolset1ZoomMouseWheelTool1: TZoomMouseWheelTool;
     ImageList1: TImageList;
     ListChartSourceModel: TListChartSource;
     ListChartSourceFoldedModel: TListChartSource;
@@ -629,10 +630,10 @@ begin
   Chart1.Extent.XMax := MaxV;
   Chart1.Extent.UseXMin := True;
   Chart1.Extent.UseXMax := True;
-  Chart1.AxisList[1].Marks.Range.Min := MinV;
-  Chart1.AxisList[1].Marks.Range.Max := MaxV;
-  Chart1.AxisList[1].Marks.Range.UseMin := True;
-  Chart1.AxisList[1].Marks.Range.UseMax := True;
+  //Chart1.AxisList[1].Marks.Range.Min := MinV;
+  //Chart1.AxisList[1].Marks.Range.Max := MaxV;
+  //Chart1.AxisList[1].Marks.Range.UseMin := True;
+  //Chart1.AxisList[1].Marks.Range.UseMax := True;
 
   MinV := Ymin;
   MaxV := Ymax;
@@ -645,10 +646,10 @@ begin
   Chart1.Extent.YMax := MaxV;
   Chart1.Extent.UseYMin := True;
   Chart1.Extent.UseYMax := True;
-  Chart1.AxisList[0].Marks.Range.Min := MinV;
-  Chart1.AxisList[0].Marks.Range.Max := MaxV;
-  Chart1.AxisList[0].Marks.Range.UseMin := True;
-  Chart1.AxisList[0].Marks.Range.UseMax := True;
+  //Chart1.AxisList[0].Marks.Range.Min := MinV;
+  //Chart1.AxisList[0].Marks.Range.Max := MaxV;
+  //Chart1.AxisList[0].Marks.Range.UseMin := True;
+  //Chart1.AxisList[0].Marks.Range.UseMax := True;
 end;
 
 procedure TFormMain.DoPolyFit;

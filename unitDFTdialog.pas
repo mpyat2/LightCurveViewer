@@ -27,6 +27,7 @@ type
     ChartToolset1DataPointClickTool1: TDataPointClickTool;
     ChartToolset1PanDragTool1: TPanDragTool;
     ChartToolset1ZoomDragTool1: TZoomDragTool;
+    ChartToolset1ZoomMouseWheelTool1: TZoomMouseWheelTool;
     DrawGrid1: TDrawGrid;
     EditPeriod: TEdit;
     EditPower: TEdit;

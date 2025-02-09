@@ -328,7 +328,10 @@ object FormMain: TFormMain
       Brush.Style = bsClear
     end
     object ChartToolset1PanDragTool1: TPanDragTool
-      Shift = [ssRight]
+      Shift = [ssCtrl, ssRight]
+    end
+    object ChartToolset1ZoomMouseWheelTool1: TZoomMouseWheelTool
+      ZoomFactor = 0.95
     end
   end
   object SaveDialog1: TSaveDialog
