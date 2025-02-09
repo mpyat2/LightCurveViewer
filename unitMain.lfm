@@ -45,7 +45,8 @@ object FormMain: TFormMain
     OnMouseLeave = Chart1MouseLeave
     OnMouseMove = Chart1MouseMove
     object Chart1LineSeriesModel: TLineSeries
-      LinePen.Color = clRed
+      LinePen.Color = clLime
+      LinePen.Width = 2
     end
     object Chart1LineSeriesData: TLineSeries
       LineType = ltNone
@@ -151,6 +152,18 @@ object FormMain: TFormMain
       object MenuItemApproximationInfo: TMenuItem
         Action = ActionModelInfo
       end
+      object Separator3: TMenuItem
+        Caption = '-'
+      end
+      object MenuItemShowSeries: TMenuItem
+        Caption = 'Show Series'
+        object MenuItemShowData: TMenuItem
+          Action = ActionShowData
+        end
+        object MenuItemShowModel: TMenuItem
+          Action = ActionShowModel
+        end
+      end
     end
     object MenuAnalyses: TMenuItem
       Caption = '&Analyses'
@@ -244,6 +257,16 @@ object FormMain: TFormMain
       Category = 'File'
       Caption = 'Save Visible Data As...'
       OnExecute = ActionSaveVisibleExecute
+    end
+    object ActionShowData: TAction
+      Category = 'View'
+      Caption = 'Show Data'
+      OnExecute = ActionShowDataExecute
+    end
+    object ActionShowModel: TAction
+      Category = 'View'
+      Caption = 'Show Model'
+      OnExecute = ActionShowModelExecute
     end
   end
   object OpenDialog1: TOpenDialog

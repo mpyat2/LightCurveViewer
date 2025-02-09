@@ -7,7 +7,8 @@ unit unitDFTparamDialog;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, IniFiles;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, IniFiles,
+  common;
 
 type
 
@@ -16,23 +17,29 @@ type
   TFormDFTparams = class(TForm)
     ButtonOk: TButton;
     ButtonCancel: TButton;
+    EditRecommendedResolution: TEdit;
     EditTrendDegree: TEdit;
     EditTrigPolyDegree: TEdit;
     EditFrequencyMin: TEdit;
     EditFrequencyMax: TEdit;
     EditFrequencyResolution: TEdit;
+    LabelRecommendedResolution: TLabel;
     LabelTrendDegree: TLabel;
     LabelTrigPolyDegree: TLabel;
     LabelFrequencyMin: TLabel;
     LabelFrequencyMax: TLabel;
     LabelFrequencyResolution: TLabel;
     procedure ButtonOkClick(Sender: TObject);
+    procedure EditTrigPolyDegreeChange(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure UpdateRecommendedResolution;
   private
     FFrequencyMin: Double;
     FFrequencyMax: Double;
     FFrequencyResolution: Double;
     FTrendDegree: Integer;
     FTrigPolyDegree: Integer;
+    Xdata: TFloatArray;
   public
 
   end;
@@ -47,20 +54,22 @@ procedure SetCurrentTrendDegree(AValue: Integer);
 
 procedure SetCurrentTrigPolyDegree(AValue: Integer);
 
+function GetCurrentTrigPolyDegree: Integer;
+
 function IsResolutionDefined: Boolean;
 
 procedure SaveParameters(const Ini: TCustomIniFile; const Section: string);
 
 procedure LoadParameters(const Ini: TCustomIniFile; const Section: string);
 
-function GetDFTparams(out AFrequencyMin, AFrequencyMax, AFrequencyResolution: Double; out ATrendDegree, ATrigPolyDegree: Integer): Boolean;
+function GetDFTparams(const Xdata: TFloatArray; out AFrequencyMin, AFrequencyMax, AFrequencyResolution: Double; out ATrendDegree, ATrigPolyDegree: Integer): Boolean;
 
 implementation
 
 {$R *.lfm}
 
 uses
-  math, common;
+  math;
 
 var
   CurrentFrequencyMin: Double = NaN;
@@ -94,6 +103,11 @@ begin
   CurrentTrigPolyDegree := AValue;
 end;
 
+function GetCurrentTrigPolyDegree: Integer;
+begin
+  Result := CurrentTrigPolyDegree;
+end;
+
 function IsResolutionDefined: Boolean;
 begin
   Result := not IsNan(CurrentFrequencyResolution);
@@ -117,7 +131,7 @@ begin
   CurrentTrigPolyDegree := Ini.ReadInteger(Section, 'periodogram.trigpolydegree', 1);
 end;
 
-function GetDFTparams(out AFrequencyMin, AFrequencyMax, AFrequencyResolution: Double; out ATrendDegree, ATrigPolyDegree: Integer): Boolean;
+function GetDFTparams(const Xdata: TFloatArray; out AFrequencyMin, AFrequencyMax, AFrequencyResolution: Double; out ATrendDegree, ATrigPolyDegree: Integer): Boolean;
 var
   F: TFormDFTparams;
 begin
@@ -133,6 +147,7 @@ begin
     if not IsNan(CurrentFrequencyResolution) then F.EditFrequencyresolution.Text := FloatToStr(CurrentFrequencyResolution);
     F.EditTrendDegree.Text := IntToStr(CurrentTrendDegree);
     F.EditTrigPolyDegree.Text := IntToStr(CurrentTrigPolyDegree);
+    F.Xdata := Xdata;
     F.ShowModal;
     if F.ModalResult <> mrOK then
       Exit;
@@ -153,6 +168,29 @@ begin
 end;
 
 { TFormDFTparams }
+
+procedure TFormDFTparams.UpdateRecommendedResolution;
+var
+  Resolution: Double;
+  TrigPolyDegree: Integer;
+begin
+  if (Length(Xdata) > 0) and TryStrToInt(Trim(EditTrigPolyDegree.Text), TrigPolyDegree) and (TrigPolyDegree > 0) then begin
+    Resolution := GetRecommendedFrequencyResolution(MinValue(Xdata), MaxValue(Xdata), TrigPolyDegree);
+    EditRecommendedResolution.Text := FloatToStr(Resolution);
+  end
+  else
+    EditRecommendedResolution.Text := '';
+end;
+
+procedure TFormDFTparams.FormShow(Sender: TObject);
+begin
+  UpdateRecommendedResolution;
+end;
+
+procedure TFormDFTparams.EditTrigPolyDegreeChange(Sender: TObject);
+begin
+  UpdateRecommendedResolution;
+end;
 
 procedure TFormDFTparams.ButtonOkClick(Sender: TObject);
 var

@@ -15,6 +15,26 @@ type
   TInt3Array = array[0..2] of Integer;
   TDouble3Array = array[0..2] of Double;
 
+type
+  TXY = class
+    X, Y: Double;
+    constructor Create(AX, AY: Double);
+  end;
+
+type
+  TDouble = class
+    D: Double;
+    constructor Create(V: Double);
+  end;
+
+function CompareXY(Item1, Item2: Pointer): Integer;
+
+function CompareD(Item1, Item2: Pointer): Integer;
+
+function GetMedianInterval(A: TFloatArray): Double;
+
+function GetRecommendedFrequencyResolution(Xmin, Xmax: Double; TrigPolyDegree: Integer): Double;
+
 // It this vestion of PolyFit, the input array (a) must be allocated and
 // initialized. fit must be allocated.
 procedure PolyFit(const Xarray: TFloatArray;
@@ -38,11 +58,11 @@ procedure PolyFit(const Xarray: TFloatArray;
 
 function CalcResidualSquared(const Observations, Model: TFloatArray): Double;
 
+function StringToFloatLocaleIndependent(const S: string; out V: Double): Boolean;
+
 function FloatToStrLocaleIndependent(V: Double): string;
 
 function FloatToStrMod(V: Double): string;
-
-procedure CalcError(const S: string);
 
 function GetFieldValue(const Field: TEdit; Min, Max: Double; const FieldName: string; out V: Double): Boolean;
 
@@ -53,11 +73,101 @@ type
 
 function GetGridSelectionAsText(Grid: TDrawGrid; GetGridCell: TGetGridCell): string;
 
+procedure CalcError(const S: string);
+
 implementation
 
-procedure CalcError(const S: string);
+{ TXY }
+
+constructor TXY.Create(AX, AY: Double);
 begin
-  raise Exception.Create(S);
+  inherited Create;
+  X := AX;
+  Y := AY;
+end;
+
+function CompareXY(Item1, Item2: Pointer): Integer;
+begin
+  if TXY(Item1).X < TXY(Item2).X then
+    Result := -1
+  else
+  if TXY(Item1).X > TXY(Item2).X then
+    Result := 1
+  else
+    Result := 0;
+end;
+
+{ TDouble }
+
+constructor TDouble.Create(V: Double);
+begin
+  Self.D := V;
+end;
+
+function CompareD(Item1, Item2: Pointer): Integer;
+begin
+  if TDouble(Item1).D < TDouble(Item2).D then
+    Result := -1
+  else
+  if TDouble(Item1).D > TDouble(Item2).D then
+    Result := 1
+  else
+    Result := 0;
+end;
+
+function GetMedianInterval(A: TFloatArray): Double;
+var
+  DoubleList: TList;
+  Intervals: TList;
+  Interval: Double;
+  I: Integer;
+begin
+  Result := NaN;
+  if Length(A) < 1 then
+    Exit;
+  DoubleList := TList.Create;
+  try
+    for I := 0 to Length(A) - 1 do
+      DoubleList.Add(TDouble.Create(A[I]));
+    DoubleList.Sort(@CompareD);
+    Intervals := TList.Create;
+    try
+      for I := 1 to DoubleList.Count - 1 do begin
+        Interval := TDouble(DoubleList[I]).D - TDouble(DoubleList[I-1]).D;
+        if Interval > 0 then
+          Intervals.Add(TDouble.Create(Interval));
+      end;
+      if Intervals.Count = 0 then
+        Exit;
+      Intervals.Sort(@CompareD);
+      // Median
+      I := Intervals.Count div 2; // Central element
+      if Odd(Intervals.Count) then
+        Result := TDouble(Intervals[I]).D
+      else
+        Result := (TDouble(Intervals[I - 1]).D + TDouble(Intervals[I]).D) / 2;
+    finally
+      for I := Intervals.Count - 1 downto 0 do begin
+        TDouble(Intervals[I]).Free;
+        Intervals[I] := nil;
+      end;
+      FreeAndNil(Intervals);
+    end;
+  finally
+    for I := DoubleList.Count - 1 downto 0 do begin
+      TDouble(Doublelist[I]).Free;
+      Doublelist[I] := nil;
+    end;
+    FreeAndNil(DoubleList);
+  end;
+end;
+
+function GetRecommendedFrequencyResolution(Xmin, Xmax: Double; TrigPolyDegree: Integer): Double;
+begin
+  if (Xmax > Xmin) and (TrigPolyDegree > 0) then
+    Result := 0.05 / (Xmax - Xmin) / TrigPolyDegree
+  else
+    Result := NaN;
 end;
 
 function CalcResidualSquared(const Observations, Model: TFloatArray): Double;
@@ -95,6 +205,14 @@ begin
   else
     CalcError('"slegls" error: ' + IntToStr(term));
   end;
+end;
+
+function StringToFloatLocaleIndependent(const S: string; out V: Double): Boolean;
+var
+  Code: Integer;
+begin
+  Val(S, V, Code);
+  Result := Code = 0;
 end;
 
 function FloatToStrLocaleIndependent(V: Double): string;
@@ -414,6 +532,11 @@ begin
     end;
     Result := Result + S2 + ^M^J;
   end;
+end;
+
+procedure CalcError(const S: string);
+begin
+  raise Exception.Create(S);
 end;
 
 end.

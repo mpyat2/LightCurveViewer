@@ -163,6 +163,10 @@ begin
   inherited Create(True);
   FreeOnTerminate := False;  // after inherited Create!
   FThreadNo := ThreadNo;
+
+  if n_freq < 1 then
+    CalcError('Nothing to do!');
+
   Ft := t;
   Fmag := mag;
   Flowfreq := lowfreq;

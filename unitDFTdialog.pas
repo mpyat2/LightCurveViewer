@@ -50,6 +50,7 @@ type
       APoint: TPoint);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
     function GetGridCell(Grid: TDrawGrid; C, R: Integer): string;
     procedure GridDrawCell(Sender: TObject; aCol, aRow: Integer; aRect: TRect; aState: TGridDrawState);
@@ -57,50 +58,54 @@ type
 
   end;
 
-procedure PlotDFTresult(const Caption: string; const frequencies, periods, power: TFloatArray);
-procedure CloseDFTdialog;
+procedure PlotDFTresult(const Caption: string; const frequencies, power: TFloatArray);
+//procedure CloseDFTdialogs;
 
 implementation
 
 {$R *.lfm}
 
 uses
-  math, Clipbrd;
+  math, Clipbrd, Contnrs;
 
+//var
+//  FormDFTDialogList: TObjectList = nil;
+
+//procedure CloseDFTdialogs;
+//var
+//  I: Integer;
+//begin
+//  if FormDFTDialogList <> nil then begin
+//    for I := FormDFTDialogList.Count - 1 downto 0 do begin
+//      if FormDFTDialogList[I] is TForm then begin
+//        (FormDFTDialogList[I] as TForm).Close;
+//        FormDFTDialogList.Delete(I);
+//      end;
+//    end;
+//  end;
+//end;
+
+procedure PlotDFTresult(const Caption: string; const frequencies, power: TFloatArray);
 var
-  FormDFTDialog: TFormDFTDialog = nil;
-
-procedure CloseDFTdialog;
-begin
-  if FormDFTDialog <> nil then
-    FormDFTDialog.Close;
-end;
-
-procedure PlotDFTresult(const Caption: string; const frequencies, periods, power: TFloatArray);
-var
+  F: TFormDFTDialog;
   I: Integer;
 begin
-  FormDFTDialog := TFormDFTDialog.Create(Application);
+  F := TFormDFTDialog.Create(Application);
   try
-    FormDFTDialog.Caption := Caption;
-    //Chart1LineSeries2.Clear;
-    //Chart1LineSeries1.Clear;
-    //DrawGrid1.ClearSelections;
+    //FormDFTDialogList.Add(F);
+    F.Caption := Caption;
     for I := 0 to Length(frequencies) - 1 do begin
         if not IsNan(power[I]) then
-          FormDFTDialog.Chart1LineSeries1.AddXY(frequencies[I], power[I]);
+          F.Chart1LineSeries1.AddXY(frequencies[I], power[I]);
     end;
-    FormDFTDialog.DrawGrid1.ColCount := 2 + FormDFTDialog.DrawGrid1.FixedCols;
-    FormDFTDialog.DrawGrid1.RowCount := FormDFTDialog.DrawGrid1.FixedRows + 1;
-    if FormDFTDialog.Chart1LineSeries1.Count > 0 then
-      FormDFTDialog.DrawGrid1.RowCount := FormDFTDialog.Chart1LineSeries1.Count + FormDFTDialog.DrawGrid1.FixedRows;
-    //FormDFTDialog.DrawGrid1.Row := FormDFTDialog.DrawGrid1.FixedRows;
-    //FormDFTDialog.DrawGrid1.Col := FormDFTDialog.DrawGrid1.FixedCols;
+    F.DrawGrid1.ColCount := 2 + F.DrawGrid1.FixedCols;
+    F.DrawGrid1.RowCount := F.DrawGrid1.FixedRows + 1;
+    if F.Chart1LineSeries1.Count > 0 then
+      F.DrawGrid1.RowCount := F.Chart1LineSeries1.Count + F.DrawGrid1.FixedRows;
   except
-    FormDFTDialog.Release;
-    FormDFTDialog := nil;
+    F.Release;
   end;
-  FormDFTDialog.Show;
+  F.Show;
 end;
 
 { TFormDFTDialog }
@@ -108,6 +113,12 @@ end;
 procedure TFormDFTDialog.FormCreate(Sender: TObject);
 begin
   DrawGrid1.OnDrawCell := @GridDrawCell;
+end;
+
+procedure TFormDFTDialog.FormDestroy(Sender: TObject);
+begin
+  //FormDFTDialogList.Remove(Self);
+  //OutputDebugString('TFormDFTDialog.FormDestroy');
 end;
 
 procedure TFormDFTDialog.ActionGridCopyExecute(Sender: TObject);
@@ -216,8 +227,21 @@ end;
 procedure TFormDFTDialog.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   CloseAction := caFree;
-  FormDFTDialog := nil;
 end;
 
+//var
+//  I: Integer;
+//
+//initialization
+//  FormDFTDialogList := TObjectList.Create(False);
+//finalization
+//  if FormDFTDialogList <> nil then begin
+//    for I := FormDFTDialogList.Count - 1 downto 0 do begin
+//      if FormDFTDialogList[I] is TForm then begin
+//        (FormDFTDialogList[I] as TForm).Release;
+//      end;
+//    end;
+//    FreeAndNil(FormDFTDialogList);
+//  end;
 end.
 

@@ -16,6 +16,8 @@ type
   { TFormMain }
 
   TFormMain = class(TForm)
+    ActionShowModel: TAction;
+    ActionShowData: TAction;
     ActionSaveVisible: TAction;
     ActionObservations: TAction;
     ActionAbout: TAction;
@@ -42,6 +44,9 @@ type
     ListChartSourceData: TListChartSource;
     MainMenu1: TMainMenu;
     MenuFile: TMenuItem;
+    MenuItemShowData: TMenuItem;
+    MenuItemShowModel: TMenuItem;
+    MenuItemShowSeries: TMenuItem;
     MenuItemSaveVisible: TMenuItem;
     MenuItemOpen: TMenuItem;
     MenuItemPeriodogram: TMenuItem;
@@ -60,6 +65,7 @@ type
     MenuItemExit: TMenuItem;
     OpenDialog1: TOpenDialog;
     Separator2: TMenuItem;
+    Separator3: TMenuItem;
     StatusBar1: TStatusBar;
     ToolBar1: TToolBar;
     ToolButton1: TToolButton;
@@ -80,6 +86,8 @@ type
     procedure ActionPolyFitExecute(Sender: TObject);
     procedure ActionRawDataExecute(Sender: TObject);
     procedure ActionSaveVisibleExecute(Sender: TObject);
+    procedure ActionShowDataExecute(Sender: TObject);
+    procedure ActionShowModelExecute(Sender: TObject);
     procedure Chart1MouseEnter(Sender: TObject);
     procedure Chart1MouseLeave(Sender: TObject);
     procedure Chart1MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
@@ -242,6 +250,18 @@ begin
   end;
 end;
 
+procedure TFormMain.ActionShowDataExecute(Sender: TObject);
+begin
+  Chart1LineSeriesData.ShowLines := False;
+  Chart1LineSeriesData.ShowPoints := not Chart1LineSeriesData.ShowPoints;
+end;
+
+procedure TFormMain.ActionShowModelExecute(Sender: TObject);
+begin
+  Chart1LineSeriesModel.ShowPoints := False;
+  Chart1LineSeriesModel.ShowLines := not Chart1LineSeriesModel.ShowLines;
+end;
+
 procedure TFormMain.ActionInvertedYExecute(Sender: TObject);
 begin
   Chart1.AxisList[0].Inverted := not Chart1.AxisList[0].Inverted;
@@ -330,6 +350,16 @@ begin
   else
   if AAction = ActionSaveVisible then begin
     (AAction as TAction).Enabled := ListChartSourceData.Count > 0;
+  end
+  else
+  if AAction = ActionShowData then begin
+    (AAction as TAction).Enabled := ListChartSourceData.Count > 0;
+    (AAction as TAction).Checked := Chart1LineSeriesData.ShowPoints or Chart1LineSeriesData.ShowLines;
+  end
+  else
+  if AAction = ActionShowModel then begin
+    (AAction as TAction).Enabled := ListChartSourceModel.Count > 0;
+    (AAction as TAction).Checked := Chart1LineSeriesModel.ShowPoints or Chart1LineSeriesModel.ShowLines;
   end;
 end;
 
@@ -355,6 +385,10 @@ begin
   FPeriodogramFirstRun := True;
   Chart1LineSeriesData.Source := nil;
   Chart1LineSeriesModel.Source := nil;
+  Chart1LineSeriesData.ShowPoints := True;
+  Chart1LineSeriesData.ShowLines := False;
+  Chart1LineSeriesModel.ShowPoints := False;
+  Chart1LineSeriesModel.ShowLines := True;
   ListChartSourceData.Clear;
   ListChartSourceFoldedData.Clear;
   ListChartSourceModel.Clear;
@@ -370,7 +404,7 @@ begin
   unitFitParamDialog.SetCurrentTrendDegree(1);
   unitFitParamDialog.SetCurrentPeriods(tempDArray);
   unitFitParamDialog.SetCurrentTrigPolyDegrees(tempIArray);
-  CloseDFTdialog;
+  //CloseDFTdialogs;
 end;
 
 procedure TFormMain.OpenFile(const AFileName: string);
@@ -742,6 +776,9 @@ begin
     end
     else
       Chart1LineSeriesModel.Source := nil;
+
+    Chart1LineSeriesModel.ShowPoints := False;
+    Chart1LineSeriesModel.ShowLines := True;
   end;
 end;
 
@@ -751,6 +788,7 @@ var
   t0: TDateTime;
   params: TDCDFTparameters;
   Item: PChartDataItem;
+  Interval, Freq: Double;
   I: Integer;
 begin
   if ListChartSourceData.Count > 0 then begin
@@ -762,14 +800,24 @@ begin
       params.Y[I] := Item^.Y;
     end;
     if FPeriodogramFirstRun then begin
-      if not unitDftParamDialog.IsResolutionDefined then
-        unitDftParamDialog.SetCurrentFrequencyResolution(0.05 / (MaxValue(params.X) - MinValue(params.X)));
+      if not unitDftParamDialog.IsResolutionDefined then begin
+        unitDftParamDialog.SetCurrentFrequencyResolution(
+          GetRecommendedFrequencyResolution(MinValue(params.X), MaxValue(params.X), unitDftParamDialog.GetCurrentTrigPolyDegree));
+        unitDftParamDialog.SetCurrentFrequencyMin(0.0);
+        Interval := GetMedianInterval(params.X);
+        if not IsNan(Interval) and (Interval > 0) then begin
+          Freq := 1.0/Interval/2.0; // Approximate Nyquist
+          if Freq > 50.0 then
+            Freq := 50.0;
+          unitDftParamDialog.SetCurrentFrequencyMax(Freq);
+        end;
+      end;
       FPeriodogramFirstRun := False;
     end;
-    if not GetDFTparams(params.FrequencyMin, params.FrequencyMax, params.FrequencyResolution, params.TrendDegree, params.TrigPolyDegree) then
+    if not GetDFTparams(params.X, params.FrequencyMin, params.FrequencyMax, params.FrequencyResolution, params.TrendDegree, params.TrigPolyDegree) then
       Exit;
     SaveDataSettings;
-    CloseDFTdialog;
+    //CloseDFTdialogs;
     params.Error := '';
     t0 := Now;
     try
@@ -785,9 +833,12 @@ begin
       Exit;
     end;
     //ShowMessage('Done!');
-    DialogCaption := Format('Periodogram | Trend degree = %d; Trig. Polynomial Degree = %d | Time = %fs',
-                            [params.TrendDegree, params.TrigPolyDegree, (Now - t0) * 24 * 60 * 60]);
-    PlotDFTresult(DialogCaption, params.frequencies, params.periods, params.power);
+    DialogCaption := Format('Periodogram | Trend degree = %d; Trig. Polynomial Degree = %d | CalcTime = %fs | %s',
+                            [params.TrendDegree,
+                             params.TrigPolyDegree,
+                             (Now - t0) * 24 * 60 * 60,
+                             ExtractFileName(FFileName)]);
+    PlotDFTresult(DialogCaption, params.frequencies, params.power);
   end;
 end;
 

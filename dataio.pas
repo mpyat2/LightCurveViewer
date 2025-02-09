@@ -15,38 +15,6 @@ procedure WriteData(const AFileName: string; const X: TFloatArray; const Y: TFlo
 
 implementation
 
-function StringToFloat(const S: string; out F: Double): Boolean;
-var
-  Code: Integer;
-begin
-  Val(S, F, Code);
-  Result := Code = 0;
-end;
-
-type
-  TXY = class
-    X, Y: Double;
-    constructor Create(AX, AY: Double);
-  end;
-
-constructor TXY.Create(AX, AY: Double);
-begin
-  inherited Create;
-  X := AX;
-  Y := AY;
-end;
-
-function CompareXY(Item1, Item2: Pointer): Integer;
-begin
-  if TXY(Item1).X < TXY(Item2).X then
-    Result := -1
-  else
-  if TXY(Item1).X > TXY(Item2).X then
-    Result := 1
-  else
-    Result := 0;
-end;
-
 // Reads a text file assuming it contains columns of the floating-point values.
 // Only the first two columns are taken into account.
 // The empty lines and lines starting with '#' are ignored.
@@ -80,7 +48,7 @@ begin
           // To workaround this, use a spercial character.
           Line.DelimitedText := StringReplace(S, ^I, #127, [rfReplaceAll]);
           if Line.Count > 1 then begin
-            if StringToFloat(Line[0], FX) and StringToFloat(Line[1], FY) then begin
+            if StringToFloatLocaleIndependent(Line[0], FX) and StringToFloatLocaleIndependent(Line[1], FY) then begin
               TempXYlist.Add(TXY.Create(FX, FY));
               Inc(N);
             end;
