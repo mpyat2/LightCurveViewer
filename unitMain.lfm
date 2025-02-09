@@ -46,7 +46,6 @@ object FormMain: TFormMain
     OnMouseMove = Chart1MouseMove
     object Chart1LineSeriesModel: TLineSeries
       LinePen.Color = clLime
-      LinePen.Width = 2
     end
     object Chart1LineSeriesData: TLineSeries
       LineType = ltNone
