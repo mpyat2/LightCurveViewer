@@ -7,7 +7,7 @@ unit common;
 interface
 
 uses
-  Classes, SysUtils, StdCtrls, Dialogs, Grids, math, typ, sle;
+  Classes, SysUtils, StdCtrls, Dialogs, Grids, math, typ, omv, inv, sle;
 
 type
   PFloatArray = ^TFloatArray;
@@ -37,8 +37,7 @@ function GetRecommendedFrequencyResolution(Xmin, Xmax: Double; TrigPolyDegree: I
 
 // It this vestion of PolyFit, the input array (a) must be allocated and
 // initialized. fit must be allocated.
-procedure PolyFit(const Xarray: TFloatArray;
-                  const Yarray: TFloatArray;
+procedure PolyFit(const Yarray: TFloatArray;
                   ATrendDegree: Integer;
                   ATrigPolyDegree: Integer;
                   const a: TFloatArray;
@@ -185,8 +184,7 @@ begin
 end;
 
 // The input array (a) must be allocated and initialized.
-procedure PolyFitSolution(const Xarray: TFloatArray;
-                          const Yarray: TFloatArray;
+procedure PolyFitSolution(const Yarray: TFloatArray;
                           NofParameters: Integer;
                           const a: TFloatArray;
                           out solution_vector: TFloatArray);
@@ -194,7 +192,7 @@ var
   ndata: Integer;
   term: typ.ArbInt;
 begin
-  ndata := Length(Xarray);
+  ndata := Length(Yarray);
   SetLength(solution_vector, NofParameters);
   // solve for overdetermined matrices
   slegls(a[0], ndata, NofParameters, NofParameters, Yarray[0], solution_vector[0], term);
@@ -240,6 +238,7 @@ procedure PolyFitSolutionToFormula(ATrendDegree: Integer;
                                    ATrigPolyDegrees: TInt3Array;
                                    AFrequencies: TDouble3Array;
                                    const solution_vector: TFloatArray;
+                                   const solution_vector_errors: TFloatArray;
                                    out Formula: string;
                                    out Info: string);
 var
@@ -256,7 +255,7 @@ begin
     else
       Sign := ' + ';
     Formula := Formula + Sign + FloatToStrLocaleIndependent(Abs(solution_vector[I]));
-    Info := Info + FloatToStrMod(solution_vector[I]);
+    Info := Info + FloatToStrMod(solution_vector[I]) + ^I'[+-' + Trim(FloatToStrMod(solution_vector_errors[I])) + ']';
     if I > 0 then begin
       Formula := Formula + ' * (t-timeZeroPoint)**' + IntToStr(I);
       Info := Info + ' * (t-timeZeroPoint)^' + IntToStr(I);
@@ -274,10 +273,10 @@ begin
         S2 := '2*math.pi*' + FloatToStrMod(I * AFrequencies[N]) + '*(t-timeZeroPoint)';
         if solution_vector[Idx] < 0 then Sign := ' - ' else Sign := ' + ';
         Formula := Formula + Sign + FloatToStrLocaleIndependent(Abs(solution_vector[Idx]))     + ' * math.cos(' + S + ')';
-        Info := Info + FloatToStrMod(solution_vector[Idx]) + ' * cos(' + S + ')' + ^M^J;
+        Info := Info + FloatToStrMod(solution_vector[Idx]) + ^I'[+-' + Trim(FloatToStrMod(solution_vector_errors[Idx])) + ']'^I' * cos(' + S + ')' + ^M^J;
         if solution_vector[Idx + 1] < 0 then Sign := ' - ' else Sign := ' + ';
         Formula := Formula + Sign + FloatToStrLocaleIndependent(Abs(solution_vector[Idx + 1])) + ' * math.sin(' + S + ') \' + ^M^J;
-        Info := Info + FloatToStrMod(solution_vector[Idx + 1]) + ' * sin(' + S + ')' + ^M^J;
+        Info := Info + FloatToStrMod(solution_vector[Idx + 1]) + ^I'[+-' + Trim(FloatToStrMod(solution_vector_errors[Idx + 1])) + ']'^I' * sin(' + S + ')' + ^M^J;
       end;
       Idx2 := Idx2 + 2 * ATrigPolyDegrees[N];
     end;
@@ -343,21 +342,73 @@ end;
 
 // It this vestion of PolyFit, the input array (a) must be allocated and
 // initialized. fit must be allocated.
-procedure PolyFit(const Xarray: TFloatArray;
-                  const Yarray: TFloatArray;
+procedure PolyFit(const Yarray: TFloatArray;
                   ATrendDegree: Integer;
                   ATrigPolyDegree: Integer;
                   const a: TFloatArray;
                   var fit: TFloatArray);
 var
-  ndata: Integer;
-  angle: Double;
   solution_vector: TFloatArray;
   NofParameters: Integer;
 begin
   NofParameters := 1 + ATrendDegree + ATrigPolyDegree * 2;
-  PolyFitSolution(Xarray, Yarray, NofParameters, a, solution_vector);
+  PolyFitSolution(Yarray, NofParameters, a, solution_vector);
   CalculateFitAtPoints(a, solution_vector, ATrendDegree, ATrigPolyDegree, fit);
+end;
+
+procedure CalcCoefficientErrors(const Xmatrix: TFloatArray; // design matrix
+                                const Yvector: TFloatArray; // dependent variable
+                                const beta: TFloatArray;    // solution vector
+                                m: Integer;                 // number of equations  (rows in Xmatrix)
+                                n: Integer;                 // number of parameters (columns in Xmatrix)
+                                out Errors: TFloatArray     // errors of the coefficients beta
+                                );
+var
+  XmatrixTrans: TFloatArray;
+  XTX: TFloatArray;
+  YvectorPredicted: TFloatArray;
+  RSS, SigmaSq, TempV: Double;
+  C, R, Idx: Integer;
+  term: typ.ArbInt;
+begin
+  if (Length(Xmatrix) <> m * n) or (Length(Yvector) <> m) or (Length(beta) <> n) then
+    CalcError('Cannot calculate coefficients'' errors: invalid parameters');
+
+  SetLength(XmatrixTrans, Length(Xmatrix));
+  // XmatrixTrans is the transposed matrix
+  omvtrm(Xmatrix[0], m, n, n, XmatrixTrans[0], m);
+  // XTX is a product of the transposed and the original design matrix
+  SetLength(XTX, n * n);
+  omvmmm(XmatrixTrans[0], n, m, m, Xmatrix[0], n, n, XTX[0], n);
+  // Invert the symmetric XTX matrix
+  invgsy(n, n, XTX[0], term);
+  case term of
+    1: ; // successful completion, the solution vector x is valid
+    2: CalcError('"invgsy" error: ' + IntToStr(term) + ': the inverse could not be calculated because the input matrix is (almost) singular.');
+    3: CalcError('"invgsy" error: ' + IntToStr(term) + ': incorrect input data, n < 1.');
+  else
+    CalcError('"invgsy" error: ' + IntToStr(term));
+  end;
+
+  // Calculate the predicted Y vector
+  SetLength(YvectorPredicted, Length(Yvector));
+  for R := 0 to m - 1 do begin
+     YvectorPredicted[R] := 0.0;
+     for C := 0 to n - 1 do begin
+       Idx := R * n + C;
+       YvectorPredicted[R] := YvectorPredicted[R] + Xmatrix[Idx] * beta[C];
+     end;
+  end;
+  RSS := 0.0;
+  for R := 0 to m - 1 do begin
+    TempV := YvectorPredicted[R] - Yvector[R];
+    RSS := RSS + TempV * TempV;
+  end;
+  SigmaSq := RSS / (m - n);
+  SetLength(Errors, Length(beta));
+  for Idx := 0 to n - 1 do begin
+    Errors[Idx] := Sqrt(SigmaSq * XTX[Idx * n + Idx]);
+  end;
 end;
 
 procedure PolyFit(const Xarray: TFloatArray;
@@ -375,6 +426,7 @@ var
   nfit: Integer;
   a: TFloatArray;
   solution_vector: TFloatArray;
+  solution_vector_errors: TFloatArray;
   nu, angle, c, s: Double;
   x: Double;
   I, II, N, Idx, Idx2: Integer;
@@ -426,7 +478,7 @@ begin
     end;
   end;
 
-  PolyFitSolution(Xarray, Yarray, NofParameters, a, solution_vector);
+  PolyFitSolution(Yarray, NofParameters, a, solution_vector);
   SetLength(FitAtPoints, ndata);
   CalculateFitAtPointsExt(a, solution_vector, ATrendDegree, ATrigPolyDegrees, FitAtPoints);
 
@@ -458,7 +510,9 @@ begin
     end;
   end;
 
-  PolyFitSolutionToFormula(ATrendDegree, ATrigPolyDegrees, AFrequencies, solution_vector, Formula, Info);
+  CalcCoefficientErrors(a, Yarray, solution_vector, ndata, NofParameters, solution_vector_errors);
+
+  PolyFitSolutionToFormula(ATrendDegree, ATrigPolyDegrees, AFrequencies, solution_vector, solution_vector_errors, Formula, Info);
 end;
 
 function GetFieldValue(const Field: TEdit; Min, Max: Double; const FieldName: string; out V: Double): Boolean;

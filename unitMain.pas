@@ -16,6 +16,7 @@ type
   { TFormMain }
 
   TFormMain = class(TForm)
+    ActionCopyChart: TAction;
     ActionShowModel: TAction;
     ActionShowData: TAction;
     ActionSaveVisible: TAction;
@@ -45,6 +46,7 @@ type
     ListChartSourceData: TListChartSource;
     MainMenu1: TMainMenu;
     MenuFile: TMenuItem;
+    MenuItemCopyChart: TMenuItem;
     MenuItemShowData: TMenuItem;
     MenuItemShowModel: TMenuItem;
     MenuItemShowSeries: TMenuItem;
@@ -55,6 +57,7 @@ type
     MenuHelp: TMenuItem;
     MenuItemAbout: TMenuItem;
     MenuItemObservations: TMenuItem;
+    PopupMenuChart: TPopupMenu;
     SaveDialog1: TSaveDialog;
     Separator1: TMenuItem;
     MenuItemPolyFit: TMenuItem;
@@ -74,6 +77,7 @@ type
     ToolButton3: TToolButton;
     ToolButton4: TToolButton;
     ToolButton5: TToolButton;
+    procedure ActionCopyChartExecute(Sender: TObject);
     procedure ActionList1Update(AAction: TBasicAction; var Handled: Boolean);
     procedure ActionAboutExecute(Sender: TObject);
     procedure ActionInvertedYExecute(Sender: TObject);
@@ -366,6 +370,11 @@ begin
     //(AAction as TAction).Checked := Chart1LineSeriesModel.ShowPoints or Chart1LineSeriesModel.ShowLines;
     (AAction as TAction).Checked := Chart1LineSeriesModel.Active;
   end;
+end;
+
+procedure TFormMain.ActionCopyChartExecute(Sender: TObject);
+begin
+  Chart1.CopyToClipboard(TPortableNetworkGraphic);
 end;
 
 procedure TFormMain.UpdateTitle;

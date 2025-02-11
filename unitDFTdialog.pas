@@ -16,6 +16,7 @@ type
   { TFormDFTDialog }
 
   TFormDFTDialog = class(TForm)
+    ActionCopyChart: TAction;
     ActionGridSelectAll: TAction;
     ActionGridCopy: TAction;
     ActionList: TActionList;
@@ -37,12 +38,15 @@ type
     LabelPeriod: TLabel;
     MenuItem1: TMenuItem;
     MenuItem2: TMenuItem;
+    MenuItemCopyChart: TMenuItem;
     PageControl1: TPageControl;
     PanelChartControls: TPanel;
     PanelButtons: TPanel;
+    PopupMenuChart: TPopupMenu;
     PopupMenuGrid: TPopupMenu;
     TabSheetFrequencies: TTabSheet;
     TabSheetTable: TTabSheet;
+    procedure ActionCopyChartExecute(Sender: TObject);
     procedure ActionGridCopyExecute(Sender: TObject);
     procedure ActionGridSelectAllExecute(Sender: TObject);
     procedure ActionListUpdate(AAction: TBasicAction; var Handled: Boolean);
@@ -133,6 +137,11 @@ begin
   finally
     Screen.Cursor := CurrentCursor;
   end;
+end;
+
+procedure TFormDFTDialog.ActionCopyChartExecute(Sender: TObject);
+begin
+  Chart1.CopyToClipboard(TPortableNetworkGraphic);
 end;
 
 procedure TFormDFTDialog.ActionGridSelectAllExecute(Sender: TObject);

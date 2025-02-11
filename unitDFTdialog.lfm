@@ -50,11 +50,14 @@ object FormDFTDialog: TFormDFTDialog
             Minors = <>
             Title.LabelBrush.Style = bsClear
           end>
+        BackColor = clWhite
         Title.Text.Strings = (
           'TAChart'
         )
         Toolset = ChartToolset1
         Align = alClient
+        Color = clWhite
+        PopupMenu = PopupMenuChart
         object Chart1LineSeries1: TLineSeries
           LinePen.Color = clBlue
           LineType = ltNone
@@ -203,6 +206,11 @@ object FormDFTDialog: TFormDFTDialog
       OnExecute = ActionGridSelectAllExecute
       ShortCut = 16449
     end
+    object ActionCopyChart: TAction
+      Category = 'Chart'
+      Caption = 'Copy to Clipboard'
+      OnExecute = ActionCopyChartExecute
+    end
   end
   object ChartToolset1: TChartToolset
     Left = 128
@@ -220,6 +228,13 @@ object FormDFTDialog: TFormDFTDialog
     end
     object ChartToolset1ZoomMouseWheelTool1: TZoomMouseWheelTool
       ZoomFactor = 0.95
+    end
+  end
+  object PopupMenuChart: TPopupMenu
+    Left = 251
+    Top = 56
+    object MenuItemCopyChart: TMenuItem
+      Action = ActionCopyChart
     end
   end
 end

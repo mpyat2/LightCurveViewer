@@ -41,11 +41,14 @@ object FormMain: TFormMain
         Minors = <>
         Title.LabelBrush.Style = bsClear
       end>
+    BackColor = clWhite
     Title.Text.Strings = (
       'TAChart'
     )
     Toolset = ChartToolset1
     Align = alClient
+    Color = clWhite
+    PopupMenu = PopupMenuChart
     OnMouseEnter = Chart1MouseEnter
     OnMouseLeave = Chart1MouseLeave
     OnMouseMove = Chart1MouseMove
@@ -272,6 +275,11 @@ object FormMain: TFormMain
       Caption = 'Show Model'
       OnExecute = ActionShowModelExecute
     end
+    object ActionCopyChart: TAction
+      Category = 'Edit'
+      Caption = 'Copy to Clipboard'
+      OnExecute = ActionCopyChartExecute
+    end
   end
   object OpenDialog1: TOpenDialog
     Title = ''
@@ -344,5 +352,12 @@ object FormMain: TFormMain
     Options = [ofOverwritePrompt, ofPathMustExist, ofEnableSizing, ofViewDetail]
     Left = 79
     Top = 300
+  end
+  object PopupMenuChart: TPopupMenu
+    Left = 79
+    Top = 376
+    object MenuItemCopyChart: TMenuItem
+      Action = ActionCopyChart
+    end
   end
 end

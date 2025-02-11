@@ -275,7 +275,7 @@ begin
         end;
       end;
 
-      PolyFit(times, Fmag, FTrendDegree, FTrigPolyDegree, a, fit);
+      PolyFit(Fmag, FTrendDegree, FTrigPolyDegree, a, fit);
 
       for II := 0 to ndata - 1 do begin
         temp_mags[II] := Fmag[II] - fit[II];
@@ -423,7 +423,7 @@ begin
       end;
 
       SetLength(fit, ndata);
-      PolyFit(t, mag, TrendDegree, 0, a, fit);
+      PolyFit(mag, TrendDegree, 0, a, fit);
 
       for I := 0 to ndata - 1 do begin
         temp_mags[I] := mag[I] - fit[I];
