@@ -34,6 +34,7 @@ object FormDFTDialog: TFormDFTDialog
         AxisList = <        
           item
             Grid.Color = clSilver
+            Intervals.Tolerance = 1
             Marks.LabelBrush.Style = bsClear
             Minors = <>
             Title.LabelFont.Orientation = 900
@@ -43,6 +44,7 @@ object FormDFTDialog: TFormDFTDialog
             Grid.Color = clSilver
             Intervals.MaxLength = 200
             Intervals.MinLength = 100
+            Intervals.Tolerance = 1
             Alignment = calBottom
             Marks.LabelBrush.Style = bsClear
             Minors = <>

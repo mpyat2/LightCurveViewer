@@ -19,6 +19,8 @@ object FormMain: TFormMain
     AxisList = <    
       item
         Grid.Color = clSilver
+        Intervals.Options = [aipUseCount, aipUseMaxLength, aipUseMinLength, aipUseNiceSteps]
+        Intervals.Tolerance = 10
         Arrow.Inverted = True
         Inverted = True
         Marks.LabelBrush.Style = bsClear
@@ -28,9 +30,12 @@ object FormMain: TFormMain
       end    
       item
         Grid.Color = clSilver
+        Intervals.Count = 10
         Intervals.MaxLength = 200
-        Intervals.MinLength = 100
-        Intervals.NiceSteps = '0.1|1'
+        Intervals.MinLength = 80
+        Intervals.NiceSteps = '0.01|0.1|1'
+        Intervals.Options = [aipUseCount, aipUseMaxLength, aipUseMinLength, aipUseNiceSteps]
+        Intervals.Tolerance = 10
         Alignment = calBottom
         Marks.LabelBrush.Style = bsClear
         Minors = <>

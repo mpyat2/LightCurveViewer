@@ -113,7 +113,7 @@ type
     procedure PlotFoldedProc;
     procedure CalculateModelPhasePlot;
     procedure CalcAndPlotFoldedProc;
-    procedure SetAxisBoundaries(Xmin, Xmax, Ymin, Ymax: Double; ExpandX, ExpandY: Boolean);
+    procedure SetAxisBoundaries(Xmin, Xmax, Ymin, Ymax: Double);
     procedure Periodogram;
     procedure DoPolyFit;
     function DoDCDFT(params: Pointer; ProgressCaptionProc: TProgressCaptionProc): Integer;
@@ -253,14 +253,16 @@ end;
 
 procedure TFormMain.ActionShowDataExecute(Sender: TObject);
 begin
-  Chart1LineSeriesData.ShowLines := False;
-  Chart1LineSeriesData.ShowPoints := not Chart1LineSeriesData.ShowPoints;
+  //Chart1LineSeriesData.ShowLines := False;
+  //Chart1LineSeriesData.ShowPoints := not Chart1LineSeriesData.ShowPoints;
+  Chart1LineSeriesData.Active := not Chart1LineSeriesData.Active;
 end;
 
 procedure TFormMain.ActionShowModelExecute(Sender: TObject);
 begin
-  Chart1LineSeriesModel.ShowPoints := False;
-  Chart1LineSeriesModel.ShowLines := not Chart1LineSeriesModel.ShowLines;
+  //Chart1LineSeriesModel.ShowPoints := False;
+  //Chart1LineSeriesModel.ShowLines := not Chart1LineSeriesModel.ShowLines;
+  Chart1LineSeriesModel.Active := not Chart1LineSeriesModel.Active;
 end;
 
 procedure TFormMain.ActionInvertedYExecute(Sender: TObject);
@@ -355,12 +357,14 @@ begin
   else
   if AAction = ActionShowData then begin
     (AAction as TAction).Enabled := ListChartSourceData.Count > 0;
-    (AAction as TAction).Checked := Chart1LineSeriesData.ShowPoints or Chart1LineSeriesData.ShowLines;
+    //(AAction as TAction).Checked := Chart1LineSeriesData.ShowPoints or Chart1LineSeriesData.ShowLines;
+    (AAction as TAction).Checked := Chart1LineSeriesData.Active;
   end
   else
   if AAction = ActionShowModel then begin
     (AAction as TAction).Enabled := ListChartSourceModel.Count > 0;
-    (AAction as TAction).Checked := Chart1LineSeriesModel.ShowPoints or Chart1LineSeriesModel.ShowLines;
+    //(AAction as TAction).Checked := Chart1LineSeriesModel.ShowPoints or Chart1LineSeriesModel.ShowLines;
+    (AAction as TAction).Checked := Chart1LineSeriesModel.Active;
   end;
 end;
 
@@ -386,15 +390,15 @@ begin
   FPeriodogramFirstRun := True;
   Chart1LineSeriesData.Source := nil;
   Chart1LineSeriesModel.Source := nil;
-  Chart1LineSeriesData.ShowPoints := True;
-  Chart1LineSeriesData.ShowLines := False;
-  Chart1LineSeriesModel.ShowPoints := False;
-  Chart1LineSeriesModel.ShowLines := True;
+  //Chart1LineSeriesData.ShowPoints := True;
+  //Chart1LineSeriesData.ShowLines := False;
+  //Chart1LineSeriesModel.ShowPoints := False;
+  //Chart1LineSeriesModel.ShowLines := True;
   ListChartSourceData.Clear;
   ListChartSourceFoldedData.Clear;
   ListChartSourceModel.Clear;
   ListChartSourceFoldedModel.Clear;
-  SetAxisBoundaries(-1, 1, -1, 1, True, True);
+  SetAxisBoundaries(-1, 1, -1, 1);
   unitPhaseDialog.SetCurrentEpoch(NaN);
   unitPhaseDialog.SetCurrentPeriod(NaN);
   unitDFTparamDialog.SetCurrentFrequencyMin(NaN);
@@ -526,7 +530,7 @@ begin
     Chart1LineSeriesData.Source := nil;
     Chart1LineSeriesModel.Source := nil;
     SourceExtent := ListChartSourceData.Extent;
-    SetAxisBoundaries(SourceExtent.coords[1], SourceExtent.coords[3], SourceExtent.coords[2], SourceExtent.coords[4], True, True);
+    //SetAxisBoundaries(SourceExtent.coords[1], SourceExtent.coords[3], SourceExtent.coords[2], SourceExtent.coords[4], True, True);
     Chart1LineSeriesData.Source := ListChartSourceData;
     if ListChartSourceModel.Count > 0 then
       Chart1LineSeriesModel.Source := ListChartSourceModel;
@@ -559,7 +563,7 @@ begin
   Chart1LineSeriesData.Source := nil;
   Chart1LineSeriesModel.Source := nil;
   SourceExtent := ListChartSourceFoldedData.Extent;
-  SetAxisBoundaries(-1.0, 1.0, SourceExtent.coords[2], SourceExtent.coords[4], False, True);
+  SetAxisBoundaries(-1.0, 1.0, SourceExtent.coords[2], SourceExtent.coords[4]);
   Chart1LineSeriesData.Source := ListChartSourceFoldedData;
   if ListChartSourceFoldedModel.Count > 0 then
     Chart1LineSeriesModel.Source := ListChartSourceFoldedModel;
@@ -615,21 +619,21 @@ begin
   end;
 end;
 
-procedure TFormMain.SetAxisBoundaries(Xmin, Xmax, Ymin, Ymax: Double; ExpandX, ExpandY: Boolean);
+procedure TFormMain.SetAxisBoundaries(Xmin, Xmax, Ymin, Ymax: Double);
 var
-  MinV, MaxV, Extent: Double;
+  MinV, MaxV: Double;
 begin
   MinV := Xmin;
   MaxV := Xmax;
-  Extent := MaxV - MinV;
-  if ExpandX then begin
-    MaxV := MaxV + Extent * 0.02;
-    MinV := MinV - Extent * 0.02;
-  end;
+  //Extent := MaxV - MinV;
+  //if ExpandX then begin
+  //  MaxV := MaxV + Extent * 0.02;
+  //  MinV := MinV - Extent * 0.02;
+  //end;
   Chart1.Extent.XMin := MinV;
   Chart1.Extent.XMax := MaxV;
-  Chart1.Extent.UseXMin := True;
-  Chart1.Extent.UseXMax := True;
+  //Chart1.Extent.UseXMin := True;
+  //Chart1.Extent.UseXMax := True;
   //Chart1.AxisList[1].Marks.Range.Min := MinV;
   //Chart1.AxisList[1].Marks.Range.Max := MaxV;
   //Chart1.AxisList[1].Marks.Range.UseMin := True;
@@ -637,15 +641,15 @@ begin
 
   MinV := Ymin;
   MaxV := Ymax;
-  Extent := MaxV - MinV;
-  if ExpandY then begin
-    MaxV := MaxV + Extent * 0.02;
-    MinV := MinV - Extent * 0.02;
-  end;
+  //Extent := MaxV - MinV;
+  //if ExpandY then begin
+  //  MaxV := MaxV + Extent * 0.02;
+  //  MinV := MinV - Extent * 0.02;
+  //end;
   Chart1.Extent.YMin := MinV;
   Chart1.Extent.YMax := MaxV;
-  Chart1.Extent.UseYMin := True;
-  Chart1.Extent.UseYMax := True;
+  //Chart1.Extent.UseYMin := True;
+  //Chart1.Extent.UseYMax := True;
   //Chart1.AxisList[0].Marks.Range.Min := MinV;
   //Chart1.AxisList[0].Marks.Range.Max := MaxV;
   //Chart1.AxisList[0].Marks.Range.UseMin := True;
@@ -778,8 +782,9 @@ begin
     else
       Chart1LineSeriesModel.Source := nil;
 
-    Chart1LineSeriesModel.ShowPoints := False;
-    Chart1LineSeriesModel.ShowLines := True;
+    //Chart1LineSeriesModel.ShowPoints := False;
+    //Chart1LineSeriesModel.ShowLines := True;
+    Chart1LineSeriesModel.Active := True;
   end;
 end;
 
