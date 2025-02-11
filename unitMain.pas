@@ -228,7 +228,7 @@ var
   Item: PChartDataItem;
   N, I: Integer;
 begin
-  if ListChartSourceData.Count > 0 then begin
+  if (ListChartSourceData.Count > 0) and (Chart1LineSeriesData.Source = ListChartSourceData) then begin
     SetLength(X1, ListChartSourceData.Count);
     SetLength(Y1, ListChartSourceData.Count);
     N := 0;
@@ -356,7 +356,7 @@ begin
   end
   else
   if AAction = ActionSaveVisible then begin
-    (AAction as TAction).Enabled := ListChartSourceData.Count > 0;
+    (AAction as TAction).Enabled := (ListChartSourceData.Count > 0) and (Chart1LineSeriesData.Source = ListChartSourceData);
   end
   else
   if AAction = ActionShowData then begin
