@@ -258,7 +258,7 @@ begin
     Info := Info + FloatToStrMod(solution_vector[I]) + ^I'[+-' + Trim(FloatToStrMod(solution_vector_errors[I])) + ']';
     if I > 0 then begin
       Formula := Formula + ' * (t-timeZeroPoint)**' + IntToStr(I);
-      Info := Info + ' * (t-timeZeroPoint)^' + IntToStr(I);
+      Info := Info + ^I' * (t-timeZeroPoint)^' + IntToStr(I);
     end;
     Formula := Formula + ' \' + ^M^J;
     Info := Info + ^M^J;
@@ -270,13 +270,13 @@ begin
       for I := 1 to ATrigPolyDegrees[N] do begin
         Idx := Idx2 + 2 * (I - 1);
         S := '2*math.pi*' + FloatToStrLocaleIndependent(I * AFrequencies[N]) + '*(t-timeZeroPoint)';
-        S2 := '2*math.pi*' + FloatToStrMod(I * AFrequencies[N]) + '*(t-timeZeroPoint)';
+        S2 := '2*Pi*' + FloatToStrMod(I * AFrequencies[N]) + '*(t-timeZeroPoint)';
         if solution_vector[Idx] < 0 then Sign := ' - ' else Sign := ' + ';
         Formula := Formula + Sign + FloatToStrLocaleIndependent(Abs(solution_vector[Idx]))     + ' * math.cos(' + S + ')';
-        Info := Info + FloatToStrMod(solution_vector[Idx]) + ^I'[+-' + Trim(FloatToStrMod(solution_vector_errors[Idx])) + ']'^I' * cos(' + S + ')' + ^M^J;
+        Info := Info + FloatToStrMod(solution_vector[Idx]) + ^I'[+-' + Trim(FloatToStrMod(solution_vector_errors[Idx])) + ']'^I' * cos(' + S2 + ')' + ^M^J;
         if solution_vector[Idx + 1] < 0 then Sign := ' - ' else Sign := ' + ';
         Formula := Formula + Sign + FloatToStrLocaleIndependent(Abs(solution_vector[Idx + 1])) + ' * math.sin(' + S + ') \' + ^M^J;
-        Info := Info + FloatToStrMod(solution_vector[Idx + 1]) + ^I'[+-' + Trim(FloatToStrMod(solution_vector_errors[Idx + 1])) + ']'^I' * sin(' + S + ')' + ^M^J;
+        Info := Info + FloatToStrMod(solution_vector[Idx + 1]) + ^I'[+-' + Trim(FloatToStrMod(solution_vector_errors[Idx + 1])) + ']'^I' * sin(' + S2 + ')' + ^M^J;
       end;
       Idx2 := Idx2 + 2 * ATrigPolyDegrees[N];
     end;

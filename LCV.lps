@@ -18,7 +18,6 @@
         <ComponentName Value="FormMain"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="3"/>
         <TopLine Value="351"/>
         <CursorPos Y="360"/>
@@ -104,9 +103,10 @@
       <Unit>
         <Filename Value="common.pas"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="173"/>
-        <CursorPos X="10" Y="269"/>
+        <TopLine Value="254"/>
+        <CursorPos X="20" Y="273"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
       </Unit>
@@ -449,30 +449,6 @@
     </Units>
     <JumpHistory HistoryIndex="29">
       <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="128" Column="19" TopLine="106"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="142" Column="13" TopLine="123"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="377" Column="51" TopLine="361"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="231" Column="6" TopLine="218"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="201" Column="3" TopLine="199"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="116" Column="15" TopLine="100"/>
-      </Position>
-      <Position>
         <Filename Value="unitMain.pas"/>
         <Caret Line="556" Column="3" TopLine="553"/>
       </Position>
@@ -564,6 +540,29 @@
       <Position>
         <Filename Value="unitMain.pas"/>
         <Caret Line="218" Column="33" TopLine="190"/>
+      </Position>
+      <Position>
+        <Filename Value="common.pas"/>
+        <Caret Line="269" Column="10" TopLine="212"/>
+      </Position>
+      <Position>
+        <Filename Value="common.pas"/>
+        <Caret Line="271" TopLine="250"/>
+      </Position>
+      <Position>
+        <Filename Value="common.pas"/>
+        <Caret Line="273" Column="11" TopLine="250"/>
+      </Position>
+      <Position>
+        <Filename Value="common.pas"/>
+        <Caret Line="576" Column="5" TopLine="548"/>
+      </Position>
+      <Position>
+        <Filename Value="common.pas"/>
+      </Position>
+      <Position>
+        <Filename Value="common.pas"/>
+        <Caret Line="247" Column="8" TopLine="219"/>
       </Position>
     </JumpHistory>
     <RunParams>
