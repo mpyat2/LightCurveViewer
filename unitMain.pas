@@ -31,20 +31,21 @@ type
     ActionInvertedY: TAction;
     ActionOpen: TAction;
     ActionExit: TAction;
-    ActionList1: TActionList;
-    Chart1: TChart;
-    Chart1LineSeriesModel: TLineSeries;
-    Chart1LineSeriesData: TLineSeries;
-    ChartToolset1: TChartToolset;
-    ChartToolset1PanDragTool1: TPanDragTool;
-    ChartToolset1ZoomDragTool1: TZoomDragTool;
-    ChartToolset1ZoomMouseWheelTool1: TZoomMouseWheelTool;
-    ImageList1: TImageList;
-    ListChartSourceModel: TListChartSource;
-    ListChartSourceFoldedModel: TListChartSource;
-    ListChartSourceFoldedData: TListChartSource;
-    ListChartSourceData: TListChartSource;
-    MainMenu1: TMainMenu;
+    ActionList: TActionList;
+    Chart: TChart;
+    ChartLineSeriesModelDownLimit: TLineSeries;
+    ChartLineSeriesModelUpLimit: TLineSeries;
+    ChartLineSeriesModel: TLineSeries;
+    ChartLineSeriesData: TLineSeries;
+    ChartToolset: TChartToolset;
+    ChartToolsetPanDragTool1: TPanDragTool;
+    ChartToolsetZoomDragTool1: TZoomDragTool;
+    ChartToolsetZoomMouseWheelTool1: TZoomMouseWheelTool;
+    ImageList: TImageList;
+    LCSourceFoldedModel: TListChartSource;
+    LCSrcFoldedData: TListChartSource;
+    LCSrcData: TListChartSource;
+    MainMenu: TMainMenu;
     MenuFile: TMenuItem;
     MenuItemCopyChart: TMenuItem;
     MenuItemShowData: TMenuItem;
@@ -58,7 +59,7 @@ type
     MenuItemAbout: TMenuItem;
     MenuItemObservations: TMenuItem;
     PopupMenuChart: TPopupMenu;
-    SaveDialog1: TSaveDialog;
+    SaveDialog: TSaveDialog;
     Separator1: TMenuItem;
     MenuItemPolyFit: TMenuItem;
     MenuAnalyses: TMenuItem;
@@ -67,7 +68,7 @@ type
     MenuItemInvertedY: TMenuItem;
     MenuView: TMenuItem;
     MenuItemExit: TMenuItem;
-    OpenDialog1: TOpenDialog;
+    OpenDialog: TOpenDialog;
     Separator2: TMenuItem;
     Separator3: TMenuItem;
     StatusBar1: TStatusBar;
@@ -77,8 +78,11 @@ type
     ToolButton3: TToolButton;
     ToolButton4: TToolButton;
     ToolButton5: TToolButton;
+    UDFSrcModel: TUserDefinedChartSource;
+    UDFSrcModelUpLimit: TUserDefinedChartSource;
+    UDFSrcModelDownLimit: TUserDefinedChartSource;
     procedure ActionCopyChartExecute(Sender: TObject);
-    procedure ActionList1Update(AAction: TBasicAction; var Handled: Boolean);
+    procedure ActionListUpdate(AAction: TBasicAction; var Handled: Boolean);
     procedure ActionAboutExecute(Sender: TObject);
     procedure ActionInvertedYExecute(Sender: TObject);
     procedure ActionModelInfoExecute(Sender: TObject);
@@ -93,10 +97,11 @@ type
     procedure ActionSaveVisibleExecute(Sender: TObject);
     procedure ActionShowDataExecute(Sender: TObject);
     procedure ActionShowModelExecute(Sender: TObject);
-    procedure Chart1MouseEnter(Sender: TObject);
-    procedure Chart1MouseLeave(Sender: TObject);
-    procedure Chart1MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+    procedure ChartMouseEnter(Sender: TObject);
+    procedure ChartMouseLeave(Sender: TObject);
+    procedure ChartMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure FormCreate(Sender: TObject);
+    procedure UDFSrcModelGetChartDataItem(ASource: TUserDefinedChartSource; AIndex: Integer; var AItem: TChartDataItem);
   private
     FFileName: string;
     FPeriodogramFirstRun: Boolean;
@@ -104,7 +109,7 @@ type
     FFitFormula: string;
     FFitInfo: string;
     FFitAtPoints: TFitColumnArray;
-    FModelErrors: TFloatArray;
+    FModelData: TFitColumnArray;
     procedure UpdateTitle;
     procedure CloseFile;
     procedure OpenFile(const AFileName: string);
@@ -144,7 +149,7 @@ uses
 
 procedure TFormMain.FormCreate(Sender: TObject);
 begin
-  ToolBar1.Images := ImageList1;
+  ToolBar1.Images := ImageList;
   CloseFile;
 end;
 
@@ -153,15 +158,15 @@ begin
   Close;
 end;
 
-procedure TFormMain.Chart1MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+procedure TFormMain.ChartMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
 var
   P: TPoint;
   Pg: TDoublePoint;
 begin
   try
-    if (Chart1LineSeriesData.Source <> nil) and (Chart1LineSeriesData.Source.Count > 0) then begin
-      P := Chart1.ScreenToClient(Mouse.CursorPos);
-      Pg := Chart1.ImageToGraph(P);
+    if (ChartLineSeriesData.Source <> nil) and (ChartLineSeriesData.Source.Count > 0) then begin
+      P := Chart.ScreenToClient(Mouse.CursorPos);
+      Pg := Chart.ImageToGraph(P);
       StatusBar1.Panels[0].Text := Format(' %g'^I' %g ', [Pg.X, Pg.Y]);
     end
     else
@@ -172,12 +177,12 @@ begin
   end;
 end;
 
-procedure TFormMain.Chart1MouseEnter(Sender: TObject);
+procedure TFormMain.ChartMouseEnter(Sender: TObject);
 begin
   //
 end;
 
-procedure TFormMain.Chart1MouseLeave(Sender: TObject);
+procedure TFormMain.ChartMouseLeave(Sender: TObject);
 begin
   StatusBar1.Panels[0].Text := '';
 end;
@@ -209,10 +214,10 @@ end;
 
 procedure TFormMain.ActionOpenExecute(Sender: TObject);
 begin
-  OpenDialog1.InitialDir := ExtractFileDir(FFileName);
-  OpenDialog1.FileName := ExtractFileName(FFileName);
-  if OpenDialog1.Execute then begin
-    OpenFile(OpenDialog1.FileName);
+  OpenDialog.InitialDir := ExtractFileDir(FFileName);
+  OpenDialog.FileName := ExtractFileName(FFileName);
+  if OpenDialog.Execute then begin
+    OpenFile(OpenDialog.FileName);
   end;
 end;
 
@@ -229,16 +234,16 @@ var
   Item: PChartDataItem;
   N, I: Integer;
 begin
-  if (ListChartSourceData.Count > 0) and (Chart1LineSeriesData.Source = ListChartSourceData) then begin
-    SetLength(X1, ListChartSourceData.Count);
-    SetLength(Y1, ListChartSourceData.Count);
+  if (LCSrcData.Count > 0) and (ChartLineSeriesData.Source = LCSrcData) then begin
+    SetLength(X1, LCSrcData.Count);
+    SetLength(Y1, LCSrcData.Count);
     N := 0;
-    for I := 0 to ListChartSourceData.Count - 1 do begin
-      Item := ListChartSourceData.Item[I];
+    for I := 0 to LCSrcData.Count - 1 do begin
+      Item := LCSrcData.Item[I];
       ItemX := Item^.X;
       ItemY := Item^.Y;
-      if ValInRange(ItemX, Chart1.CurrentExtent.a.X, Chart1.CurrentExtent.b.X) and
-         ValInRange(ItemY, Chart1.CurrentExtent.a.Y, Chart1.CurrentExtent.b.Y) then
+      if ValInRange(ItemX, Chart.CurrentExtent.a.X, Chart.CurrentExtent.b.X) and
+         ValInRange(ItemY, Chart.CurrentExtent.a.Y, Chart.CurrentExtent.b.Y) then
       begin
         X1[N] := ItemX;
         Y1[N] := ItemY;
@@ -248,31 +253,29 @@ begin
     SetLength(X1, N);
     SetLength(Y1, N);
     //ShowTable(X1, Y1, 'X', 'Y');
-    SaveDialog1.InitialDir := SaveDialog1.InitialDir;
-    SaveDialog1.FileName := '';
-    if SaveDialog1.Execute then begin
-      SaveFileAs(SaveDialog1.FileName, X1, Y1);
+    SaveDialog.InitialDir := SaveDialog.InitialDir;
+    SaveDialog.FileName := '';
+    if SaveDialog.Execute then begin
+      SaveFileAs(SaveDialog.FileName, X1, Y1);
     end;
   end;
 end;
 
 procedure TFormMain.ActionShowDataExecute(Sender: TObject);
 begin
-  //Chart1LineSeriesData.ShowLines := False;
-  //Chart1LineSeriesData.ShowPoints := not Chart1LineSeriesData.ShowPoints;
-  Chart1LineSeriesData.Active := not Chart1LineSeriesData.Active;
+  ChartLineSeriesData.Active := not ChartLineSeriesData.Active;
 end;
 
 procedure TFormMain.ActionShowModelExecute(Sender: TObject);
 begin
-  //Chart1LineSeriesModel.ShowPoints := False;
-  //Chart1LineSeriesModel.ShowLines := not Chart1LineSeriesModel.ShowLines;
-  Chart1LineSeriesModel.Active := not Chart1LineSeriesModel.Active;
+  ChartLineSeriesModel.Active := not ChartLineSeriesModel.Active;
+  ChartLineSeriesModelUpLimit.Active := ChartLineSeriesModel.Active;
+  ChartLineSeriesModelDownLimit.Active := ChartLineSeriesModel.Active;
 end;
 
 procedure TFormMain.ActionInvertedYExecute(Sender: TObject);
 begin
-  Chart1.AxisList[0].Inverted := not Chart1.AxisList[0].Inverted;
+  Chart.AxisList[0].Inverted := not Chart.AxisList[0].Inverted;
   SaveDataSettings;
 end;
 
@@ -282,27 +285,10 @@ begin
 end;
 
 procedure TFormMain.ActionModelInfoExecute(Sender: TObject);
-var
-  ContiniousFit: TFitColumnArray;
-  Item: PChartDataItem;
-  I: Integer;
-  FitColumn: FitColumnType;
 begin
-  if ListChartSourceModel.Count > 0 then begin
-    for FitColumn := Low(FitColumnType) to High(FitColumnType) do begin
-      ContiniousFit[FitColumn] := nil;
-    end;
-    SetLength(ContiniousFit[FitColumnType.x], ListChartSourceModel.Count);
-    SetLength(ContiniousFit[FitColumnType.yFit], ListChartSourceModel.Count);
-    SetLength(ContiniousFit[FitColumnType.yErrors], ListChartSourceModel.Count);
-    for I := 0 to ListChartSourceModel.Count - 1 do begin
-      Item := ListChartSourceModel.Item[I];
-      ContiniousFit[FitColumnType.x][I] := Item^.X;
-      ContiniousFit[FitColumnType.yFit][I] := Item^.Y;
-      ContiniousFit[FitColumnType.yErrors][I] := FModelErrors[I];
-    end;
+  if Length(FModelData[FitColumnType.x]) > 0 then begin
+    ShowModelInfo(FFitInfo, FFitFormula, FModelData, FFitAtPoints);
   end;
-  ShowModelInfo(FFitInfo, FFitFormula, ContiniousFit, FFitAtPoints);
 end;
 
 procedure TFormMain.ActionObservationsExecute(Sender: TObject);
@@ -311,11 +297,11 @@ var
   Item: PChartDataItem;
   I: Integer;
 begin
-  if ListChartSourceData.Count > 0 then begin
-    SetLength(X1, ListChartSourceData.Count);
-    SetLength(Y1, ListChartSourceData.Count);
-    for I := 0 to ListChartSourceData.Count - 1 do begin
-      Item := ListChartSourceData.Item[I];
+  if LCSrcData.Count > 0 then begin
+    SetLength(X1, LCSrcData.Count);
+    SetLength(Y1, LCSrcData.Count);
+    for I := 0 to LCSrcData.Count - 1 do begin
+      Item := LCSrcData.Item[I];
       X1[I] := Item^.X;
       Y1[I] := Item^.Y;
     end;
@@ -323,63 +309,61 @@ begin
   end;
 end;
 
-procedure TFormMain.ActionList1Update(AAction: TBasicAction; var Handled: Boolean);
+procedure TFormMain.ActionListUpdate(AAction: TBasicAction; var Handled: Boolean);
 begin
   if AAction = ActionInvertedY then begin
-    (AAction as TAction).Checked := Chart1.AxisList[0].Inverted;
+    (AAction as TAction).Checked := Chart.AxisList[0].Inverted;
   end
   else
   if AAction = ActionRawData then begin
-    (AAction as TAction).Enabled := ListChartSourceData.Count > 0;
-    //(AAction as TAction).Checked := Chart1LineSeriesData.Source = ListChartSourceData;
+    (AAction as TAction).Enabled := LCSrcData.Count > 0;
+    //(AAction as TAction).Checked := ChartLineSeriesData.Source = LCSrcData;
   end
   else
   if AAction = ActionPhasePlot then begin
-    (AAction as TAction).Enabled := ListChartSourceData.Count > 0;
-    //(AAction as TAction).Checked := Chart1LineSeriesData.Source = ListChartSourceFoldedData;
+    (AAction as TAction).Enabled := LCSrcData.Count > 0;
+    //(AAction as TAction).Checked := ChartLineSeriesData.Source = LCSrcFoldedData;
   end
   else
   if AAction = ActionPhasePlotSimple then begin
-    (AAction as TAction).Enabled := ListChartSourceData.Count > 0;
-    //(AAction as TAction).Checked := Chart1LineSeriesData.Source = ListChartSourceFoldedData;
+    (AAction as TAction).Enabled := LCSrcData.Count > 0;
+    //(AAction as TAction).Checked := ChartLineSeriesData.Source = LCSrcFoldedData;
   end
   else
   if AAction = ActionPeriodogram then begin
-    (AAction as TAction).Enabled := ListChartSourceData.Count > 0;
+    (AAction as TAction).Enabled := LCSrcData.Count > 0;
   end
   else
   if AAction = ActionPolyFit then begin
-    (AAction as TAction).Enabled := ListChartSourceData.Count > 0;
+    (AAction as TAction).Enabled := LCSrcData.Count > 0;
   end
   else
   if AAction = ActionModelInfo then begin
-    (AAction as TAction).Enabled := ListChartSourceModel.Count > 0;
+    (AAction as TAction).Enabled := Length(FModelData[FitColumnType.x]) > 0;
   end
   else
   if AAction = ActionObservations then begin
-    (AAction as TAction).Enabled := ListChartSourceData.Count > 0;
+    (AAction as TAction).Enabled := LCSrcData.Count > 0;
   end
   else
   if AAction = ActionSaveVisible then begin
-    (AAction as TAction).Enabled := (ListChartSourceData.Count > 0) and (Chart1LineSeriesData.Source = ListChartSourceData);
+    (AAction as TAction).Enabled := (LCSrcData.Count > 0) and (ChartLineSeriesData.Source = LCSrcData);
   end
   else
   if AAction = ActionShowData then begin
-    (AAction as TAction).Enabled := ListChartSourceData.Count > 0;
-    //(AAction as TAction).Checked := Chart1LineSeriesData.ShowPoints or Chart1LineSeriesData.ShowLines;
-    (AAction as TAction).Checked := Chart1LineSeriesData.Active;
+    (AAction as TAction).Enabled := LCSrcData.Count > 0;
+    (AAction as TAction).Checked := ChartLineSeriesData.Active;
   end
   else
   if AAction = ActionShowModel then begin
-    (AAction as TAction).Enabled := ListChartSourceModel.Count > 0;
-    //(AAction as TAction).Checked := Chart1LineSeriesModel.ShowPoints or Chart1LineSeriesModel.ShowLines;
-    (AAction as TAction).Checked := Chart1LineSeriesModel.Active;
+    (AAction as TAction).Enabled := UDFSrcModel.Count > 0;
+    (AAction as TAction).Checked := ChartLineSeriesModel.Active;
   end;
 end;
 
 procedure TFormMain.ActionCopyChartExecute(Sender: TObject);
 begin
-  Chart1.CopyToClipboard(TPortableNetworkGraphic);
+  Chart.CopyToClipboard(TPortableNetworkGraphic);
 end;
 
 procedure TFormMain.UpdateTitle;
@@ -387,6 +371,33 @@ begin
   Caption := 'LCV';
   if FFileName <> '' then
     Caption := ExtractFileName(FFileName) + ' - ' + Caption;
+end;
+
+procedure TFormMain.UDFSrcModelGetChartDataItem(
+  ASource: TUserDefinedChartSource;
+  AIndex: Integer;
+  var AItem: TChartDataItem);
+begin
+  if (AIndex >= 0) and (AIndex < Length(FModelData[FitColumnType.x])) and (AIndex < Length(FModelData[FitColumnType.yFit])) then begin
+    if ASource = UDFSrcModel then begin
+      AItem.X := FModelData[FitColumnType.x][AIndex];
+      AItem.Y := FModelData[FitColumnType.yFit][AIndex];
+    end
+    else
+    if ASource = UDFSrcModelUpLimit then begin
+      if (AIndex < Length(FModelData[FitColumnType.yErrors])) then begin
+        AItem.X := FModelData[FitColumnType.x][AIndex];
+        AItem.Y := FModelData[FitColumnType.yFit][AIndex] + FModelData[FitColumnType.yErrors][AIndex];
+      end;
+    end
+    else
+    if ASource = UDFSrcModelDownLimit then begin
+      if (AIndex < Length(FModelData[FitColumnType.yErrors])) then begin
+        AItem.X := FModelData[FitColumnType.x][AIndex];
+        AItem.Y := FModelData[FitColumnType.yFit][AIndex] - FModelData[FitColumnType.yErrors][AIndex];
+      end;
+    end;
+  end;
 end;
 
 procedure TFormMain.CloseFile;
@@ -402,18 +413,23 @@ begin
   for FitColumn := Low(FitColumnType) to High(FitColumnType) do begin
     FFitAtPoints[FitColumn] := nil;
   end;
+  for FitColumn := Low(FitColumnType) to High(FitColumnType) do begin
+    FModelData[FitColumn] := nil;
+  end;
   FPeriodogramFirstRun := True;
-  Chart1LineSeriesData.Source := nil;
-  Chart1LineSeriesModel.Source := nil;
-  //Chart1LineSeriesData.ShowPoints := True;
-  //Chart1LineSeriesData.ShowLines := False;
-  //Chart1LineSeriesModel.ShowPoints := False;
-  //Chart1LineSeriesModel.ShowLines := True;
-  ListChartSourceData.Clear;
-  ListChartSourceFoldedData.Clear;
-  ListChartSourceModel.Clear;
-  FModelErrors := nil;
-  ListChartSourceFoldedModel.Clear;
+  ChartLineSeriesData.Source := nil;
+  ChartLineSeriesModel.Source := nil;
+  ChartLineSeriesModelUpLimit.Source := nil;
+  ChartLineSeriesModelDownLimit.Source := nil;
+  LCSrcData.Clear;
+  LCSrcFoldedData.Clear;
+  UDFSrcModel.PointsNumber := 0;
+  UDFSrcModel.Reset;
+  UDFSrcModelUpLimit.PointsNumber := 0;
+  UDFSrcModelUpLimit.Reset;
+  UDFSrcModelDownLimit.PointsNumber := 0;
+  UDFSrcModelDownLimit.Reset;
+  LCSourceFoldedModel.Clear;
   SetAxisBoundaries(-1, 1, -1, 1);
   unitPhaseDialog.SetCurrentEpoch(NaN);
   unitPhaseDialog.SetCurrentPeriod(NaN);
@@ -455,7 +471,7 @@ begin
   UpdateTitle;
   unitPhaseDialog.SetCurrentEpoch((MaxValue(X) + MinValue(X)) / 2.0);
   for I := 0 to Length(X) - 1 do begin
-    ListChartSourceData.Add(X[I], Y[I]);
+    LCSrcData.Add(X[I], Y[I]);
   end;
   LoadDataSettings;
   PlotData;
@@ -497,7 +513,7 @@ begin
       unitFitParamDialog.LoadParameters(Ini, 'SETTINGS');
       unitDFTparamDialog.LoadParameters(Ini, 'SETTINGS');
       unitPhaseDialog.LoadParameters(Ini, 'SETTINGS');
-      Chart1.AxisList[0].Inverted := Ini.ReadBool('SETTINGS', 'Yinverted', True);
+      Chart.AxisList[0].Inverted := Ini.ReadBool('SETTINGS', 'Yinverted', True);
     finally
       FreeAndNil(Ini);
     end;
@@ -533,23 +549,28 @@ end;
 
 procedure TFormMain.SaveChartSettings(const Ini: TIniFile; const Section: string);
 begin
-  Ini.WriteBool(Section, 'Yinverted', Chart1.AxisList[0].Inverted);
+  Ini.WriteBool(Section, 'Yinverted', Chart.AxisList[0].Inverted);
 end;
 
 procedure TFormMain.PlotData;
 var
   SourceExtent: TDoubleRect;
 begin
-  if ListChartSourceData.Count > 0 then begin
+  if LCSrcData.Count > 0 then begin
     StatusBar1.Panels[0].Text := '';
     StatusBar1.Panels[1].Text := '';
-    Chart1LineSeriesData.Source := nil;
-    Chart1LineSeriesModel.Source := nil;
-    SourceExtent := ListChartSourceData.Extent;
+    ChartLineSeriesData.Source := nil;
+    ChartLineSeriesModel.Source := nil;
+    ChartLineSeriesModelUpLimit.Source := nil;
+    ChartLineSeriesModelDownLimit.Source := nil;
+    SourceExtent := LCSrcData.Extent;
     //SetAxisBoundaries(SourceExtent.coords[1], SourceExtent.coords[3], SourceExtent.coords[2], SourceExtent.coords[4], True, True);
-    Chart1LineSeriesData.Source := ListChartSourceData;
-    if ListChartSourceModel.Count > 0 then
-      Chart1LineSeriesModel.Source := ListChartSourceModel;
+    ChartLineSeriesData.Source := LCSrcData;
+    if UDFSrcModel.Count > 0 then begin
+      ChartLineSeriesModel.Source := UDFSrcModel;
+      ChartLineSeriesModelUpLimit.Source := UDFSrcModelUpLimit;
+      ChartLineSeriesModelDownLimit.Source := UDFSrcModelDownLimit;
+    end;
   end;
 end;
 
@@ -560,8 +581,8 @@ end;
 
 procedure TFormMain.PlotFoldedSimple;
 begin
-  if ListChartSourceFoldedData.Count > 0 then begin
-    if (ListChartSourceModel.Count > 0) and (ListChartSourceFoldedModel.Count < 1) then
+  if LCSrcFoldedData.Count > 0 then begin
+    if (UDFSrcModel.Count > 0) and (LCSourceFoldedModel.Count < 1) then
       CalculateModelPhasePlot;
     PlotFoldedProc;
   end
@@ -576,13 +597,18 @@ var
 begin
   StatusBar1.Panels[0].Text := '';
   StatusBar1.Panels[1].Text := '';
-  Chart1LineSeriesData.Source := nil;
-  Chart1LineSeriesModel.Source := nil;
-  SourceExtent := ListChartSourceFoldedData.Extent;
+  ChartLineSeriesData.Source := nil;
+  ChartLineSeriesModel.Source := nil;
+  ChartLineSeriesModelUpLimit.Source := nil;
+  ChartLineSeriesModelDownLimit.Source := nil;
+  SourceExtent := LCSrcFoldedData.Extent;
   SetAxisBoundaries(-1.0, 1.0, SourceExtent.coords[2], SourceExtent.coords[4]);
-  Chart1LineSeriesData.Source := ListChartSourceFoldedData;
-  if ListChartSourceFoldedModel.Count > 0 then
-    Chart1LineSeriesModel.Source := ListChartSourceFoldedModel;
+  ChartLineSeriesData.Source := LCSrcFoldedData;
+  if LCSourceFoldedModel.Count > 0 then begin
+    ChartLineSeriesModel.Source := LCSourceFoldedModel;
+    ChartLineSeriesModelUpLimit.Source := nil;
+    ChartLineSeriesModelDownLimit.Source := nil;
+  end;
   StatusBar1.Panels[1].Text := ' P= ' + FloatToStr(unitPhaseDialog.GetCurrentPeriod) + ^I' E= ' + FloatToStr(unitPhaseDialog.GetCurrentEpoch) + ' ';
 end;
 
@@ -594,18 +620,18 @@ var
 begin
   Period := unitPhaseDialog.GetCurrentPeriod;
   Epoch := unitPhaseDialog.GetCurrentEpoch;
-  ListChartSourceFoldedModel.Clear;
+  LCSourceFoldedModel.Clear;
   if IsNaN(Period) or IsNaN(Epoch) then
     Exit;
-  for I := 0 to ListChartSourceModel.Count - 1 do begin
-    Item := ListChartSourceModel.Item[I];
+  for I := 0 to UDFSrcModel.Count - 1 do begin
+    Item := UDFSrcModel.Item[I];
     X := Item^.X;
     Y := Item^.Y;
     Phase := CalculatePhase(X, Period, Epoch);
-    ListChartSourceFoldedModel.Add(Phase, Y);
-    ListChartSourceFoldedModel.Add(Phase - 1.0, Y);
+    LCSourceFoldedModel.Add(Phase, Y);
+    LCSourceFoldedModel.Add(Phase - 1.0, Y);
   end;
-  ListChartSourceFoldedModel.Sort;
+  LCSourceFoldedModel.Sort;
 end;
 
 procedure TFormMain.CalcAndPlotFoldedProc;
@@ -617,18 +643,18 @@ begin
   SaveDataSettings;
   StatusBar1.Panels[0].Text := '';
   StatusBar1.Panels[1].Text := '';
-  if (ListChartSourceData.Count > 0) then begin
+  if (LCSrcData.Count > 0) then begin
     Period := unitPhaseDialog.GetCurrentPeriod;
     Epoch := unitPhaseDialog.GetCurrentEpoch;
-    ListChartSourceFoldedData.Clear;
-    ListChartSourceFoldedModel.Clear;
-    for I := 0 to ListChartSourceData.Count - 1 do begin
-      Item := ListChartSourceData.Item[I];
+    LCSrcFoldedData.Clear;
+    LCSourceFoldedModel.Clear;
+    for I := 0 to LCSrcData.Count - 1 do begin
+      Item := LCSrcData.Item[I];
       X := Item^.X;
       Y := Item^.Y;
       Phase := CalculatePhase(X, Period, Epoch);
-      ListChartSourceFoldedData.Add(Phase, Y);
-      ListChartSourceFoldedData.Add(Phase - 1.0, Y);
+      LCSrcFoldedData.Add(Phase, Y);
+      LCSrcFoldedData.Add(Phase - 1.0, Y);
     end;
     CalculateModelPhasePlot;
     PlotFoldedProc;
@@ -646,14 +672,14 @@ begin
   //  MaxV := MaxV + Extent * 0.02;
   //  MinV := MinV - Extent * 0.02;
   //end;
-  Chart1.Extent.XMin := MinV;
-  Chart1.Extent.XMax := MaxV;
-  //Chart1.Extent.UseXMin := True;
-  //Chart1.Extent.UseXMax := True;
-  //Chart1.AxisList[1].Marks.Range.Min := MinV;
-  //Chart1.AxisList[1].Marks.Range.Max := MaxV;
-  //Chart1.AxisList[1].Marks.Range.UseMin := True;
-  //Chart1.AxisList[1].Marks.Range.UseMax := True;
+  Chart.Extent.XMin := MinV;
+  Chart.Extent.XMax := MaxV;
+  //Chart.Extent.UseXMin := True;
+  //Chart.Extent.UseXMax := True;
+  //Chart.AxisList[1].Marks.Range.Min := MinV;
+  //Chart.AxisList[1].Marks.Range.Max := MaxV;
+  //Chart.AxisList[1].Marks.Range.UseMin := True;
+  //Chart.AxisList[1].Marks.Range.UseMax := True;
 
   MinV := Ymin;
   MaxV := Ymax;
@@ -662,14 +688,14 @@ begin
   //  MaxV := MaxV + Extent * 0.02;
   //  MinV := MinV - Extent * 0.02;
   //end;
-  Chart1.Extent.YMin := MinV;
-  Chart1.Extent.YMax := MaxV;
-  //Chart1.Extent.UseYMin := True;
-  //Chart1.Extent.UseYMax := True;
-  //Chart1.AxisList[0].Marks.Range.Min := MinV;
-  //Chart1.AxisList[0].Marks.Range.Max := MaxV;
-  //Chart1.AxisList[0].Marks.Range.UseMin := True;
-  //Chart1.AxisList[0].Marks.Range.UseMax := True;
+  Chart.Extent.YMin := MinV;
+  Chart.Extent.YMax := MaxV;
+  //Chart.Extent.UseYMin := True;
+  //Chart.Extent.UseYMax := True;
+  //Chart.AxisList[0].Marks.Range.Min := MinV;
+  //Chart.AxisList[0].Marks.Range.Max := MaxV;
+  //Chart.AxisList[0].Marks.Range.UseMin := True;
+  //Chart.AxisList[0].Marks.Range.UseMax := True;
 end;
 
 procedure TFormMain.DoPolyFit;
@@ -701,12 +727,11 @@ var
   meanTime: Double;
   fitXmin, fitXmax, fitXstep: Double;
   nfit: Integer;
-  Xfit, Yfit: TFloatArray;
   Item: PChartDataItem;
   I: Integer;
   FitColumn: FitColumnType;
 begin
-  if ListChartSourceData.Count > 0 then begin
+  if LCSrcData.Count > 0 then begin
     if not GetFitParams(TrendDegree, TrigPolyDegrees, Frequencies) then
       Exit;
     SaveDataSettings;
@@ -715,11 +740,16 @@ begin
     for FitColumn := Low(FitColumnType) to High(FitColumnType) do begin
       FFitAtPoints[FitColumn] := nil;
     end;
-    Chart1LineSeriesModel.Source := nil;
-    SetLength(X, ListChartSourceData.Count);
-    SetLength(Y, ListChartSourceData.Count);
-    for I := 0 to ListChartSourceData.Count - 1 do begin
-      Item := ListChartSourceData.Item[I];
+    for FitColumn := Low(FitColumnType) to High(FitColumnType) do begin
+      FModelData[FitColumn] := nil;
+    end;
+    ChartLineSeriesModel.Source := nil;
+    ChartLineSeriesModelUpLimit.Source := nil;
+    ChartLineSeriesModelDownLimit.Source := nil;
+    SetLength(X, LCSrcData.Count);
+    SetLength(Y, LCSrcData.Count);
+    for I := 0 to LCSrcData.Count - 1 do begin
+      Item := LCSrcData.Item[I];
       X[I] := Item^.X;
       Y[I] := Item^.Y;
     end;
@@ -733,18 +763,37 @@ begin
     fitXmax := MaxValue(X);
     fitXstep := FitStepFromFrequencies(Frequencies);
     if IsNan(fitXstep) then
-      fitXstep := (fitXmax - fitXmin) / (ListChartSourceData.Count * 3);
+      fitXstep := (fitXmax - fitXmin) / (LCSrcData.Count * 3);
     nfit := Ceil((fitXmax - fitXmin) / fitXstep);
     if nfit > 100000 then begin
       nfit := 100000;
       fitXstep := (fitXmax - fitXmin) / nfit;
     end;
 
+    LCSourceFoldedModel.Clear;
+    UDFSrcModel.PointsNumber := 0;
+    UDFSrcModel.Reset;
+    UDFSrcModelUpLimit.PointsNumber := 0;
+    UDFSrcModelUpLimit.Reset;
+    UDFSrcModelDownLimit.PointsNumber := 0;
+    UDFSrcModelDownLimit.Reset;
+
+    for FitColumn := Low(FitColumnType) to High(FitColumnType) do begin
+      FModelData[FitColumn] := nil;
+    end;
+
     try
       PolyFit(X, Y, TrendDegree, TrigPolyDegrees, Frequencies,
-              fitXmin, fitXmax, fitXstep, Xfit, Yfit, FModelErrors,
-              FFitAtPoints[FitColumnType.yFit], FFitAtPoints[FitColumnType.yErrors],
+              fitXmin, fitXmax, fitXstep,
+              FModelData[FitColumnType.x],
+              FModelData[FitColumnType.yFit],
+              FModelData[FitColumnType.yErrors],
+              FFitAtPoints[FitColumnType.yFit],
+              FFitAtPoints[FitColumnType.yErrors],
               FFitFormula, FFitInfo);
+      for I := 0 to Length(FModelData[FitColumnType.x]) - 1 do begin
+        FModelData[FitColumnType.x][I] := FModelData[FitColumnType.x][I] + meanTime;
+      end;
     except
       on E: Exception do begin
         ShowMessage('Error: '^M^J + E.Message);
@@ -787,24 +836,34 @@ begin
     FFitInfo := FFitInfo + 'Number of parameters = ' + IntToStr(NofParameters) + ^M^J;
     FFitInfo := FFitInfo + 'sigma = ' + Trim(FloatToStrMod(Power(OCsquared * Double(NofParameters) / Double(n_points) / Double(n_points - NofParameters), 0.5))) + ^M^J;
 
-    ListChartSourceModel.Clear;
-    ListChartSourceFoldedModel.Clear;
-    for I := 0 to Length(Xfit) - 1 do begin
-      ListChartSourceModel.Add(Xfit[I] + meanTime, Yfit[I]);
-    end;
-    if Chart1LineSeriesData.Source = ListChartSourceData then
-      Chart1LineSeriesModel.Source := ListChartSourceModel
-    else
-    if Chart1LineSeriesData.Source = ListChartSourceFoldedData then begin
-      CalculateModelPhasePlot;
-      Chart1LineSeriesModel.Source := ListChartSourceFoldedModel;
+
+    UDFSrcModel.PointsNumber := Length(FModelData[FitColumnType.x]);
+    UDFSrcModel.Reset;
+    UDFSrcModelUpLimit.PointsNumber := UDFSrcModel.PointsNumber;
+    UDFSrcModelUpLimit.Reset;
+    UDFSrcModelDownLimit.PointsNumber := UDFSrcModel.PointsNumber;
+    UDFSrcModelDownLimit.Reset;
+    if ChartLineSeriesData.Source = LCSrcData then begin
+      ChartLineSeriesModel.Source := UDFSrcModel;
+      ChartLineSeriesModelUpLimit.Source := UDFSrcModelUpLimit;
+      ChartLineSeriesModelDownLimit.Source := UDFSrcModelDownLimit;
     end
     else
-      Chart1LineSeriesModel.Source := nil;
+    if ChartLineSeriesData.Source = LCSrcFoldedData then begin
+      CalculateModelPhasePlot;
+      ChartLineSeriesModel.Source := LCSourceFoldedModel;
+      ChartLineSeriesModelUpLimit.Source := nil;
+      ChartLineSeriesModelDownLimit.Source := nil;
+    end
+    else begin
+      ChartLineSeriesModel.Source := nil;
+      ChartLineSeriesModelUpLimit.Source := nil;
+      ChartLineSeriesModelDownLimit.Source := nil;
+    end;
 
-    //Chart1LineSeriesModel.ShowPoints := False;
-    //Chart1LineSeriesModel.ShowLines := True;
-    Chart1LineSeriesModel.Active := True;
+    ChartLineSeriesModel.Active := True;
+    ChartLineSeriesModelUpLimit.Active := ChartLineSeriesModel.Active;
+    ChartLineSeriesModelDownLimit.Active := ChartLineSeriesModel.Active;
   end;
 end;
 
@@ -817,11 +876,11 @@ var
   Interval, Freq: Double;
   I: Integer;
 begin
-  if ListChartSourceData.Count > 0 then begin
-    SetLength(params.X, ListChartSourceData.Count);
-    SetLength(params.Y, ListChartSourceData.Count);
-    for I := 0 to ListChartSourceData.Count - 1 do begin
-      Item := ListChartSourceData.Item[I];
+  if LCSrcData.Count > 0 then begin
+    SetLength(params.X, LCSrcData.Count);
+    SetLength(params.Y, LCSrcData.Count);
+    for I := 0 to LCSrcData.Count - 1 do begin
+      Item := LCSrcData.Item[I];
       params.X[I] := Item^.X;
       params.Y[I] := Item^.Y;
     end;

@@ -6,11 +6,11 @@ object FormMain: TFormMain
   Caption = 'LCV'
   ClientHeight = 574
   ClientWidth = 989
-  Menu = MainMenu1
+  Menu = MainMenu
   OnCreate = FormCreate
   Position = poDefaultPosOnly
   LCLVersion = '3.2.0.0'
-  object Chart1: TChart
+  object Chart: TChart
     Cursor = crCross
     Left = 0
     Height = 525
@@ -45,17 +45,14 @@ object FormMain: TFormMain
     Title.Text.Strings = (
       'TAChart'
     )
-    Toolset = ChartToolset1
+    Toolset = ChartToolset
     Align = alClient
     Color = clWhite
     PopupMenu = PopupMenuChart
-    OnMouseEnter = Chart1MouseEnter
-    OnMouseLeave = Chart1MouseLeave
-    OnMouseMove = Chart1MouseMove
-    object Chart1LineSeriesModel: TLineSeries
-      LinePen.Color = clLime
-    end
-    object Chart1LineSeriesData: TLineSeries
+    OnMouseEnter = ChartMouseEnter
+    OnMouseLeave = ChartMouseLeave
+    OnMouseMove = ChartMouseMove
+    object ChartLineSeriesData: TLineSeries
       LineType = ltNone
       Pointer.Brush.Color = clPurple
       Pointer.HorizSize = 2
@@ -64,6 +61,15 @@ object FormMain: TFormMain
       Pointer.VertSize = 2
       Pointer.Visible = True
       ShowPoints = True
+    end
+    object ChartLineSeriesModel: TLineSeries
+      LinePen.Color = clLime
+    end
+    object ChartLineSeriesModelUpLimit: TLineSeries
+      LinePen.Color = clRed
+    end
+    object ChartLineSeriesModelDownLimit: TLineSeries
+      LinePen.Color = clRed
     end
   end
   object StatusBar1: TStatusBar
@@ -120,8 +126,8 @@ object FormMain: TFormMain
       Action = ActionPhasePlot
     end
   end
-  object MainMenu1: TMainMenu
-    Images = ImageList1
+  object MainMenu: TMainMenu
+    Images = ImageList
     Left = 80
     Top = 48
     object MenuFile: TMenuItem
@@ -188,9 +194,9 @@ object FormMain: TFormMain
       end
     end
   end
-  object ActionList1: TActionList
-    Images = ImageList1
-    OnUpdate = ActionList1Update
+  object ActionList: TActionList
+    Images = ImageList
+    OnUpdate = ActionListUpdate
     Left = 80
     Top = 104
     object ActionExit: TAction
@@ -281,7 +287,7 @@ object FormMain: TFormMain
       OnExecute = ActionCopyChartExecute
     end
   end
-  object OpenDialog1: TOpenDialog
+  object OpenDialog: TOpenDialog
     Title = ''
     DefaultExt = '.txt'
     Filter = 'Text files (*.txt,*.tsv,*.dat)|*.txt;*.tsv;*.dat|All files (*.*)|*.*'
@@ -289,15 +295,15 @@ object FormMain: TFormMain
     Left = 80
     Top = 232
   end
-  object ListChartSourceData: TListChartSource
+  object LCSrcData: TListChartSource
     Left = 264
     Top = 48
   end
-  object ListChartSourceFoldedData: TListChartSource
+  object LCSrcFoldedData: TListChartSource
     Left = 264
     Top = 104
   end
-  object ImageList1: TImageList
+  object ImageList: TImageList
     Left = 80
     Top = 168
     Bitmap = {
@@ -324,40 +330,51 @@ object FormMain: TFormMain
       823793F9F4BFDCE74BAD9744FDA5FE5FEAFF64EAFF9F0D361F57
     }
   end
-  object ListChartSourceModel: TListChartSource
+  object LCSourceFoldedModel: TListChartSource
     Left = 264
-    Top = 168
+    Top = 352
   end
-  object ListChartSourceFoldedModel: TListChartSource
-    Left = 264
-    Top = 240
-  end
-  object ChartToolset1: TChartToolset
+  object ChartToolset: TChartToolset
     Left = 600
     Top = 48
-    object ChartToolset1ZoomDragTool1: TZoomDragTool
+    object ChartToolsetZoomDragTool1: TZoomDragTool
       Shift = [ssCtrl, ssLeft]
       Brush.Style = bsClear
     end
-    object ChartToolset1PanDragTool1: TPanDragTool
+    object ChartToolsetPanDragTool1: TPanDragTool
       Shift = [ssCtrl, ssRight]
     end
-    object ChartToolset1ZoomMouseWheelTool1: TZoomMouseWheelTool
+    object ChartToolsetZoomMouseWheelTool1: TZoomMouseWheelTool
       ZoomFactor = 0.95
     end
   end
-  object SaveDialog1: TSaveDialog
+  object SaveDialog: TSaveDialog
     DefaultExt = '.txt'
     Filter = 'Text files (*.txt,*.tsv,*.dat)|*.txt;*.tsv;*.dat|All files (*.*)|*.*'
     Options = [ofOverwritePrompt, ofPathMustExist, ofEnableSizing, ofViewDetail]
     Left = 79
-    Top = 300
+    Top = 288
   end
   object PopupMenuChart: TPopupMenu
-    Left = 79
-    Top = 376
+    Left = 80
+    Top = 352
     object MenuItemCopyChart: TMenuItem
       Action = ActionCopyChart
     end
+  end
+  object UDFSrcModel: TUserDefinedChartSource
+    OnGetChartDataItem = UDFSrcModelGetChartDataItem
+    Left = 264
+    Top = 184
+  end
+  object UDFSrcModelUpLimit: TUserDefinedChartSource
+    OnGetChartDataItem = UDFSrcModelGetChartDataItem
+    Left = 264
+    Top = 232
+  end
+  object UDFSrcModelDownLimit: TUserDefinedChartSource
+    OnGetChartDataItem = UDFSrcModelGetChartDataItem
+    Left = 264
+    Top = 288
   end
 end
