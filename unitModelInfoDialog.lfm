@@ -109,7 +109,7 @@ object FormInfo: TFormInfo
         Top = 0
         Width = 832
         Align = alClient
-        ColCount = 4
+        ColCount = 2
         DefaultColWidth = 200
         ExtendedSelect = False
         FixedCols = 0

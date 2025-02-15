@@ -103,7 +103,8 @@ type
     FDFTThreadTerminated: Boolean;
     FFitFormula: string;
     FFitInfo: string;
-    FFitAtPoints: array[0..2] of TFloatArray;
+    FFitAtPoints: TFitColumnArray;
+    FModelErrors: TFloatArray;
     procedure UpdateTitle;
     procedure CloseFile;
     procedure OpenFile(const AFileName: string);
@@ -282,22 +283,26 @@ end;
 
 procedure TFormMain.ActionModelInfoExecute(Sender: TObject);
 var
-  X1, Y1: TFloatArray;
+  ContiniousFit: TFitColumnArray;
   Item: PChartDataItem;
   I: Integer;
+  FitColumn: FitColumnType;
 begin
   if ListChartSourceModel.Count > 0 then begin
-    SetLength(X1, ListChartSourceModel.Count);
-    SetLength(Y1, ListChartSourceModel.Count);
+    for FitColumn := Low(FitColumnType) to High(FitColumnType) do begin
+      ContiniousFit[FitColumn] := nil;
+    end;
+    SetLength(ContiniousFit[FitColumnType.x], ListChartSourceModel.Count);
+    SetLength(ContiniousFit[FitColumnType.yFit], ListChartSourceModel.Count);
+    SetLength(ContiniousFit[FitColumnType.yErrors], ListChartSourceModel.Count);
     for I := 0 to ListChartSourceModel.Count - 1 do begin
       Item := ListChartSourceModel.Item[I];
-      X1[I] := Item^.X;
-      Y1[I] := Item^.Y;
+      ContiniousFit[FitColumnType.x][I] := Item^.X;
+      ContiniousFit[FitColumnType.yFit][I] := Item^.Y;
+      ContiniousFit[FitColumnType.yErrors][I] := FModelErrors[I];
     end;
-    ShowModelInfo(FFitInfo, FFitFormula,
-                  X1, Y1,
-                  FFitAtPoints[0], FFitAtPoints[1], FFitAtPoints[2]);
   end;
+  ShowModelInfo(FFitInfo, FFitFormula, ContiniousFit, FFitAtPoints);
 end;
 
 procedure TFormMain.ActionObservationsExecute(Sender: TObject);
@@ -388,14 +393,15 @@ procedure TFormMain.CloseFile;
 var
   tempDArray: TDouble3Array = (NaN, NaN, NaN);
   tempIArray: TInt3Array = (0, 0, 0);
+  FitColumn: FitColumnType;
 begin
   FFileName := '';
   UpdateTitle;
   FFitFormula := '';
   FFitInfo := '';
-  FFitAtPoints[0] := nil;
-  FFitAtPoints[1] := nil;
-  FFitAtPoints[2] := nil;
+  for FitColumn := Low(FitColumnType) to High(FitColumnType) do begin
+    FFitAtPoints[FitColumn] := nil;
+  end;
   FPeriodogramFirstRun := True;
   Chart1LineSeriesData.Source := nil;
   Chart1LineSeriesModel.Source := nil;
@@ -406,6 +412,7 @@ begin
   ListChartSourceData.Clear;
   ListChartSourceFoldedData.Clear;
   ListChartSourceModel.Clear;
+  FModelErrors := nil;
   ListChartSourceFoldedModel.Clear;
   SetAxisBoundaries(-1, 1, -1, 1);
   unitPhaseDialog.SetCurrentEpoch(NaN);
@@ -697,6 +704,7 @@ var
   Xfit, Yfit: TFloatArray;
   Item: PChartDataItem;
   I: Integer;
+  FitColumn: FitColumnType;
 begin
   if ListChartSourceData.Count > 0 then begin
     if not GetFitParams(TrendDegree, TrigPolyDegrees, Frequencies) then
@@ -704,9 +712,9 @@ begin
     SaveDataSettings;
     FFitFormula := '';
     FFitInfo := '';
-    FFitAtPoints[0] := nil;
-    FFitAtPoints[1] := nil;
-    FFitAtPoints[2] := nil;
+    for FitColumn := Low(FitColumnType) to High(FitColumnType) do begin
+      FFitAtPoints[FitColumn] := nil;
+    end;
     Chart1LineSeriesModel.Source := nil;
     SetLength(X, ListChartSourceData.Count);
     SetLength(Y, ListChartSourceData.Count);
@@ -733,27 +741,30 @@ begin
     end;
 
     try
-      PolyFit(X, Y, TrendDegree, TrigPolyDegrees, Frequencies, fitXmin, fitXmax, fitXstep, Xfit, Yfit, FFitAtPoints[1], FFitFormula, FFitInfo);
+      PolyFit(X, Y, TrendDegree, TrigPolyDegrees, Frequencies,
+              fitXmin, fitXmax, fitXstep, Xfit, Yfit, FModelErrors,
+              FFitAtPoints[FitColumnType.yFit], FFitAtPoints[FitColumnType.yErrors],
+              FFitFormula, FFitInfo);
     except
       on E: Exception do begin
         ShowMessage('Error: '^M^J + E.Message);
         Exit;
       end;
     end;
-    SetLength(FFitAtPoints[0], n_points);
+    SetLength(FFitAtPoints[FitColumnType.x], n_points);
     for I := 0 to n_points - 1 do begin
-      FFitAtPoints[0][I] := X[I] + meanTime;
+      FFitAtPoints[FitColumnType.x][I] := X[I] + meanTime;
     end;
-    SetLength(FFitAtPoints[2], n_points);
+    SetLength(FFitAtPoints[FitColumnType.yObserved], n_points);
     for I := 0 to n_points - 1 do begin
-      FFitAtPoints[2][I] := Y[I];
+      FFitAtPoints[FitColumnType.yObserved][I] := Y[I];
     end;
 
     NofParameters := 1 + TrendDegree;
       for I := 0 to Length(TrigPolyDegrees) - 1 do
         NofParameters := NofParameters + TrigPolyDegrees[I] * 2;
 
-    OCsquared := CalcResidualSquared(FFitAtPoints[2], FFitAtPoints[1]);
+    OCsquared := CalcResidualSquared(FFitAtPoints[FitColumnType.yObserved], FFitAtPoints[FitColumnType.yFit]);
 
     FFitFormula := '# Python'^M^J^M^J +
                    'import numpy as np'^M^J +

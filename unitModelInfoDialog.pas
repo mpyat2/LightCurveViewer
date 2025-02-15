@@ -37,8 +37,8 @@ type
     procedure ActionSelectAllExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
-    FX, FY: array[0..1] of TFloatArray;
-    Y2_2: TFloatArray;
+    FContiniousFit: TFitColumnArray;
+    FFitAtPoints: TFitColumnArray;
     procedure UpdateGridProps;
     function GetActiveGrid: TDrawGrid;
     function GetGridCell(Grid: TDrawGrid; C, R: Integer): string;
@@ -48,7 +48,8 @@ type
   end;
 
 procedure ShowModelInfo(const Info, Formula: string;
-                        const X1, Y1, X2, Y2, Y2_2: TFloatArray);
+                        const ContiniousFit: TFitColumnArray;
+                        const FitAtPoints: TFitColumnArray);
 
 implementation
 
@@ -58,7 +59,8 @@ uses
   Clipbrd;
 
 procedure ShowModelInfo(const Info, Formula: string;
-                        const X1, Y1, X2, Y2, Y2_2: TFloatArray);
+                        const ContiniousFit: TFitColumnArray;
+                        const FitAtPoints: TFitColumnArray);
 var
   F: TFormInfo;
 begin
@@ -66,11 +68,8 @@ begin
   try
     F.MemoInfo.Text := Info;
     F.MemoFormula.Text := Formula;
-    F.FX[0] := X1;
-    F.FY[0] := Y1;
-    F.FX[1] := X2;
-    F.FY[1] := Y2;
-    F.Y2_2 := Y2_2;
+    F.FContiniousFit := ContiniousFit;
+    F.FFitAtPoints := FitAtPoints;
     F.UpdateGridProps;
     F.ShowModal;
   finally
@@ -139,21 +138,24 @@ end;
 
 procedure TFormInfo.UpdateGridProps;
 begin
-  DrawGridModelData.RowCount := DrawGridModelData.FixedRows + Length(FX[0]);
-  DrawGridModelPoints.RowCount := DrawGridModelData.FixedRows + Length(FX[1]);
+  DrawGridModelData.ColCount := DrawGridModelData.FixedCols + 3;
+  DrawGridModelData.RowCount := DrawGridModelData.FixedRows + Length(FContiniousFit[FitColumnType.x]);
+
+  DrawGridModelPoints.ColCount := DrawGridModelData.FixedCols + 5;
+  DrawGridModelPoints.RowCount := DrawGridModelData.FixedRows + Length(FFitAtPoints[FitColumnType.x]);
 end;
 
 function TFormInfo.GetGridCell(Grid: TDrawGrid; C, R: Integer): string;
 var
   Idx: Integer;
-  GridIndex: Integer;
+  DataArray: TFitColumnArray;
 begin
   Result := '';
   if Grid = DrawGridModelData then
-    GridIndex := 0
+    DataArray := FContiniousFit
   else
   if Grid = DrawGridModelPoints then
-    GridIndex := 1
+    DataArray := FFitAtPoints
   else
     Exit;
   if R < Grid.FixedRows then begin
@@ -164,27 +166,31 @@ begin
       Result := 'Calculated Magnitude'
     else
     if C = Grid.FixedCols + 2 then
-      Result := 'Observed Magnitude'
+      Result := 'Calc. Mag. Error'
     else
     if C = Grid.FixedCols + 3 then
+      Result := 'Observed Magnitude'
+    else
+    if C = Grid.FixedCols + 4 then
       Result := 'Observed - Calculated';
   end
   else begin
     Idx := R - Grid.FixedRows;
-    if (Idx >= 0) and (Idx < Length(FX[GridIndex])) then begin
+    if (Idx >= 0) and (Idx < Length(DataArray[FitColumnType.x])) then begin
       if C = Grid.FixedCols then
-        Result := FloatToStr(FX[GridIndex][Idx])
+        Result := FloatToStr(DataArray[FitColumnType.x][Idx])
       else
       if C = Grid.FixedCols + 1 then
-        Result := FloatToStr(FY[GridIndex][Idx])
+        Result := FloatToStr(DataArray[FitColumnType.yFit][Idx])
       else
-      if Grid = DrawGridModelPoints then begin
-        if C = Grid.FixedCols + 2 then
-          Result := FloatToStr(Y2_2[Idx])
-        else
-        if C = Grid.FixedCols + 3 then
-          Result := FloatToStr(Y2_2[Idx] - FY[GridIndex][Idx]);
-      end;
+      if C = Grid.FixedCols + 2 then
+        Result := FloatToStr(DataArray[FitColumnType.yErrors][Idx])
+      else
+      if (C = Grid.FixedCols + 3) and (DataArray[FitColumnType.yObserved] <> nil) then
+        Result := FloatToStr(DataArray[FitColumnType.yObserved][Idx])
+      else
+      if (C = Grid.FixedCols + 4) and (DataArray[FitColumnType.yObserved] <> nil) then
+        Result := FloatToStr(DataArray[FitColumnType.yObserved][Idx] - DataArray[FitColumnType.yFit][Idx]);
     end;
   end;
 end;
