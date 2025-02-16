@@ -9,7 +9,7 @@ interface
 uses
   Classes, SysUtils, IniFiles, Forms, Controls, Graphics, Dialogs, Menus,
   ActnList, ComCtrls, TAGraph, TASources, TASeries, TACustomSource, TATools,
-  DoLongOp, lcvtypes;
+  DoLongOp, lcvtypes, Types;
 
 type
 
@@ -38,6 +38,7 @@ type
     ChartLineSeriesModel: TLineSeries;
     ChartLineSeriesData: TLineSeries;
     ChartToolset: TChartToolset;
+    ChartToolsetDataPointClickTool1: TDataPointClickTool;
     ChartToolsetPanDragTool1: TPanDragTool;
     ChartToolsetZoomDragTool1: TZoomDragTool;
     ChartToolsetZoomMouseWheelTool1: TZoomMouseWheelTool;
@@ -102,11 +103,13 @@ type
     procedure ChartMouseEnter(Sender: TObject);
     procedure ChartMouseLeave(Sender: TObject);
     procedure ChartMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+    procedure ChartToolsetDataPointClickTool1PointClick(ATool: TChartTool; APoint: TPoint);
     procedure FormCreate(Sender: TObject);
     procedure UDFSrcModelFoldedGetChartDataItem(ASource: TUserDefinedChartSource; AIndex: Integer; var AItem: TChartDataItem);
     procedure UDFSrcModelGetChartDataItem(ASource: TUserDefinedChartSource; AIndex: Integer; var AItem: TChartDataItem);
   private
     FFileName: string;
+    FObjectName: string;
     FPeriodogramFirstRun: Boolean;
     FDFTThreadTerminated: Boolean;
     FFitFormula: string;
@@ -153,7 +156,7 @@ implementation
 {$R *.lfm}
 
 uses
-  Windows, math, TAChartUtils, unitPhaseDialog, unitFitParamDialog,
+  Windows, math, TACustomSeries, TAChartUtils, unitPhaseDialog, unitFitParamDialog,
   unitDFTparamDialog, unitDFTdialog, unitDFT, unitTableDialog,
   unitModelInfoDialog, unitAbout, dftThread, dataio, sortutils, formatutils,
   miscutils, fitproc;
@@ -187,6 +190,27 @@ begin
   except
     on E: Exception do
       StatusBar1.Panels[0].Text := '';
+  end;
+end;
+
+procedure TFormMain.ChartToolsetDataPointClickTool1PointClick(ATool: TChartTool; APoint: TPoint);
+var
+  Tool: TDatapointClickTool;
+  Series: TLineSeries;
+  S, S1: String;
+  X, Y: Double;
+begin
+  Tool := ATool as TDatapointClickTool;
+  if Tool.Series = ChartLineSeriesData then begin
+    Series := Tool.Series as TLineSeries;
+    X := Series.GetXValue(Tool.PointIndex);
+    Y := Series.GetYValue(Tool.PointIndex);
+    S1 := Format('x = %f'#13#10'y = %f', [X, Y]);
+    S := Series.ListSource.Item[Tool.PointIndex]^.Text;
+    if S = S1 then
+      Series.ListSource.SetText(Tool.PointIndex, '')
+    else
+      Series.ListSource.SetText(Tool.PointIndex, S1);
   end;
 end;
 
@@ -382,8 +406,11 @@ end;
 procedure TFormMain.UpdateTitle;
 begin
   Caption := 'LCV';
-  if FFileName <> '' then
+  Chart.Title.Text.Text := 'LCV';
+  if FFileName <> '' then begin
     Caption := ExtractFileName(FFileName) + ' - ' + Caption;
+    Chart.Title.Text.Text := FObjectName;
+  end;
 end;
 
 procedure TFormMain.UDFSrcModelGetChartDataItem(
@@ -514,6 +541,7 @@ var
   tempIArray: TInt3Array = (0, 0, 0);
 begin
   FFileName := '';
+  FObjectName := '';
   UpdateTitle;
   FFitFormula := '';
   FFitInfo := '';
@@ -548,11 +576,12 @@ end;
 procedure TFormMain.OpenFile(const AFileName: string);
 var
   X, Y: TFloatArray;
+  TempObjectName: string;
   I: Integer;
 begin
   CloseFile;
   try
-    ReadData(AFileName, X, Y);
+    ReadData(AFileName, X, Y, TempObjectName);
   except
     on E: Exception do begin
       ShowMessage(E.Message);
@@ -569,6 +598,7 @@ begin
   end;
 
   FFileName := AFileName;
+  FObjectName := TempObjectName;
   UpdateTitle;
   unitPhaseDialog.SetCurrentEpoch((MaxValue(X) + MinValue(X)) / 2.0);
   for I := 0 to Length(X) - 1 do begin
@@ -827,7 +857,7 @@ procedure TFormMain.DoPolyFit;
         F := Freq[I];
     end;
     if not IsNan(F) and (F > 0) then
-      Result := 1.0 / F * 0.01;
+      Result := 1.0 / F * 0.01 * 0.5;
   end;
 
 var
@@ -844,7 +874,6 @@ var
   nfit: Integer;
   Item: PChartDataItem;
   I: Integer;
-  FitColumn: FitColumnType;
 begin
   if LCSrcData.Count > 0 then begin
     if not GetFitParams(TrendDegree, TrigPolyDegrees, Frequencies) then
@@ -875,6 +904,7 @@ begin
     if IsNan(fitXstep) then
       fitXstep := (fitXmax - fitXmin) / (LCSrcData.Count * 3);
     nfit := Ceil((fitXmax - fitXmin) / fitXstep);
+    nfit := Ceil(nfit / 10) * 10;
     if nfit > 100000 then begin
       nfit := 100000;
       fitXstep := (fitXmax - fitXmin) / nfit;

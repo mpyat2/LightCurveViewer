@@ -22,12 +22,20 @@ object FormAbout: TFormAbout
     TabOrder = 1
     object Memo1: TMemo
       Left = 1
-      Height = 287
+      Height = 272
       Top = 1
       Width = 511
       Align = alClient
       ReadOnly = True
       TabOrder = 0
+    end
+    object LabelVersion: TLabel
+      Left = 1
+      Height = 15
+      Top = 273
+      Width = 511
+      Align = alBottom
+      Caption = ' Version'
     end
   end
   object Panel2: TPanel

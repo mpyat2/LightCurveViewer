@@ -224,7 +224,7 @@ object FormDFTDialog: TFormDFTDialog
     end
     object ChartToolset1DataPointClickTool1: TDataPointClickTool
       Shift = [ssLeft]
-      OnAfterMouseDown = ChartToolset1DataPointClickTool1AfterMouseDown
+      OnPointClick = ChartToolset1DataPointClickTool1PointClick
     end
     object ChartToolset1ZoomMouseWheelTool1: TZoomMouseWheelTool
       ZoomFactor = 0.95

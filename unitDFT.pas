@@ -43,7 +43,7 @@ uses
   miscutils, fitproc;
 
 const
-  GlobalCounterIncrement = 1000;
+  GlobalCounterIncrement = 100;
 
 var
   GlobalTerminateAllThreads: Boolean = False;

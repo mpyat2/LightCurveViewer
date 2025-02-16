@@ -99,7 +99,6 @@ end;
 procedure SortDataPoints(var X, Y: TFloatArray);
 var
   List: TList;
-  Item: TXY;
   I: Integer;
 begin
   Assert(Length(X) = Length(Y), 'SortDataPoints: X and Y must be of equal length');
@@ -125,7 +124,6 @@ end;
 procedure SortFloatArray(var X: TFloatArray);
 var
   List: TList;
-  Item: TXY;
   I: Integer;
 begin
   List := TList.Create;

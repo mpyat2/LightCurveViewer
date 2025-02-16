@@ -51,8 +51,7 @@ type
     procedure ActionGridSelectAllExecute(Sender: TObject);
     procedure ActionListUpdate(AAction: TBasicAction; var Handled: Boolean);
     procedure ButtonCloseClick(Sender: TObject);
-    procedure ChartToolset1DataPointClickTool1AfterMouseDown(ATool: TChartTool;
-      APoint: TPoint);
+    procedure ChartToolset1DataPointClickTool1PointClick(ATool: TChartTool; APoint: TPoint);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -166,11 +165,40 @@ begin
   Close;
 end;
 
-procedure TFormDFTDialog.ChartToolset1DataPointClickTool1AfterMouseDown(
-  ATool: TChartTool; APoint: TPoint);
+//procedure TFormDFTDialog.ChartToolset1DataPointClickTool1AfterMouseDown(
+//  ATool: TChartTool; APoint: TPoint);
+//var
+//  Item: PChartDataItem;
+//  PointClickTool: TDataPointClickTool;
+//  Series: TChartSeries;
+//  PointIndex: Integer;
+//begin
+  //PointClickTool := ATool as TDataPointClickTool;
+  //Series := PointClickTool.Series as TChartSeries;
+  //
+  //if Series = Chart1LineSeries2 then
+  //  Exit;
+  //
+  //EditFrequency.Text := '';
+  //EditPeriod.Text := '';
+  //EditPower.Text := '';
+  //Chart1LineSeries2.Clear;
+  //
+  //if Series = nil then
+  //  Exit;
+  //
+  //PointIndex := PointClickTool.PointIndex;
+  //Item := Series.ListSource.Item[PointIndex];
+  //EditFrequency.Text := FloatToStr(Item^.X);
+  //EditPower.Text := FloatToStr(Item^.Y);
+  //if (Item^.X <> 0) then
+  //  EditPeriod.Text := FloatToStr(1.0 / Item^.X);
+  //Chart1LineSeries2.AddXY(Item^.X, Item^.Y);
+//end;
+
+procedure TFormDFTDialog.ChartToolset1DataPointClickTool1PointClick(ATool: TChartTool; APoint: TPoint);
 var
   Item: PChartDataItem;
-var
   PointClickTool: TDataPointClickTool;
   Series: TChartSeries;
   PointIndex: Integer;

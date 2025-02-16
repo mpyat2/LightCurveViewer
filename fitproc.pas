@@ -4,6 +4,8 @@ unit fitproc;
 
 {$include LCV.inc}
 
+{.$DEFINE Y_ERRORS_WITH_VAR_OF_RESIDUALS}
+
 interface
 
 uses
@@ -167,6 +169,7 @@ procedure CalculateFitAtPointsExt(const a: TFloatArray;
                                   const solution_vector: TFloatArray;
                                   ATrendDegree: Integer;
                                   const ATrigPolyDegrees: TInt3Array;
+                                  SigmaSq: Double;
                                   const XTXI: TFloatArray;
                                   ndata: Integer;
                                   out fit: TFloatArray;
@@ -208,6 +211,10 @@ begin
       end;
     end;
 
+{$IFDEF Y_ERRORS_WITH_VAR_OF_RESIDUALS}
+    fitError[I] := fitError[I] + SigmaSq;
+{$ENDIF}
+
     fitError[I] := Sqrt(fitError[I]);
   end;
 end;
@@ -217,6 +224,7 @@ procedure CalculateFit(fitXmin, fitXmax, fitXstep: Double;
                        const ATrigPolyDegrees: TInt3Array;
                        const AFrequencies: TDouble3Array;
                        const solution_vector: TFloatArray;
+                       SigmaSq: Double;
                        const XTXI: TFloatArray;
                        out Xfit: TFloatArray;
                        out Yfit: TFloatArray;
@@ -228,6 +236,9 @@ var
   NofParameters: Integer;
 begin
   nfit := Ceil((fitXmax - fitXmin) / fitXstep);
+  if fitXmin + nfit * fitXstep < fitXmax then
+    nfit := nfit + 1;
+  nfit := nfit + 1;
   SetLength(Xfit, nfit);
   SetLength(Yfit, nfit);
   SetLength(YfitErrors, nfit);
@@ -269,6 +280,10 @@ begin
       end;
     end;
 
+{$IFDEF Y_ERRORS_WITH_VAR_OF_RESIDUALS}
+    YfitErrors[I] := YfitErrors[I] + SigmaSq;
+{$ENDIF}
+
     YfitErrors[I] := Sqrt(YfitErrors[I]);
   end;
 end;
@@ -278,12 +293,13 @@ procedure CalcCoefficientErrors(const Xmatrix: TFloatArray; // design matrix
                                 const beta: TFloatArray;    // solution vector
                                 m: Integer;                 // number of equations  (rows in Xmatrix)
                                 n: Integer;                 // number of parameters (columns in Xmatrix)
+                                out SigmaSq: Double;        // Variance of residuals
                                 out XTXI: TFloatArray;      // Variance-Covariance Matrix of the Coefficients
                                 out Errors: TFloatArray);   // errors of the coefficients
 var
   XmatrixTrans: TFloatArray;
   YvectorPredicted: TFloatArray;
-  RSS, SigmaSq, TempV: Double;
+  RSS, TempV: Double;
   C, R, Idx: Integer;
   term: typ.ArbInt;
 begin
@@ -354,13 +370,12 @@ procedure PolyFit(const Xarray: TFloatArray;
                   out Formula: string;
                   out Info: string);
 var
-  nfit: Integer;
   a: TFloatArray;
   solution_vector: TFloatArray;
+  SigmaSq: Double;
   XTXI: TFloatArray;
   solution_vector_errors: TFloatArray;
-  nu, angle, c, s: Double;
-  x: Double;
+  nu, angle: Double;
   I, II, N, Idx, Idx2: Integer;
   NofParameters: Integer;
   ndata: Integer;
@@ -412,11 +427,11 @@ begin
 
   PolyFitSolution(a, Yarray, NofParameters, solution_vector);
 
-  CalcCoefficientErrors(a, Yarray, solution_vector, ndata, NofParameters, XTXI, solution_vector_errors);
+  CalcCoefficientErrors(a, Yarray, solution_vector, ndata, NofParameters, SigmaSq, XTXI, solution_vector_errors);
 
-  CalculateFitAtPointsExt(a, solution_vector, ATrendDegree, ATrigPolyDegrees, XTXI, ndata, FitAtPoints, FitAtPointsErrors);
+  CalculateFitAtPointsExt(a, solution_vector, ATrendDegree, ATrigPolyDegrees, SigmaSq, XTXI, ndata, FitAtPoints, FitAtPointsErrors);
 
-  CalculateFit(fitXmin, fitXmax, fitXstep, ATrendDegree, ATRigPolyDegrees, AFrequencies, solution_vector, XTXI, Xfit, Yfit, YfitErrors);
+  CalculateFit(fitXmin, fitXmax, fitXstep, ATrendDegree, ATRigPolyDegrees, AFrequencies, solution_vector, SigmaSq, XTXI, Xfit, Yfit, YfitErrors);
 
   PolyFitSolutionToFormula(ATrendDegree, ATrigPolyDegrees, AFrequencies, solution_vector, solution_vector_errors, Formula, Info);
 end;

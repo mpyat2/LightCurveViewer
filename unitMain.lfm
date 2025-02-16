@@ -43,8 +43,9 @@ object FormMain: TFormMain
       end>
     BackColor = clWhite
     Title.Text.Strings = (
-      'TAChart'
+      'LCV'
     )
+    Title.Visible = True
     Toolset = ChartToolset
     Align = alClient
     Color = clWhite
@@ -53,7 +54,11 @@ object FormMain: TFormMain
     OnMouseLeave = ChartMouseLeave
     OnMouseMove = ChartMouseMove
     object ChartLineSeriesData: TLineSeries
+      LinePen.Color = clPurple
       LineType = ltNone
+      Marks.Format = '%2:s'
+      Marks.LinkPen.Color = clBlack
+      Marks.Style = smsLabel
       Pointer.Brush.Color = clPurple
       Pointer.HorizSize = 2
       Pointer.Pen.Color = clPurple
@@ -342,6 +347,10 @@ object FormMain: TFormMain
     end
     object ChartToolsetZoomMouseWheelTool1: TZoomMouseWheelTool
       ZoomFactor = 0.95
+    end
+    object ChartToolsetDataPointClickTool1: TDataPointClickTool
+      Shift = [ssLeft]
+      OnPointClick = ChartToolsetDataPointClickTool1PointClick
     end
   end
   object SaveDialog: TSaveDialog
