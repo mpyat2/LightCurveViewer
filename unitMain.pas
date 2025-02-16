@@ -115,6 +115,14 @@ type
     FModelData: TFitColumnArray;
     FModelFolded: TFitColumnArray;
     procedure UpdateTitle;
+    procedure ChartSeriesModelToNil;
+    procedure ChartSeriesModelToModel;
+    procedure ChartSeriesModelToModelFolded;
+    procedure ClearUDFSrcModel;
+    procedure ClearUDFSrcModelFolded;
+    procedure ClearFitAtPoints;
+    procedure ClearModelData;
+    procedure ClearModelFolded;
     procedure CloseFile;
     procedure OpenFile(const AFileName: string);
     procedure SaveFileAs(const AFileName: string; const X, Y: TFloatArray);
@@ -432,45 +440,98 @@ begin
   end;
 end;
 
-procedure TFormMain.CloseFile;
-var
-  tempDArray: TDouble3Array = (NaN, NaN, NaN);
-  tempIArray: TInt3Array = (0, 0, 0);
-  FitColumn: FitColumnType;
+procedure TFormMain.ChartSeriesModelToNil;
 begin
-  FFileName := '';
-  UpdateTitle;
-  FFitFormula := '';
-  FFitInfo := '';
-  for FitColumn := Low(FitColumnType) to High(FitColumnType) do begin
-    FFitAtPoints[FitColumn] := nil;
-  end;
-  for FitColumn := Low(FitColumnType) to High(FitColumnType) do begin
-    FModelData[FitColumn] := nil;
-    FModelFolded[FitColumn] := nil;
-  end;
-  FPeriodogramFirstRun := True;
-  ChartLineSeriesData.Source := nil;
   ChartLineSeriesModel.Source := nil;
   ChartLineSeriesModelUpLimit.Source := nil;
   ChartLineSeriesModelDownLimit.Source := nil;
-  LCSrcData.Clear;
-  LCSrcFoldedData.Clear;
-  // Model uses virtual sources
+end;
+
+procedure TFormMain.ChartSeriesModelToModel;
+begin
+  ChartLineSeriesModel.Source := UDFSrcModel;
+  ChartLineSeriesModelUpLimit.Source := UDFSrcModelUpLimit;
+  ChartLineSeriesModelDownLimit.Source := UDFSrcModelDownLimit;
+end;
+
+procedure TFormMain.ChartSeriesModelToModelFolded;
+begin
+  ChartLineSeriesModel.Source := UDFSrcModelFolded;
+  ChartLineSeriesModelUpLimit.Source := UDFSrcModelFoldedUpLimit;
+  ChartLineSeriesModelDownLimit.Source := UDFSrcModelFoldedDownLimit;;
+end;
+
+procedure TFormMain.ClearUDFSrcModel;
+begin
   UDFSrcModel.PointsNumber := 0;
   UDFSrcModel.Reset;
   UDFSrcModelUpLimit.PointsNumber := 0;
   UDFSrcModelUpLimit.Reset;
   UDFSrcModelDownLimit.PointsNumber := 0;
   UDFSrcModelDownLimit.Reset;
+end;
+
+procedure TFormMain.ClearUDFSrcModelFolded;
+begin
   UDFSrcModelFolded.PointsNumber := 0;
   UDFSrcModelFolded.Reset;
   UDFSrcModelFoldedUpLimit.PointsNumber := 0;
   UDFSrcModelFoldedUpLimit.Reset;
   UDFSrcModelFoldedDownLimit.PointsNumber := 0;
   UDFSrcModelFoldedDownLimit.Reset;
+end;
+
+procedure TFormMain.ClearFitAtPoints;
+var
+  FitColumn: FitColumnType;
+begin
+  for FitColumn := Low(FitColumnType) to High(FitColumnType) do begin
+    FFitAtPoints[FitColumn] := nil;
+  end;
+end;
+
+procedure TFormMain.ClearModelData;
+var
+  FitColumn: FitColumnType;
+begin
+  for FitColumn := Low(FitColumnType) to High(FitColumnType) do begin
+    FModelData[FitColumn] := nil;
+  end;
+end;
+
+procedure TFormMain.ClearModelFolded;
+var
+  FitColumn: FitColumnType;
+begin
+  for FitColumn := Low(FitColumnType) to High(FitColumnType) do begin
+    FModelFolded[FitColumn] := nil;
+  end;
+end;
+
+procedure TFormMain.CloseFile;
+var
+  tempDArray: TDouble3Array = (NaN, NaN, NaN);
+  tempIArray: TInt3Array = (0, 0, 0);
+begin
+  FFileName := '';
+  UpdateTitle;
+  FFitFormula := '';
+  FFitInfo := '';
+  FPeriodogramFirstRun := True;
+  // Data
+  ChartLineSeriesData.Source := nil;
+  LCSrcData.Clear;
+  LCSrcFoldedData.Clear;
+  // Model (virtual sources)
+  ChartSeriesModelToNil;
+  ClearUDFSrcModel;
+  ClearUDFSrcModelFolded;
+  ClearModelData;
+  ClearModelFolded;
   //
-  SetAxisBoundaries(-1, 1, -1, 1);
+  ClearFitAtPoints;
+  //
+  SetAxisBoundaries(-1.0, 1.0, -1.0, 1.0);
   unitPhaseDialog.SetCurrentEpoch(NaN);
   unitPhaseDialog.SetCurrentPeriod(NaN);
   unitDFTparamDialog.SetCurrentFrequencyMin(NaN);
@@ -600,16 +661,12 @@ begin
     StatusBar1.Panels[0].Text := '';
     StatusBar1.Panels[1].Text := '';
     ChartLineSeriesData.Source := nil;
-    ChartLineSeriesModel.Source := nil;
-    ChartLineSeriesModelUpLimit.Source := nil;
-    ChartLineSeriesModelDownLimit.Source := nil;
+    ChartSeriesModelToNil;
     SourceExtent := LCSrcData.Extent;
-    //SetAxisBoundaries(SourceExtent.coords[1], SourceExtent.coords[3], SourceExtent.coords[2], SourceExtent.coords[4], True, True);
+    SetAxisBoundaries(SourceExtent.coords[1], SourceExtent.coords[3], SourceExtent.coords[2], SourceExtent.coords[4]);
     ChartLineSeriesData.Source := LCSrcData;
     if UDFSrcModel.Count > 0 then begin
-      ChartLineSeriesModel.Source := UDFSrcModel;
-      ChartLineSeriesModelUpLimit.Source := UDFSrcModelUpLimit;
-      ChartLineSeriesModelDownLimit.Source := UDFSrcModelDownLimit;
+      ChartSeriesModelToModel;
     end;
   end;
 end;
@@ -638,16 +695,12 @@ begin
   StatusBar1.Panels[0].Text := '';
   StatusBar1.Panels[1].Text := '';
   ChartLineSeriesData.Source := nil;
-  ChartLineSeriesModel.Source := nil;
-  ChartLineSeriesModelUpLimit.Source := nil;
-  ChartLineSeriesModelDownLimit.Source := nil;
+  ChartSeriesModelToNil;
   SourceExtent := LCSrcFoldedData.Extent;
   SetAxisBoundaries(-1.0, 1.0, SourceExtent.coords[2], SourceExtent.coords[4]);
   ChartLineSeriesData.Source := LCSrcFoldedData;
   if UDFSrcModelFolded.Count > 0 then begin
-    ChartLineSeriesModel.Source := UDFSrcModelFolded;
-    ChartLineSeriesModelUpLimit.Source := UDFSrcModelFoldedUpLimit;
-    ChartLineSeriesModelDownLimit.Source := UDFSrcModelFoldedDownLimit;;
+    ChartSeriesModelToModelFolded;
   end;
   StatusBar1.Panels[1].Text := ' P= ' + FloatToStr(unitPhaseDialog.GetCurrentPeriod) + ^I' E= ' + FloatToStr(unitPhaseDialog.GetCurrentEpoch) + ' ';
 end;
@@ -658,6 +711,7 @@ var
   FitColumn: FitColumnType;
   L, I: Integer;
 begin
+  ClearUDFSrcModelFolded;
   Period := unitPhaseDialog.GetCurrentPeriod;
   Epoch := unitPhaseDialog.GetCurrentEpoch;
   for FitColumn := Low(FitColumnType) to High(FitColumnType) do begin
@@ -706,13 +760,8 @@ begin
     Period := unitPhaseDialog.GetCurrentPeriod;
     Epoch := unitPhaseDialog.GetCurrentEpoch;
     LCSrcFoldedData.Clear;
-    // Model uses virtual sources
-    UDFSrcModelFolded.PointsNumber := 0;
-    UDFSrcModelFolded.Reset;
-    UDFSrcModelFoldedUpLimit.PointsNumber := 0;
-    UDFSrcModelFoldedUpLimit.Reset;
-    UDFSrcModelFoldedDownLimit.PointsNumber := 0;
-    UDFSrcModelFoldedDownLimit.Reset;
+    // Model (virtual sources)
+    ClearUDFSrcModelFolded;
     //
     for I := 0 to LCSrcData.Count - 1 do begin
       Item := LCSrcData.Item[I];
@@ -803,16 +852,10 @@ begin
     SaveDataSettings;
     FFitFormula := '';
     FFitInfo := '';
-    for FitColumn := Low(FitColumnType) to High(FitColumnType) do begin
-      FFitAtPoints[FitColumn] := nil;
-    end;
-    for FitColumn := Low(FitColumnType) to High(FitColumnType) do begin
-      FModelData[FitColumn] := nil;
-      FModelFolded[FitColumn] := nil;
-    end;
-    ChartLineSeriesModel.Source := nil;
-    ChartLineSeriesModelUpLimit.Source := nil;
-    ChartLineSeriesModelDownLimit.Source := nil;
+    ChartSeriesModelToNil;
+    ClearFitAtPoints;
+    ClearModelData;
+    ClearModelFolded;
     SetLength(X, LCSrcData.Count);
     SetLength(Y, LCSrcData.Count);
     for I := 0 to LCSrcData.Count - 1 do begin
@@ -838,24 +881,14 @@ begin
     end;
 
     // Model uses virtual sources
-    UDFSrcModel.PointsNumber := 0;
-    UDFSrcModel.Reset;
-    UDFSrcModelUpLimit.PointsNumber := 0;
-    UDFSrcModelUpLimit.Reset;
-    UDFSrcModelDownLimit.PointsNumber := 0;
-    UDFSrcModelDownLimit.Reset;
-    UDFSrcModelFolded.PointsNumber := 0;
-    UDFSrcModelFolded.Reset;
-    UDFSrcModelFoldedUpLimit.PointsNumber := 0;
-    UDFSrcModelFoldedUpLimit.Reset;
-    UDFSrcModelFoldedDownLimit.PointsNumber := 0;
-    UDFSrcModelFoldedDownLimit.Reset;
+    ClearUDFSrcModel;
+    ClearUDFSrcModelFolded;
     //
-    for FitColumn := Low(FitColumnType) to High(FitColumnType) do begin
-      FModelData[FitColumn] := nil;
-      FModelFolded[FitColumn] := nil;
-    end;
-
+    ClearModelData;
+    ClearModelFolded;
+    //
+    ClearFitAtPoints;
+    //
     try
       PolyFit(X, Y, TrendDegree, TrigPolyDegrees, Frequencies,
               fitXmin, fitXmax, fitXstep,
@@ -918,21 +951,15 @@ begin
     UDFSrcModelDownLimit.PointsNumber := UDFSrcModel.PointsNumber;
     UDFSrcModelDownLimit.Reset;
     if ChartLineSeriesData.Source = LCSrcData then begin
-      ChartLineSeriesModel.Source := UDFSrcModel;
-      ChartLineSeriesModelUpLimit.Source := UDFSrcModelUpLimit;
-      ChartLineSeriesModelDownLimit.Source := UDFSrcModelDownLimit;
+      ChartSeriesModelToModel;
     end
     else
     if ChartLineSeriesData.Source = LCSrcFoldedData then begin
       CalculateModelPhasePlot;
-      ChartLineSeriesModel.Source := UDFSrcModelFolded;
-      ChartLineSeriesModelUpLimit.Source := UDFSrcModelFoldedUpLimit;
-      ChartLineSeriesModelDownLimit.Source := UDFSrcModelFoldedDownLimit;
+      ChartSeriesModelToModelFolded;
     end
     else begin
-      ChartLineSeriesModel.Source := nil;
-      ChartLineSeriesModelUpLimit.Source := nil;
-      ChartLineSeriesModelDownLimit.Source := nil;
+      ChartSeriesModelToNil;
     end;
 
     ChartLineSeriesModel.Active := True;
