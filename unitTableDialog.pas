@@ -8,7 +8,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Grids, Menus, ActnList,
-  ExtCtrls, StdCtrls, common;
+  ExtCtrls, StdCtrls, lcvtypes;
 
 type
 
@@ -44,7 +44,7 @@ implementation
 {$R *.lfm}
 
 uses
-  Clipbrd;
+  Clipbrd, guiutils;
 
 procedure ShowTable(const X, Y: TFloatArray; const Xname, Yname: string);
 var

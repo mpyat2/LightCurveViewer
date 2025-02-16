@@ -7,13 +7,16 @@ unit dataio;
 interface
 
 uses
-  Classes, SysUtils, common;
+  Classes, SysUtils, lcvtypes;
 
 procedure ReadData(const AFileName: string; out X: TFloatArray; out Y: TFloatArray);
 
 procedure WriteData(const AFileName: string; const X: TFloatArray; const Y: TFloatArray);
 
 implementation
+
+uses
+  formatutils, sortutils;
 
 // Reads a text file assuming it contains columns of the floating-point values.
 // Only the first two columns are taken into account.
@@ -24,7 +27,6 @@ implementation
 // The columns are assumed to be separated by tabs or spaces.
 procedure ReadData(const AFileName: string; out X: TFloatArray; out Y: TFloatArray);
 var
-  TempXYlist: TList;
   Lines, Line: TStrings;
   S: string;
   FX, FY: Double;
@@ -33,42 +35,32 @@ begin
   Lines := TStringList.Create;
   try
     Lines.LoadFromFile(AFileName);
-    TempXYlist := TList.Create;
+    Line := TStringList.Create;
     try
-      Line := TStringList.Create;
-      try
-        Line.Delimiter := #127;
-        Line.QuoteChar := '"';
-        N := 0;
-        for I := 0 to Lines.Count - 1 do begin
-          S := Trim(Lines[I]);
-          if (S = '') or (S[1] = '#') or (Pos(#127, S) > 0) then
-            Continue;
-          // DelimitedText treats repeating spaces (including tabs) as one delimiter.
-          // To workaround this, use a spercial character.
-          Line.DelimitedText := StringReplace(S, ^I, #127, [rfReplaceAll]);
-          if Line.Count > 1 then begin
-            if StringToFloatLocaleIndependent(Line[0], FX) and StringToFloatLocaleIndependent(Line[1], FY) then begin
-              TempXYlist.Add(TXY.Create(FX, FY));
-              Inc(N);
-            end;
+      Line.Delimiter := #127;
+      Line.QuoteChar := '"';
+      SetLength(X, Lines.Count);
+      SetLength(Y, Lines.Count);
+      N := 0;
+      for I := 0 to Lines.Count - 1 do begin
+        S := Trim(Lines[I]);
+        if (S = '') or (S[1] = '#') or (Pos(#127, S) > 0) then
+          Continue;
+        // DelimitedText treats repeating spaces (including tabs) as one delimiter.
+        // To workaround this, use a spercial character.
+        Line.DelimitedText := StringReplace(S, ^I, #127, [rfReplaceAll]);
+        if Line.Count > 1 then begin
+          if StringToFloatLocaleIndependent(Line[0], FX) and StringToFloatLocaleIndependent(Line[1], FY) then begin
+            X[N] := FX;
+            Y[N] := FY;
+            Inc(N);
           end;
         end;
-        // While it is not required now, sort the data
-        TempXYlist.Sort(@CompareXY);
-        SetLength(X, N);
-        SetLength(Y, N);
-        for I := 0 to N - 1 do begin
-          X[I] := TXY(TempXYlist.Items[I]).X;
-          Y[I] := TXY(TempXYlist.Items[I]).Y;
-        end;
-      finally
-        for I := TempXYlist.Count - 1 downto 0 do begin
-          TXY(TempXYlist[I]).Free;
-          TempXYlist[I] := nil;
-        end;
-        FreeAndNil(TempXYlist);
       end;
+      SetLength(X, N);
+      SetLength(Y, N);
+      // While it is not required now, sort the data
+      SortDataPoints(X, Y);
     finally
       FreeAndNil(Line);
     end;

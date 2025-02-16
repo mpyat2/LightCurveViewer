@@ -9,7 +9,7 @@ interface
 uses
   Classes, SysUtils, IniFiles, Forms, Controls, Graphics, Dialogs, Menus,
   ActnList, ComCtrls, TAGraph, TASources, TASeries, TACustomSource, TATools,
-  DoLongOp, common;
+  DoLongOp, lcvtypes;
 
 type
 
@@ -42,7 +42,6 @@ type
     ChartToolsetZoomDragTool1: TZoomDragTool;
     ChartToolsetZoomMouseWheelTool1: TZoomMouseWheelTool;
     ImageList: TImageList;
-    LCSourceFoldedModel: TListChartSource;
     LCSrcFoldedData: TListChartSource;
     LCSrcData: TListChartSource;
     MainMenu: TMainMenu;
@@ -81,6 +80,9 @@ type
     UDFSrcModel: TUserDefinedChartSource;
     UDFSrcModelUpLimit: TUserDefinedChartSource;
     UDFSrcModelDownLimit: TUserDefinedChartSource;
+    UDFSrcModelFolded: TUserDefinedChartSource;
+    UDFSrcModelFoldedUpLimit: TUserDefinedChartSource;
+    UDFSrcModelFoldedDownLimit: TUserDefinedChartSource;
     procedure ActionCopyChartExecute(Sender: TObject);
     procedure ActionListUpdate(AAction: TBasicAction; var Handled: Boolean);
     procedure ActionAboutExecute(Sender: TObject);
@@ -101,6 +103,7 @@ type
     procedure ChartMouseLeave(Sender: TObject);
     procedure ChartMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure FormCreate(Sender: TObject);
+    procedure UDFSrcModelFoldedGetChartDataItem(ASource: TUserDefinedChartSource; AIndex: Integer; var AItem: TChartDataItem);
     procedure UDFSrcModelGetChartDataItem(ASource: TUserDefinedChartSource; AIndex: Integer; var AItem: TChartDataItem);
   private
     FFileName: string;
@@ -110,6 +113,7 @@ type
     FFitInfo: string;
     FFitAtPoints: TFitColumnArray;
     FModelData: TFitColumnArray;
+    FModelFolded: TFitColumnArray;
     procedure UpdateTitle;
     procedure CloseFile;
     procedure OpenFile(const AFileName: string);
@@ -143,7 +147,8 @@ implementation
 uses
   Windows, math, TAChartUtils, unitPhaseDialog, unitFitParamDialog,
   unitDFTparamDialog, unitDFTdialog, unitDFT, unitTableDialog,
-  unitModelInfoDialog, dftThread, dataio, unitAbout;
+  unitModelInfoDialog, unitAbout, dftThread, dataio, sortutils, formatutils,
+  miscutils, fitproc;
 
 { TFormMain }
 
@@ -400,6 +405,33 @@ begin
   end;
 end;
 
+procedure TFormMain.UDFSrcModelFoldedGetChartDataItem(
+  ASource: TUserDefinedChartSource;
+  AIndex: Integer;
+  var AItem: TChartDataItem);
+begin
+  if (AIndex >= 0) and (AIndex < Length(FModelFolded[FitColumnType.x])) and (AIndex < Length(FModelFolded[FitColumnType.yFit])) then begin
+    if ASource = UDFSrcModelFolded then begin
+      AItem.X := FModelFolded[FitColumnType.x][AIndex];
+      AItem.Y := FModelFolded[FitColumnType.yFit][AIndex];
+    end
+    else
+    if ASource = UDFSrcModelFoldedUpLimit then begin
+      if (AIndex < Length(FModelFolded[FitColumnType.yErrors])) then begin
+        AItem.X := FModelFolded[FitColumnType.x][AIndex];
+        AItem.Y := FModelFolded[FitColumnType.yFit][AIndex] + FModelFolded[FitColumnType.yErrors][AIndex];
+      end;
+    end
+    else
+    if ASource = UDFSrcModelFoldedDownLimit then begin
+      if (AIndex < Length(FModelFolded[FitColumnType.yErrors])) then begin
+        AItem.X := FModelFolded[FitColumnType.x][AIndex];
+        AItem.Y := FModelFolded[FitColumnType.yFit][AIndex] - FModelFolded[FitColumnType.yErrors][AIndex];
+      end;
+    end;
+  end;
+end;
+
 procedure TFormMain.CloseFile;
 var
   tempDArray: TDouble3Array = (NaN, NaN, NaN);
@@ -415,6 +447,7 @@ begin
   end;
   for FitColumn := Low(FitColumnType) to High(FitColumnType) do begin
     FModelData[FitColumn] := nil;
+    FModelFolded[FitColumn] := nil;
   end;
   FPeriodogramFirstRun := True;
   ChartLineSeriesData.Source := nil;
@@ -423,13 +456,20 @@ begin
   ChartLineSeriesModelDownLimit.Source := nil;
   LCSrcData.Clear;
   LCSrcFoldedData.Clear;
+  // Model uses virtual sources
   UDFSrcModel.PointsNumber := 0;
   UDFSrcModel.Reset;
   UDFSrcModelUpLimit.PointsNumber := 0;
   UDFSrcModelUpLimit.Reset;
   UDFSrcModelDownLimit.PointsNumber := 0;
   UDFSrcModelDownLimit.Reset;
-  LCSourceFoldedModel.Clear;
+  UDFSrcModelFolded.PointsNumber := 0;
+  UDFSrcModelFolded.Reset;
+  UDFSrcModelFoldedUpLimit.PointsNumber := 0;
+  UDFSrcModelFoldedUpLimit.Reset;
+  UDFSrcModelFoldedDownLimit.PointsNumber := 0;
+  UDFSrcModelFoldedDownLimit.Reset;
+  //
   SetAxisBoundaries(-1, 1, -1, 1);
   unitPhaseDialog.SetCurrentEpoch(NaN);
   unitPhaseDialog.SetCurrentPeriod(NaN);
@@ -582,7 +622,7 @@ end;
 procedure TFormMain.PlotFoldedSimple;
 begin
   if LCSrcFoldedData.Count > 0 then begin
-    if (UDFSrcModel.Count > 0) and (LCSourceFoldedModel.Count < 1) then
+    if (UDFSrcModel.Count > 0) and (UDFSrcModelFolded.Count < 1) then
       CalculateModelPhasePlot;
     PlotFoldedProc;
   end
@@ -604,34 +644,53 @@ begin
   SourceExtent := LCSrcFoldedData.Extent;
   SetAxisBoundaries(-1.0, 1.0, SourceExtent.coords[2], SourceExtent.coords[4]);
   ChartLineSeriesData.Source := LCSrcFoldedData;
-  if LCSourceFoldedModel.Count > 0 then begin
-    ChartLineSeriesModel.Source := LCSourceFoldedModel;
-    ChartLineSeriesModelUpLimit.Source := nil;
-    ChartLineSeriesModelDownLimit.Source := nil;
+  if UDFSrcModelFolded.Count > 0 then begin
+    ChartLineSeriesModel.Source := UDFSrcModelFolded;
+    ChartLineSeriesModelUpLimit.Source := UDFSrcModelFoldedUpLimit;
+    ChartLineSeriesModelDownLimit.Source := UDFSrcModelFoldedDownLimit;;
   end;
   StatusBar1.Panels[1].Text := ' P= ' + FloatToStr(unitPhaseDialog.GetCurrentPeriod) + ^I' E= ' + FloatToStr(unitPhaseDialog.GetCurrentEpoch) + ' ';
 end;
 
 procedure TFormMain.CalculateModelPhasePlot;
 var
-  I: Integer;
-  Item: PChartDataItem;
-  Period, Epoch, X, Y, Phase: Double;
+  X, Y, E, Period, Epoch, Phase: Double;
+  FitColumn: FitColumnType;
+  L, I: Integer;
 begin
   Period := unitPhaseDialog.GetCurrentPeriod;
   Epoch := unitPhaseDialog.GetCurrentEpoch;
-  LCSourceFoldedModel.Clear;
+  for FitColumn := Low(FitColumnType) to High(FitColumnType) do begin
+    FModelFolded[FitColumn] := nil;
+  end;
   if IsNaN(Period) or IsNaN(Epoch) then
     Exit;
-  for I := 0 to UDFSrcModel.Count - 1 do begin
-    Item := UDFSrcModel.Item[I];
-    X := Item^.X;
-    Y := Item^.Y;
+  L := Length(FModelData[FitColumnType.x]);
+  SetLength(FModelFolded[FitColumnType.x], L * 2);
+  SetLength(FModelFolded[FitColumnType.yFit], L * 2);
+  SetLength(FModelFolded[FitColumnType.yErrors], L * 2);
+  for I := 0 to L - 1 do begin
+    X := FModelData[FitColumnType.x][I];
+    Y := FModelData[FitColumnType.yFit][I];
+    E := FModelData[FitColumnType.yErrors][I];
     Phase := CalculatePhase(X, Period, Epoch);
-    LCSourceFoldedModel.Add(Phase, Y);
-    LCSourceFoldedModel.Add(Phase - 1.0, Y);
+    FModelFolded[FitColumnType.x][I] := Phase;
+    FModelFolded[FitColumnType.yFit][I] := Y;
+    FModelFolded[FitColumnType.yErrors][I] := E;
+
+    FModelFolded[FitColumnType.x][L + I] := Phase - 1;
+    FModelFolded[FitColumnType.yFit][L + I] := Y;
+    FModelFolded[FitColumnType.yErrors][L + I] := E;
   end;
-  LCSourceFoldedModel.Sort;
+  SortModelPoints(FModelFolded);
+  // Virtual sources
+  UDFSrcModelFolded.PointsNumber := L * 2;
+  UDFSrcModelFolded.Reset;
+  UDFSrcModelFoldedUpLimit.PointsNumber := L * 2;
+  UDFSrcModelFoldedUpLimit.Reset;
+  UDFSrcModelFoldedDownLimit.PointsNumber := L * 2;
+  UDFSrcModelFoldedDownLimit.Reset;
+  //
 end;
 
 procedure TFormMain.CalcAndPlotFoldedProc;
@@ -647,7 +706,14 @@ begin
     Period := unitPhaseDialog.GetCurrentPeriod;
     Epoch := unitPhaseDialog.GetCurrentEpoch;
     LCSrcFoldedData.Clear;
-    LCSourceFoldedModel.Clear;
+    // Model uses virtual sources
+    UDFSrcModelFolded.PointsNumber := 0;
+    UDFSrcModelFolded.Reset;
+    UDFSrcModelFoldedUpLimit.PointsNumber := 0;
+    UDFSrcModelFoldedUpLimit.Reset;
+    UDFSrcModelFoldedDownLimit.PointsNumber := 0;
+    UDFSrcModelFoldedDownLimit.Reset;
+    //
     for I := 0 to LCSrcData.Count - 1 do begin
       Item := LCSrcData.Item[I];
       X := Item^.X;
@@ -742,6 +808,7 @@ begin
     end;
     for FitColumn := Low(FitColumnType) to High(FitColumnType) do begin
       FModelData[FitColumn] := nil;
+      FModelFolded[FitColumn] := nil;
     end;
     ChartLineSeriesModel.Source := nil;
     ChartLineSeriesModelUpLimit.Source := nil;
@@ -770,16 +837,23 @@ begin
       fitXstep := (fitXmax - fitXmin) / nfit;
     end;
 
-    LCSourceFoldedModel.Clear;
+    // Model uses virtual sources
     UDFSrcModel.PointsNumber := 0;
     UDFSrcModel.Reset;
     UDFSrcModelUpLimit.PointsNumber := 0;
     UDFSrcModelUpLimit.Reset;
     UDFSrcModelDownLimit.PointsNumber := 0;
     UDFSrcModelDownLimit.Reset;
-
+    UDFSrcModelFolded.PointsNumber := 0;
+    UDFSrcModelFolded.Reset;
+    UDFSrcModelFoldedUpLimit.PointsNumber := 0;
+    UDFSrcModelFoldedUpLimit.Reset;
+    UDFSrcModelFoldedDownLimit.PointsNumber := 0;
+    UDFSrcModelFoldedDownLimit.Reset;
+    //
     for FitColumn := Low(FitColumnType) to High(FitColumnType) do begin
       FModelData[FitColumn] := nil;
+      FModelFolded[FitColumn] := nil;
     end;
 
     try
@@ -851,9 +925,9 @@ begin
     else
     if ChartLineSeriesData.Source = LCSrcFoldedData then begin
       CalculateModelPhasePlot;
-      ChartLineSeriesModel.Source := LCSourceFoldedModel;
-      ChartLineSeriesModelUpLimit.Source := nil;
-      ChartLineSeriesModelDownLimit.Source := nil;
+      ChartLineSeriesModel.Source := UDFSrcModelFolded;
+      ChartLineSeriesModelUpLimit.Source := UDFSrcModelFoldedUpLimit;
+      ChartLineSeriesModelDownLimit.Source := UDFSrcModelFoldedDownLimit;
     end
     else begin
       ChartLineSeriesModel.Source := nil;

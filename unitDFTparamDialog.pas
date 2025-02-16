@@ -8,7 +8,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, IniFiles,
-  common;
+  lcvtypes;
 
 type
 
@@ -69,7 +69,7 @@ implementation
 {$R *.lfm}
 
 uses
-  math;
+  math, miscutils, guiutils;
 
 var
   CurrentFrequencyMin: Double = NaN;

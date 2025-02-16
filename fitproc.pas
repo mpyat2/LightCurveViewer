@@ -1,4 +1,4 @@
-unit common;
+unit fitproc;
 
 {$mode ObjFPC}{$H+}
 
@@ -7,37 +7,7 @@ unit common;
 interface
 
 uses
-  Classes, SysUtils, StdCtrls, Dialogs, Grids, math, typ, omv, inv, sle;
-
-type
-  FitColumnType = (x, yFit, yErrors, yObserved);
-
-type
-  PFloatArray = ^TFloatArray;
-  TFloatArray = array of Double;
-  TInt3Array = array[0..2] of Integer;
-  TDouble3Array = array[0..2] of Double;
-  TFitColumnArray = array[FitColumnType] of TFloatArray;
-
-type
-  TXY = class
-    X, Y: Double;
-    constructor Create(AX, AY: Double);
-  end;
-
-type
-  TDouble = class
-    D: Double;
-    constructor Create(V: Double);
-  end;
-
-function CompareXY(Item1, Item2: Pointer): Integer;
-
-function CompareD(Item1, Item2: Pointer): Integer;
-
-function GetMedianInterval(A: TFloatArray): Double;
-
-function GetRecommendedFrequencyResolution(Xmin, Xmax: Double; TrigPolyDegree: Integer): Double;
+  Classes, SysUtils, lcvtypes;
 
 // It this vestion of PolyFit, the input array (a) must be allocated and
 // initialized. fit must be allocated.
@@ -63,121 +33,10 @@ procedure PolyFit(const Xarray: TFloatArray;
 
 function CalcResidualSquared(const Observations, Model: TFloatArray): Double;
 
-function StringToFloatLocaleIndependent(const S: string; out V: Double): Boolean;
-
-function FloatToStrLocaleIndependent(V: Double): string;
-
-function FloatToStrMod(V: Double): string;
-
-function GetFieldValue(const Field: TEdit; Min, Max: Double; const FieldName: string; out V: Double): Boolean;
-
-function GetFieldValue(const Field: TEdit; Min, Max: Integer; const FieldName: string; out V: integer): Boolean;
-
-type
-  TGetGridCell = function(Grid: TDrawGrid; C, R: Integer): string of object;
-
-function GetGridSelectionAsText(Grid: TDrawGrid; GetGridCell: TGetGridCell): string;
-
-procedure CalcError(const S: string);
-
 implementation
 
-{ TXY }
-
-constructor TXY.Create(AX, AY: Double);
-begin
-  inherited Create;
-  X := AX;
-  Y := AY;
-end;
-
-function CompareXY(Item1, Item2: Pointer): Integer;
-begin
-  if TXY(Item1).X < TXY(Item2).X then
-    Result := -1
-  else
-  if TXY(Item1).X > TXY(Item2).X then
-    Result := 1
-  else
-    Result := 0;
-end;
-
-{ TDouble }
-
-constructor TDouble.Create(V: Double);
-begin
-  Self.D := V;
-end;
-
-function CompareD(Item1, Item2: Pointer): Integer;
-begin
-  if TDouble(Item1).D < TDouble(Item2).D then
-    Result := -1
-  else
-  if TDouble(Item1).D > TDouble(Item2).D then
-    Result := 1
-  else
-    Result := 0;
-end;
-
-function GetMedianInterval(A: TFloatArray): Double;
-var
-  DoubleList: TList;
-  Intervals: TList;
-  Interval: Double;
-  I: Integer;
-begin
-  Result := NaN;
-  if Length(A) < 1 then
-    Exit;
-  DoubleList := TList.Create;
-  try
-    for I := 0 to Length(A) - 1 do
-      DoubleList.Add(TDouble.Create(A[I]));
-    DoubleList.Sort(@CompareD);
-    Intervals := TList.Create;
-    try
-      for I := 1 to DoubleList.Count - 1 do begin
-        Interval := TDouble(DoubleList[I]).D - TDouble(DoubleList[I-1]).D;
-        if Interval > 0 then
-          Intervals.Add(TDouble.Create(Interval));
-      end;
-      if Intervals.Count = 0 then
-        Exit;
-      Intervals.Sort(@CompareD);
-      // Median
-      I := Intervals.Count div 2; // Central element
-      if Odd(Intervals.Count) then
-        Result := TDouble(Intervals[I]).D
-      else
-        Result := (TDouble(Intervals[I - 1]).D + TDouble(Intervals[I]).D) / 2;
-    finally
-      for I := Intervals.Count - 1 downto 0 do begin
-        TDouble(Intervals[I]).Free;
-        Intervals[I] := nil;
-      end;
-      FreeAndNil(Intervals);
-    end;
-  finally
-    for I := DoubleList.Count - 1 downto 0 do begin
-      TDouble(Doublelist[I]).Free;
-      Doublelist[I] := nil;
-    end;
-    FreeAndNil(DoubleList);
-  end;
-end;
-
-function GetRecommendedFrequencyResolution(Xmin, Xmax: Double; TrigPolyDegree: Integer): Double;
-begin
-  if (Xmax > Xmin) and (TrigPolyDegree > 0) then
-    Result := 0.05 / (Xmax - Xmin) / TrigPolyDegree
-  else
-    Result := NaN;
-end;
-
-////////////////////////////////////////////////////////////////////////////////
-// Approximation
-////////////////////////////////////////////////////////////////////////////////
+uses
+  math, typ, omv, inv, sle, miscutils, formatutils;
 
 function CalcResidualSquared(const Observations, Model: TFloatArray): Double;
 var
@@ -560,125 +419,6 @@ begin
   CalculateFit(fitXmin, fitXmax, fitXstep, ATrendDegree, ATRigPolyDegrees, AFrequencies, solution_vector, XTXI, Xfit, Yfit, YfitErrors);
 
   PolyFitSolutionToFormula(ATrendDegree, ATrigPolyDegrees, AFrequencies, solution_vector, solution_vector_errors, Formula, Info);
-end;
-
-////////////////////////////////////////////////////////////////////////////////
-// Format functions
-////////////////////////////////////////////////////////////////////////////////
-
-function StringToFloatLocaleIndependent(const S: string; out V: Double): Boolean;
-var
-  Code: Integer;
-begin
-  Val(S, V, Code);
-  Result := Code = 0;
-end;
-
-function FloatToStrLocaleIndependent(V: Double): string;
-var
-  F: TFormatSettings;
-begin
-  GetLocaleFormatSettings(0409, F);
-  if Abs(V) > 0.0000001 then
-    Result := FloatToStrF(V, ffFixed, 0, 15, F)
-  else
-    Result := FloatToStr(V, F);
-end;
-
-function FloatToStrMod(V: Double): string;
-begin
-  if Abs(V) > 0.0000001 then
-    Result := FloatToStrF(V, ffFixed, 0, 15)
-  else
-    Result := FloatToStr(V);
-  if V >= 0 then
-    Result := ' ' + Result;
-end;
-
-////////////////////////////////////////////////////////////////////////////////
-// GUI-related functions
-////////////////////////////////////////////////////////////////////////////////
-
-function GetFieldValue(const Field: TEdit; Min, Max: Double; const FieldName: string; out V: Double): Boolean;
-var
-  S: string;
-begin
-  Result := False;
-  S := Trim(Field.Text);
-  if not TryStrToFloat(S, V) then begin
-    Field.SetFocus;
-    Field.SelectAll;
-    ShowMessage(FieldName + ': Invalid value');
-    Exit;
-  end;
-  if (not IsNaN(Min)) and (V < Min) then begin
-    Field.SetFocus;
-    Field.SelectAll;
-    ShowMessage(FieldName + ': Value must be greater than or equal to ' + FloatToStr(Min));
-    Exit;
-  end;
-  if (not IsNaN(Max)) and (V > Max) then begin
-    Field.SetFocus;
-    Field.SelectAll;
-    ShowMessage(FieldName + ': Value must be less than or equal to ' + FloatToStr(Max));
-    Exit;
-  end;
-  Result := True;
-end;
-
-function GetFieldValue(const Field: TEdit; Min, Max: Integer; const FieldName: string; out V: integer): Boolean;
-var
-  S: string;
-begin
-  Result := False;
-  S := Trim(Field.Text);
-  if not TryStrToInt(S, V) then begin
-    Field.SetFocus;
-    Field.SelectAll;
-    ShowMessage(FieldName + ': Invalid value');
-    Exit;
-  end;
-  if V < Min then begin
-    Field.SetFocus;
-    Field.SelectAll;
-    ShowMessage(FieldName + ': Value must be greater than or equal to ' + FloatToStr(Min));
-    Exit;
-  end;
-  if V > Max then begin
-    Field.SetFocus;
-    Field.SelectAll;
-    ShowMessage(FieldName + ': Value must be less than or equal to ' + FloatToStr(Max));
-    Exit;
-  end;
-  Result := True;
-end;
-
-function GetGridSelectionAsText(Grid: TDrawGrid; GetGridCell: TGetGridCell): string;
-var
-  Selection: TRect;
-  R, C: Integer;
-  S2: string;
-begin
-  Result := '';
-  Selection := Grid.Selection;
-  for R := Selection.Top to Selection.Bottom do begin
-    S2 := '';
-    for C := Selection.Left to Selection.Right do begin
-      S2 := S2 + GetGridCell(Grid, C, R);
-      if C < Selection.Right then
-        S2 := S2 + ^I;
-    end;
-    Result := Result + S2 + ^M^J;
-  end;
-end;
-
-////////////////////////////////////////////////////////////////////////////////
-// Error messages, etc.
-////////////////////////////////////////////////////////////////////////////////
-
-procedure CalcError(const S: string);
-begin
-  raise Exception.Create(S);
 end;
 
 end.

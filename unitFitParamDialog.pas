@@ -8,11 +8,9 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, IniFiles,
-  common;
+  lcvtypes;
 
 type
-
-  { TFormDFTparams }
 
   { TFormFitparams }
 
@@ -60,7 +58,7 @@ implementation
 {$R *.lfm}
 
 uses
-  math;
+  math, guiutils;
 
 var
   CurrentTrendDegree: Integer = 1;

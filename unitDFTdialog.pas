@@ -9,7 +9,7 @@ interface
 uses
   Windows, Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls,
   ComCtrls, Grids, Menus, ActnList, StdCtrls, TAGraph, TACustomSource, TACustomSeries,
-  TASeries, TATools, common, Types;
+  TASeries, TATools, Types, lcvtypes;
 
 type
 
@@ -71,7 +71,7 @@ implementation
 {$R *.lfm}
 
 uses
-  math, Clipbrd, Contnrs;
+  math, Clipbrd, Contnrs, guiutils;
 
 //var
 //  FormDFTDialogList: TObjectList = nil;

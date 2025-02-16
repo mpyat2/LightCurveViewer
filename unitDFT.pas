@@ -7,7 +7,7 @@ unit unitDFT;
 interface
 
 uses
-  Windows, Classes, SysUtils, math, common, DoLongOp;
+  Windows, Classes, SysUtils, math, DoLongOp, lcvtypes;
 
 type
   PDCDFTparameters = ^TDCDFTparameters;
@@ -38,6 +38,9 @@ procedure dcdft_proc(
 procedure SetGlobalTerminateAllThreads(AValue: Boolean);
 
 implementation
+
+uses
+  miscutils, fitproc;
 
 const
   GlobalCounterIncrement = 1000;

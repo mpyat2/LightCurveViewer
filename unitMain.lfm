@@ -330,10 +330,6 @@ object FormMain: TFormMain
       823793F9F4BFDCE74BAD9744FDA5FE5FEAFF64EAFF9F0D361F57
     }
   end
-  object LCSourceFoldedModel: TListChartSource
-    Left = 264
-    Top = 352
-  end
   object ChartToolset: TChartToolset
     Left = 600
     Top = 48
@@ -376,5 +372,20 @@ object FormMain: TFormMain
     OnGetChartDataItem = UDFSrcModelGetChartDataItem
     Left = 264
     Top = 288
+  end
+  object UDFSrcModelFolded: TUserDefinedChartSource
+    OnGetChartDataItem = UDFSrcModelFoldedGetChartDataItem
+    Left = 264
+    Top = 352
+  end
+  object UDFSrcModelFoldedUpLimit: TUserDefinedChartSource
+    OnGetChartDataItem = UDFSrcModelFoldedGetChartDataItem
+    Left = 264
+    Top = 411
+  end
+  object UDFSrcModelFoldedDownLimit: TUserDefinedChartSource
+    OnGetChartDataItem = UDFSrcModelFoldedGetChartDataItem
+    Left = 264
+    Top = 472
   end
 end

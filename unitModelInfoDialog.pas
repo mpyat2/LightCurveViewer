@@ -8,7 +8,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  ComCtrls, Grids, ActnList, Menus, common;
+  ComCtrls, Grids, ActnList, Menus, lcvtypes;
 
 type
 
@@ -56,7 +56,7 @@ implementation
 {$R *.lfm}
 
 uses
-  Clipbrd;
+  Clipbrd, guiutils;
 
 procedure ShowModelInfo(const Info, Formula: string;
                         const ContiniousFit: TFitColumnArray;
