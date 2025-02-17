@@ -199,9 +199,6 @@ begin
   SetLength(Fpartial_frequencies, Fn_freq);
   SetLength(Fpartial_periods, Fn_freq);
   SetLength(Fpartial_power, Fn_freq);
-  FillChar(Fpartial_frequencies[0], Fn_freq * SizeOf(Double), 0);
-  FillChar(Fpartial_periods[0], Fn_freq * SizeOf(Double), 0);
-  FillChar(Fpartial_power[0], Fn_freq * SizeOf(Double), 0);
   FProgressCaptionProc := ProgressCaptionProc;
   FTotalNfreq := TotalNfreq;
   FExecuteCompleted := False;
