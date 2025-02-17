@@ -7,7 +7,7 @@ unit unitDFT;
 interface
 
 uses
-  Windows, Classes, SysUtils, math, DoLongOp, lcvtypes;
+  Classes, SysUtils, math, lcvtypes;
 
 type
   PDCDFTparameters = ^TDCDFTparameters;
@@ -40,36 +40,22 @@ procedure SetGlobalTerminateAllThreads(AValue: Boolean);
 implementation
 
 uses
+{$IF defined(windows)}
+  Windows,
+{$ELSEIF defined(linux)}
+  ctypes,
+{$ENDIF}
   miscutils, fitproc;
 
-const
-  GlobalCounterIncrement = 100;
-
-var
-  GlobalTerminateAllThreads: Boolean = False;
-  GlobalCounter: Integer;
-  GlobalCounterCriticalSection: TCriticalSection;
-
-function IncrementGlobalCounter(N: Integer): Integer;
-begin
-  EnterCriticalSection(GlobalCounterCriticalSection);
-  try
-    GlobalCounter := GlobalCounter + N;
-    Result := GlobalCounter;
-  finally
-    LeaveCriticalSection(GlobalCounterCriticalSection);
-  end;
-end;
-
-procedure SetGlobalTerminateAllThreads(AValue: Boolean);
-begin
-  GlobalTerminateAllThreads := AValue;
-end;
+{$IFDEF Linux}
+const _SC_NPROCESSORS_ONLN = 83;
+function sysconf(i: cint): clong; cdecl; external name 'sysconf';
+{$ENDIF}
 
 // http://wiki.freepascal.org/Example_of_multi-threaded_application:_array_of_threads
 function GetLogicalCpuCount: integer;
 // returns a good default for the number of threads on this system
-// Windows only!
+{$IF defined(windows)}
 //returns total number of processors available to system including logical hyperthreaded processors
 var
   i: Integer;
@@ -90,6 +76,39 @@ begin
     GetSystemInfo(SystemInfo);
     Result := SystemInfo.dwNumberOfProcessors;
   end;
+end;
+{$ELSEIF defined(linux)}
+  begin
+    Result:=sysconf(_SC_NPROCESSORS_ONLN);
+  end;
+{$ELSE}
+  begin
+    Result:=1;
+  end;
+{$ENDIF}
+
+const
+  GlobalCounterIncrement = 100;
+
+var
+  GlobalTerminateAllThreads: Boolean = False;
+  GlobalCounter: Integer;
+  GlobalCounterCriticalSection: TRTLCriticalSection;
+
+function IncrementGlobalCounter(N: Integer): Integer;
+begin
+  EnterCriticalSection(GlobalCounterCriticalSection);
+  try
+    GlobalCounter := GlobalCounter + N;
+    Result := GlobalCounter;
+  finally
+    LeaveCriticalSection(GlobalCounterCriticalSection);
+  end;
+end;
+
+procedure SetGlobalTerminateAllThreads(AValue: Boolean);
+begin
+  GlobalTerminateAllThreads := AValue;
 end;
 
 type

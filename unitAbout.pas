@@ -31,7 +31,7 @@ implementation
 {$R *.lfm}
 
 uses
-  Windows;
+  fileinfo;
 
 procedure About;
 var
@@ -45,51 +45,28 @@ begin
   end;
 end;
 
-procedure GetVersionValues(const ModuleName: String; out V1, V2, V3, V4: Word);
-var
-  VerInfoSize:  DWORD;
-  VerInfo:      Pointer;
-  VerValueSize: DWORD;
-  VerValue:     PVSFixedFileInfo;
-  Dummy:        DWORD;
-begin
-  V1 := 0;
-  V2 := 0;
-  V3 := 0;
-  V4 := 0;
-  VerInfoSize := GetFileVersionInfoSize(PChar(ModuleName), Dummy);
-  if VerInfoSize = 0 then Exit;
-  GetMem(VerInfo, VerInfoSize);
-  try
-    if not GetFileVersionInfo(PChar(ModuleName), 0, VerInfoSize, VerInfo) then Exit;
-    if not VerQueryValue(VerInfo, '\', Pointer(VerValue), VerValueSize) then Exit;
-    with VerValue^ do begin
-      V1 := dwFileVersionMS shr 16;
-      V2 := dwFileVersionMS and $FFFF;
-      V3 := dwFileVersionLS shr 16;
-      V4 := dwFileVersionLS and $FFFF;
-   end;
- finally
-   FreeMem(VerInfo, VerInfoSize);
- end;
-end;
-
 function GetVersionString(const ModuleName: String): String;
 var
-  V1, V2, V3, V4: Word;
+  FileVerInfo: TFileVersionInfo;
+  I: Integer;
 begin
-  Result := '';
-  GetVersionValues(ModuleName, V1, V2, V3, V4);
-  Result := ExtractFileName(ModuleName) + ' Version ' + IntToStr(V1) + '.' + IntToStr(V2) + '.' + IntToStr(V3) + ' (Build ' + IntToStr(V4) + ')';
+  FileVerInfo := TFileVersionInfo.Create(nil);
+  try
+    FileVerInfo.ReadFileInfo;
+    Result := FileVerInfo.VersionStrings.Values['FileVersion'];
+  finally
+    FreeAndNil(FileVerInfo);
+  end;
+  Result := ExtractFileName(ModuleName) + ' Version ' + Result;
 end;
 
 { TFormAbout }
 
 procedure TFormAbout.FormCreate(Sender: TObject);
 begin
-  LabelVersion.Caption := '  ' + GetVersionString(AnsiUpperCase(ParamStr(0))) +
-                          ' FPC ' + {$I %FPCVERSION%} + ' ' + {$I %FPCTARGETOS%} +
-                          ' ' + {$I %DATE%} + ' ' + {$I %TIME%};
+  LabelVersion.Caption := '  ' + GetVersionString(ParamStr(0)) +
+                          ' | FPC ' + {$I %FPCVERSION%} + ' ' + {$I %FPCTARGETOS%} +
+                          ' | ' + {$I %DATE%} + ' ' + {$I %TIME%};
   Memo1.Text :=
   ^M^J +
   'Light Curve Viewer by Maksym Yu. Pyatnytskyy'^M^J^M^J +

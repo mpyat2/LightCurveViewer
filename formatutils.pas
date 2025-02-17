@@ -29,11 +29,13 @@ function FloatToStrLocaleIndependent(V: Double): string;
 var
   F: TFormatSettings;
 begin
-  GetLocaleFormatSettings(0409, F);
+  F := DefaultFormatSettings;
+  F.DecimalSeparator := '.';
+  F.ThousandSeparator := #0;
   if Abs(V) > 0.0000001 then
     Result := FloatToStrF(V, ffFixed, 0, 15, F)
   else
-    Result := FloatToStr(V, F);
+    Result := FloatToStrF(V, ffGeneral, 15, 0, F);
 end;
 
 function FloatToStrMod(V: Double): string;

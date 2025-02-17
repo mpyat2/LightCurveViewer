@@ -35,6 +35,9 @@ type
     constructor Create(V: Double);
   end;
 
+type
+  TProgressCaptionProc = procedure (const Msg: string) of object;
+
 implementation
 
 { TFitPoint }

@@ -9,13 +9,14 @@ interface
 uses
   Classes, SysUtils, IniFiles, Forms, Controls, Graphics, Dialogs, Menus,
   ActnList, ComCtrls, TAGraph, TASources, TASeries, TACustomSource, TATools,
-  DoLongOp, lcvtypes, Types;
+  lcvtypes, Types;
 
 type
 
   { TFormMain }
 
   TFormMain = class(TForm)
+    ActionStop: TAction;
     ActionCopyChart: TAction;
     ActionShowModel: TAction;
     ActionShowData: TAction;
@@ -71,13 +72,15 @@ type
     OpenDialog: TOpenDialog;
     Separator2: TMenuItem;
     Separator3: TMenuItem;
-    StatusBar1: TStatusBar;
-    ToolBar1: TToolBar;
+    StatusBar: TStatusBar;
+    ToolBar: TToolBar;
     ToolButton1: TToolButton;
     ToolButton2: TToolButton;
     ToolButton3: TToolButton;
     ToolButton4: TToolButton;
     ToolButton5: TToolButton;
+    ToolButton6: TToolButton;
+    ToolButton7: TToolButton;
     UDFSrcModel: TUserDefinedChartSource;
     UDFSrcModelUpLimit: TUserDefinedChartSource;
     UDFSrcModelDownLimit: TUserDefinedChartSource;
@@ -100,14 +103,18 @@ type
     procedure ActionSaveVisibleExecute(Sender: TObject);
     procedure ActionShowDataExecute(Sender: TObject);
     procedure ActionShowModelExecute(Sender: TObject);
+    procedure ActionStopExecute(Sender: TObject);
     procedure ChartMouseEnter(Sender: TObject);
     procedure ChartMouseLeave(Sender: TObject);
     procedure ChartMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure ChartToolsetDataPointClickTool1PointClick(ATool: TChartTool; APoint: TPoint);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure FormCreate(Sender: TObject);
     procedure UDFSrcModelFoldedGetChartDataItem(ASource: TUserDefinedChartSource; AIndex: Integer; var AItem: TChartDataItem);
     procedure UDFSrcModelGetChartDataItem(ASource: TUserDefinedChartSource; AIndex: Integer; var AItem: TChartDataItem);
   private
+    FCalculationInProgress: Boolean;
+    //FSavedChartColor: TColor;
     FFileName: string;
     FObjectName: string;
     FPeriodogramFirstRun: Boolean;
@@ -141,9 +148,12 @@ type
     procedure SetAxisBoundaries(Xmin, Xmax, Ymin, Ymax: Double);
     procedure Periodogram;
     procedure DoPolyFit;
-    function DoDCDFT(params: Pointer; ProgressCaptionProc: TProgressCaptionProc): Integer;
+    procedure DoDCDFT(params: Pointer);
     procedure DCDFTThreadOnTerminate(Sender: TObject);
-    procedure DFTGlobalTerminate(Sender: TObject);
+    procedure DFTGlobalTerminate;
+    procedure ProgressCaptionProc(const Msg: string);
+    procedure LongOpStart;
+    procedure LongOpStop;
   public
 
   end;
@@ -156,7 +166,7 @@ implementation
 {$R *.lfm}
 
 uses
-  Windows, math, TACustomSeries, TAChartUtils, unitPhaseDialog, unitFitParamDialog,
+  math, TACustomSeries, TAChartUtils, unitPhaseDialog, unitFitParamDialog,
   unitDFTparamDialog, unitDFTdialog, unitDFT, unitTableDialog,
   unitModelInfoDialog, unitAbout, dftThread, dataio, sortutils, formatutils,
   miscutils, fitproc;
@@ -165,8 +175,13 @@ uses
 
 procedure TFormMain.FormCreate(Sender: TObject);
 begin
-  ToolBar1.Images := ImageList;
+  ToolBar.Images := ImageList;
   CloseFile;
+end;
+
+procedure TFormMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+begin
+  CanClose := not FCalculationInProgress;
 end;
 
 procedure TFormMain.ActionExitExecute(Sender: TObject);
@@ -183,13 +198,13 @@ begin
     if (ChartLineSeriesData.Source <> nil) and (ChartLineSeriesData.Source.Count > 0) then begin
       P := Chart.ScreenToClient(Mouse.CursorPos);
       Pg := Chart.ImageToGraph(P);
-      StatusBar1.Panels[0].Text := Format(' %g'^I' %g ', [Pg.X, Pg.Y]);
+      StatusBar.Panels[0].Text := Format(' %g'^I' %g ', [Pg.X, Pg.Y]);
     end
     else
-      StatusBar1.Panels[0].Text := '';
+      StatusBar.Panels[0].Text := '';
   except
     on E: Exception do
-      StatusBar1.Panels[0].Text := '';
+      StatusBar.Panels[0].Text := '';
   end;
 end;
 
@@ -221,7 +236,7 @@ end;
 
 procedure TFormMain.ChartMouseLeave(Sender: TObject);
 begin
-  StatusBar1.Panels[0].Text := '';
+  StatusBar.Panels[0].Text := '';
 end;
 
 procedure TFormMain.ActionPeriodogramExecute(Sender: TObject);
@@ -310,6 +325,11 @@ begin
   ChartLineSeriesModelDownLimit.Active := ChartLineSeriesModel.Active;
 end;
 
+procedure TFormMain.ActionStopExecute(Sender: TObject);
+begin
+  DFTGlobalTerminate;
+end;
+
 procedure TFormMain.ActionInvertedYExecute(Sender: TObject);
 begin
   Chart.AxisList[0].Inverted := not Chart.AxisList[0].Inverted;
@@ -348,53 +368,65 @@ end;
 
 procedure TFormMain.ActionListUpdate(AAction: TBasicAction; var Handled: Boolean);
 begin
+  if (AAction = ActionOpen) or
+     (AAction = ActionSaveVisible) or
+     (AAction = ActionExit) or
+     (AAction = ActionInvertedY) or
+     (AAction = ActionAbout) or
+     (AAction = ActionCopyChart)
+  then begin
+    (AAction as TAction).Enabled := not FCalculationInProgress;
+  end
+  else
   if AAction = ActionInvertedY then begin
+    (AAction as TAction).Enabled := FCalculationInProgress;
     (AAction as TAction).Checked := Chart.AxisList[0].Inverted;
   end
   else
   if AAction = ActionRawData then begin
-    (AAction as TAction).Enabled := LCSrcData.Count > 0;
-    //(AAction as TAction).Checked := ChartLineSeriesData.Source = LCSrcData;
+    (AAction as TAction).Enabled := (LCSrcData.Count > 0) and not FCalculationInProgress;
   end
   else
   if AAction = ActionPhasePlot then begin
-    (AAction as TAction).Enabled := LCSrcData.Count > 0;
-    //(AAction as TAction).Checked := ChartLineSeriesData.Source = LCSrcFoldedData;
+    (AAction as TAction).Enabled := (LCSrcData.Count > 0) and not FCalculationInProgress;
   end
   else
   if AAction = ActionPhasePlotSimple then begin
-    (AAction as TAction).Enabled := LCSrcData.Count > 0;
-    //(AAction as TAction).Checked := ChartLineSeriesData.Source = LCSrcFoldedData;
+    (AAction as TAction).Enabled := (LCSrcData.Count > 0) and not FCalculationInProgress;
   end
   else
   if AAction = ActionPeriodogram then begin
-    (AAction as TAction).Enabled := LCSrcData.Count > 0;
+    (AAction as TAction).Enabled := (LCSrcData.Count > 0) and not FCalculationInProgress;
   end
   else
   if AAction = ActionPolyFit then begin
-    (AAction as TAction).Enabled := LCSrcData.Count > 0;
+    (AAction as TAction).Enabled := (LCSrcData.Count > 0) and not FCalculationInProgress;
   end
   else
   if AAction = ActionModelInfo then begin
-    (AAction as TAction).Enabled := Length(FModelData[FitColumnType.x]) > 0;
+    (AAction as TAction).Enabled := (Length(FModelData[FitColumnType.x]) > 0) and not FCalculationInProgress;
   end
   else
   if AAction = ActionObservations then begin
-    (AAction as TAction).Enabled := LCSrcData.Count > 0;
+    (AAction as TAction).Enabled := (LCSrcData.Count > 0) and not FCalculationInProgress;
   end
   else
   if AAction = ActionSaveVisible then begin
-    (AAction as TAction).Enabled := (LCSrcData.Count > 0) and (ChartLineSeriesData.Source = LCSrcData);
+    (AAction as TAction).Enabled := (LCSrcData.Count > 0) and (ChartLineSeriesData.Source = LCSrcData) and not FCalculationInProgress;
   end
   else
   if AAction = ActionShowData then begin
-    (AAction as TAction).Enabled := LCSrcData.Count > 0;
+    (AAction as TAction).Enabled := (LCSrcData.Count > 0) and not FCalculationInProgress;
     (AAction as TAction).Checked := ChartLineSeriesData.Active;
   end
   else
   if AAction = ActionShowModel then begin
-    (AAction as TAction).Enabled := UDFSrcModel.Count > 0;
+    (AAction as TAction).Enabled := (UDFSrcModel.Count > 0) and not FCalculationInProgress;
     (AAction as TAction).Checked := ChartLineSeriesModel.Active;
+  end
+  else
+  if AAction = ActionStop then begin
+    (AAction as TAction).Enabled := FCalculationInProgress;
   end;
 end;
 
@@ -688,8 +720,8 @@ var
   SourceExtent: TDoubleRect;
 begin
   if LCSrcData.Count > 0 then begin
-    StatusBar1.Panels[0].Text := '';
-    StatusBar1.Panels[1].Text := '';
+    StatusBar.Panels[0].Text := '';
+    StatusBar.Panels[1].Text := '';
     ChartLineSeriesData.Source := nil;
     ChartSeriesModelToNil;
     SourceExtent := LCSrcData.Extent;
@@ -722,8 +754,8 @@ procedure TFormMain.PlotFoldedProc;
 var
   SourceExtent: TDoubleRect;
 begin
-  StatusBar1.Panels[0].Text := '';
-  StatusBar1.Panels[1].Text := '';
+  StatusBar.Panels[0].Text := '';
+  StatusBar.Panels[1].Text := '';
   ChartLineSeriesData.Source := nil;
   ChartSeriesModelToNil;
   SourceExtent := LCSrcFoldedData.Extent;
@@ -732,7 +764,7 @@ begin
   if UDFSrcModelFolded.Count > 0 then begin
     ChartSeriesModelToModelFolded;
   end;
-  StatusBar1.Panels[1].Text := ' P= ' + FloatToStr(unitPhaseDialog.GetCurrentPeriod) + ^I' E= ' + FloatToStr(unitPhaseDialog.GetCurrentEpoch) + ' ';
+  StatusBar.Panels[1].Text := ' P= ' + FloatToStr(unitPhaseDialog.GetCurrentPeriod) + ^I' E= ' + FloatToStr(unitPhaseDialog.GetCurrentEpoch) + ' ';
 end;
 
 procedure TFormMain.CalculateModelPhasePlot;
@@ -784,8 +816,8 @@ var
   Period, Epoch, X, Y, Phase: Double;
 begin
   SaveDataSettings;
-  StatusBar1.Panels[0].Text := '';
-  StatusBar1.Panels[1].Text := '';
+  StatusBar.Panels[0].Text := '';
+  StatusBar.Panels[1].Text := '';
   if (LCSrcData.Count > 0) then begin
     Period := unitPhaseDialog.GetCurrentPeriod;
     Epoch := unitPhaseDialog.GetCurrentEpoch;
@@ -1036,13 +1068,18 @@ begin
     //CloseDFTdialogs;
     params.Error := '';
     t0 := Now;
+    LongOpStart;
     try
-      DoLongOp.DoLongOperation(@DoDCDFT, @params, @DFTGlobalTerminate, 'Periodogram');
-    except
-      on E: Exception do begin
-        ShowMessage(E.Message);
-        Exit;
+      try
+        DoDCDFT(@params);
+      except
+        on E: Exception do begin
+          ShowMessage(E.Message);
+          Exit;
+        end;
       end;
+    finally
+      LongOpStop;
     end;
     if params.Error <> '' then begin
       ShowMessage('Error:'^M^J + params.Error);
@@ -1063,18 +1100,47 @@ begin
   FDFTThreadTerminated := True;
 end;
 
-procedure TFormMain.DFTGlobalTerminate(Sender: TObject);
+procedure TFormMain.DFTGlobalTerminate;
 begin
   unitDFT.SetGlobalTerminateAllThreads(True);
 end;
 
-function TFormMain.DoDCDFT(params: Pointer; ProgressCaptionProc: TProgressCaptionProc): Integer;
+procedure TFormMain.ProgressCaptionProc(const Msg: string);
+begin
+  StatusBar.Panels[2].Text := Msg;
+end;
+
+procedure TFormMain.LongOpStart;
+var
+  I: Integer;
+begin
+  FCalculationInProgress := True;
+  Chart.Enabled := False;
+  //FSavedChartColor := Chart.BackColor;
+  //Chart.BackColor := clGray;
+  StatusBar.Panels[2].Text := 'Calculating...';
+  for I := 0 to ActionList.ActionCount - 1 do begin
+    ActionList.UpdateAction(ActionList.Actions[I]);
+  end;
+  Application.ProcessMessages;
+end;
+
+procedure TFormMain.LongOpStop;
+begin
+  FCalculationInProgress := False;
+  Chart.Enabled := True;
+  //Chart.BackColor := FSavedChartColor;
+  StatusBar.Panels[2].Text := '';
+  if Self.WindowState = wsMinimized then
+    Application.Restore;
+end;
+
+procedure TFormMain.DoDCDFT(params: Pointer);
 var
   DCDFTThread: TDFTThread;
 begin
-  Result := 0;
   FDFTThreadTerminated := False;
-  DCDFTThread := TDFTThread.Create(PDCDFTparameters(params), @DCDFTThreadOnTerminate, ProgressCaptionProc);
+  DCDFTThread := TDFTThread.Create(PDCDFTparameters(params), @DCDFTThreadOnTerminate, @ProgressCaptionProc);
   if Assigned(DCDFTThread.FatalException) then
     raise DCDFTThread.FatalException;
   DCDFTThread.Start;

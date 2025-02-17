@@ -7,7 +7,7 @@ unit dftThread;
 interface
 
 uses
-  Classes, SysUtils, unitDFT, DoLongOp;
+  Classes, SysUtils, lcvtypes, unitDFT;
 
 type
 

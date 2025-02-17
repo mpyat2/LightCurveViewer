@@ -1,21 +1,22 @@
 object FormMain: TFormMain
-  Left = 499
-  Height = 574
-  Top = 205
-  Width = 989
+  Left = 457
+  Height = 600
+  Top = 202
+  Width = 1000
   Caption = 'LCV'
-  ClientHeight = 574
-  ClientWidth = 989
+  ClientHeight = 600
+  ClientWidth = 1000
   Menu = MainMenu
+  OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   Position = poDefaultPosOnly
   LCLVersion = '3.2.0.0'
   object Chart: TChart
     Cursor = crCross
     Left = 0
-    Height = 525
+    Height = 551
     Top = 26
-    Width = 989
+    Width = 1000
     AxisList = <    
       item
         Grid.Color = clSilver
@@ -77,11 +78,11 @@ object FormMain: TFormMain
       LinePen.Color = clRed
     end
   end
-  object StatusBar1: TStatusBar
+  object StatusBar: TStatusBar
     Left = 0
     Height = 23
-    Top = 551
-    Width = 989
+    Top = 577
+    Width = 1000
     Panels = <    
       item
         Width = 400
@@ -90,16 +91,16 @@ object FormMain: TFormMain
         Width = 400
       end    
       item
-        Width = 50
+        Width = 400
       end>
     SimplePanel = False
   end
-  object ToolBar1: TToolBar
+  object ToolBar: TToolBar
     Left = 0
     Height = 26
     Top = 0
-    Width = 989
-    Caption = 'ToolBar1'
+    Width = 1000
+    Caption = 'ToolBar'
     ParentShowHint = False
     ShowHint = True
     TabOrder = 2
@@ -130,11 +131,23 @@ object FormMain: TFormMain
       Top = 2
       Action = ActionPhasePlot
     end
+    object ToolButton6: TToolButton
+      Left = 98
+      Height = 22
+      Top = 2
+      Caption = 'ToolButton6'
+      Style = tbsDivider
+    end
+    object ToolButton7: TToolButton
+      Left = 103
+      Top = 2
+      Action = ActionStop
+    end
   end
   object MainMenu: TMainMenu
     Images = ImageList
-    Left = 80
-    Top = 48
+    Left = 79
+    Top = 72
     object MenuFile: TMenuItem
       Caption = '&File'
       object MenuItemOpen: TMenuItem
@@ -203,7 +216,7 @@ object FormMain: TFormMain
     Images = ImageList
     OnUpdate = ActionListUpdate
     Left = 80
-    Top = 104
+    Top = 184
     object ActionExit: TAction
       Category = 'File'
       Caption = 'E&xit'
@@ -291,53 +304,70 @@ object FormMain: TFormMain
       Caption = 'Copy to Clipboard'
       OnExecute = ActionCopyChartExecute
     end
+    object ActionStop: TAction
+      Category = 'Tools'
+      Caption = '&Stop'
+      Enabled = False
+      ImageIndex = 4
+      OnExecute = ActionStopExecute
+    end
   end
   object OpenDialog: TOpenDialog
     Title = ''
     DefaultExt = '.txt'
     Filter = 'Text files (*.txt,*.tsv,*.dat)|*.txt;*.tsv;*.dat|All files (*.*)|*.*'
     Options = [ofPathMustExist, ofFileMustExist, ofEnableSizing, ofViewDetail]
-    Left = 80
-    Top = 232
+    Left = 79
+    Top = 296
   end
   object LCSrcData: TListChartSource
     Left = 264
-    Top = 48
+    Top = 128
   end
   object LCSrcFoldedData: TListChartSource
     Left = 264
-    Top = 104
+    Top = 184
   end
   object ImageList: TImageList
-    Left = 80
-    Top = 168
+    Left = 79
+    Top = 240
     Bitmap = {
-      4C7A040000001000000010000000840200000000000078DAED95D94F13511487
-      FD13FC037C323EFAE083C6184D449017633401A310A3A54663D0D81097187101
-      97BA8104A18AB420445CA84122CBB30A1A2406A822A294B6974E9799022D2DB6
-      543ACACF3BC5360DCED081A216C3245FEE64CEF96639F79E3B009661919372D7
-      C2EC6D64C93E8A30EED13B499A8EA8E4FACA268E3C1E0622D47153C8EFF0B9B3
-      1B9C248BB2FBA9234CA6DE4E32EBED6493C6C4C4FA8AE71CA9B6F3D032215458
-      27A1B10471DB1C44C9600045037E5CFFE287BA7F1C97FA7C28E8F562E7132B89
-      F5B31A1C24A79983B2C50565B30B39513828049A38EC0FC386C7EC672CBF4BEF
-      B06DD498D4829F51CF102156E7826CD48600BFB6D8982EF8DB1E0D11652BF75B
-      CE030EA865A75043A976FC4095FD3B74944A1B0F450B6B5B53489687EBAF33D9
-      F3DA3CB8C7F0A8A0DC190A8529B74CA28C526AFE466B11C42D4A917102370726
-      B0E321D31DF9FECD95A6D10B3D3E7A3D801B946B9FFDB84AB9F2E92B2E532E7E
-      1C4721A5A0D787F31FBC38F7DE8734ADA5353AFF5AB35FB876D6E045BE610C67
-      7AC670BADB83535D6E9CECF2E0C43B378E53F23A47A1EA1C416EBB0B1BCA074B
-      227E6A9539A87A3B826394A31DC338F2C6855CCAE1D71C0EB57338D8C6E2C02B
-      27942F9D50BC7020A3D18AD5C5FDE9117F5DA991DF5A6B09A5D698A36CB96FA2
-      984329BFC669A6CFD79719F948EDFE35F4402247B2F9AB56B82573C562B17E24
-      2E962715FB53FECC3CA998982FF61CA958B2F862F952358B8D49F972E7239E2F
-      3617B131C19FEB9A8B8D2DC4FA4F94FFA9FFE5D63E9E3FDBDAF9DBFE6CF788E7
-      C77B8764F4E7B217C8F1E5EEBFF17CB1B958C8FFCF62E8FFED4D2B137AFFF9FA
-      823793F9F4BFDCE74BAD9744FDA5FE5FEAFF64EAFF9F0D361F57
+      4C7A050000001000000010000000B90300000000000078DAED97596C4C6114C7
+      2D8FC412CB93A76A9496AA04559528E54584A41534423B4204D15823F6B57652
+      6DA96EA6B1B6528DE219451041A9BD66E6B6D399CE1DD565684D3B83BF73C6BD
+      7533EE35D3D6D28A497EF9BE7BCEF97FCBF9CE77271740177472A28E9BCCF30A
+      6DC27C82DB39F95542749690E8AF5E57240AE7DE0232A7C52FD878C751135750
+      25CC25665FB07A88CDB708B1791661429AC1ACD4C75F12851C8B1B996617D22B
+      9A916672E2A8D189236F1A71F07503F6BD6A40D28BF7D8F9CC816DA5F59879BE
+      4250EAE716588584CB227457ECD05DB623A10511F14C9188051E6C9E36EEA2CD
+      3D2BDF5A19996648627D4C9E5960DF693BFC26A9A4D13DFA50D954D64F3B5B2E
+      E8AE8A3FC49C12815CDB17E8891CEB67645B3E218BC8A87423FE8AAD326CBBD0
+      C793FF2C836565712D4E98DD48278E95BB3CA49A9A9142241B9B28174E1C260E
+      967DC481D71F31E38CF9A1BCFF891986775B1F39C8DE88FDC4DE970DD843EC7E
+      FE01BB881D4FDF633BB1ADD4812D4FEAB1F9B103D199A6AB2DE79F696C60DBA6
+      927A6C2CA9C386477558FFB016EB1ED460ED835AACB95F83D5C4CA7BEF9078AF
+      1A4B6FDA1191FAE688AC9F9C6D7426DEADC60A62F99DB75876DB8EA5C4925B22
+      16DF14B1A8D8868537AAA0BB5E85F86B56C4145660F8A1175365FD98E432F794
+      5C936BB2DED8C2A49306C2E88A92DA6F7CEB87A794B9E5DCFD6DE887F6FC3A9A
+      3E70508D66AC9A4FA997FD6A715ABEDFA5F78ED3F2A9E9D5E6D1F27514BD5ABC
+      56CE943E2DBDBFE7E14BAF76164A1FEB5B5B734ADFAFA8FFF6F22FDD7F7F73EF
+      4BFFB3DAF9D3FA9F8DE14BEF6B0D1D51DF9A77813F7A7FDFBFBEF46A67F12BFF
+      7F3AC3FD9F5E14D0AEF5B755CF3A6FDA72FFFD9D5FAB5EDAABFF7FFFFFDFFF8E
+      74FFD5BE09468C40DFA020CC1A3A14AB870DC32AEE8785C1E7F7CAE0C118489A
+      4CC245C00BB69D080CC400356D703042C85F41341147870CC1D8D050F460C817
+      CE36C957CEB12AF3B2D6426B0DD55A1F8D399263780CEAF797EDF49C4138D94F
+      29E946FDF1DC7EFF46FA6EA3B94751BF99F292CE3ECE0BEF8D9E93F999E68F94
+      F6ABE77849AB671BFBA4F9D2788C8000F496F20CDEAF622EBD3446AE44CB781C
+      43738D936C31C45AEE8784A0A762BD5DA53DC9B9CF55EE876325FB1A096F7D37
+      C5BCBCEE3CB27597FD7486BDD8CEB5416D6C6BD74FFD0879FD72FE8894B6E44F
+      717E4DAD3CBFE38AFD0CE09AE0DAA03C8469D58FA4B51202D14FA57E798C6622
+      95F7C83995721D21AF99B5640BD6A8CFFE5C57529CF7FDF1ACD97B5E35382F9C
+      5B3E1FE98C62E45C79F315FA90458A
     }
   end
   object ChartToolset: TChartToolset
-    Left = 600
-    Top = 48
+    Left = 264
+    Top = 72
     object ChartToolsetZoomDragTool1: TZoomDragTool
       Shift = [ssCtrl, ssLeft]
       Brush.Style = bsClear
@@ -358,11 +388,11 @@ object FormMain: TFormMain
     Filter = 'Text files (*.txt,*.tsv,*.dat)|*.txt;*.tsv;*.dat|All files (*.*)|*.*'
     Options = [ofOverwritePrompt, ofPathMustExist, ofEnableSizing, ofViewDetail]
     Left = 79
-    Top = 288
+    Top = 352
   end
   object PopupMenuChart: TPopupMenu
     Left = 80
-    Top = 352
+    Top = 128
     object MenuItemCopyChart: TMenuItem
       Action = ActionCopyChart
     end
@@ -370,31 +400,31 @@ object FormMain: TFormMain
   object UDFSrcModel: TUserDefinedChartSource
     OnGetChartDataItem = UDFSrcModelGetChartDataItem
     Left = 264
-    Top = 184
+    Top = 240
   end
   object UDFSrcModelUpLimit: TUserDefinedChartSource
     OnGetChartDataItem = UDFSrcModelGetChartDataItem
     Left = 264
-    Top = 232
+    Top = 296
   end
   object UDFSrcModelDownLimit: TUserDefinedChartSource
     OnGetChartDataItem = UDFSrcModelGetChartDataItem
     Left = 264
-    Top = 288
+    Top = 352
   end
   object UDFSrcModelFolded: TUserDefinedChartSource
     OnGetChartDataItem = UDFSrcModelFoldedGetChartDataItem
     Left = 264
-    Top = 352
+    Top = 408
   end
   object UDFSrcModelFoldedUpLimit: TUserDefinedChartSource
     OnGetChartDataItem = UDFSrcModelFoldedGetChartDataItem
     Left = 264
-    Top = 411
+    Top = 456
   end
   object UDFSrcModelFoldedDownLimit: TUserDefinedChartSource
     OnGetChartDataItem = UDFSrcModelFoldedGetChartDataItem
     Left = 264
-    Top = 472
+    Top = 504
   end
 end
