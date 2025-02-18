@@ -15,12 +15,13 @@ type
 
   TDFTThread = class(TThread)
   private
-    FParamsPtr: PDCDFTparameters;
+    FParams: TDCDFTparameters;
     FProgressCaptionProc: TProgressCaptionProc;
   protected
     procedure Execute; override;
   public
-    constructor Create(AParamsPtr: PDCDFTparameters;
+    property Params: TDCDFTparameters read FParams;
+    constructor Create(AParams: TDCDFTparameters;
                        AOnTerminate: TNotifyEvent;
                        ProgressCaptionProc: TProgressCaptionProc);
   end;
@@ -28,7 +29,7 @@ type
 
 implementation
 
-constructor TDFTThread.Create(AParamsPtr: PDCDFTparameters;
+constructor TDFTThread.Create(AParams: TDCDFTparameters;
                               AOnTerminate: TNotifyEvent;
                               ProgressCaptionProc: TProgressCaptionProc);
 begin
@@ -36,26 +37,26 @@ begin
   OnTerminate := AOnTerminate;
   FreeOnTerminate := True;
   FProgressCaptionProc := ProgressCaptionProc;
-  FParamsPtr := AParamsPtr;
+  FParams := AParams;
 end;
 
 procedure TDFTThread.Execute;
 begin
   try
-    dcdft_proc(FParamsPtr^.X, FParamsPtr^.Y,
-               FParamsPtr^.FrequencyMin, FParamsPtr^.FrequencyMax, FParamsPtr^.FrequencyResolution,
-               FParamsPtr^.TrendDegree, FParamsPtr^.TrigPolyDegree,
+    dcdft_proc(FParams.X, FParams.Y,
+               FParams.FrequencyMin, FParams.FrequencyMax, FParams.FrequencyResolution,
+               FParams.TrendDegree, FParams.TrigPolyDegree,
                0,
                FProgressCaptionProc,
-               FParamsPtr^.frequencies, FParamsPtr^.periods, FParamsPtr^.power);
+               FParams.frequencies, FParams.periods, FParams.power);
   except
     on E: Exception do begin
-      FParamsPtr^.Error := E.Message;
-      if FParamsPtr^.Error = '' then
-        FParamsPtr^.Error := 'Unknown Error';
+      FParams.Error := E.Message;
+      if FParams.Error = '' then
+        FParams.Error := 'Unknown Error';
     end
     else
-      FParamsPtr^.Error := 'Unknown Error';
+      FParams.Error := 'Unknown Error';
   end;
 end;
 

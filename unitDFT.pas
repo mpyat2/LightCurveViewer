@@ -10,7 +10,7 @@ uses
   Classes, SysUtils, math, lcvtypes;
 
 type
-  PDCDFTparameters = ^TDCDFTparameters;
+  //PDCDFTparameters = ^TDCDFTparameters;
   TDCDFTparameters = record
     X: TFloatArray;
     Y: TFloatArray;
@@ -22,6 +22,7 @@ type
     frequencies: TFloatArray;
     periods: TFloatArray;
     power: TFloatArray;
+    StartTime: Double;
     Error: string;
   end;
 

@@ -9,7 +9,7 @@ interface
 uses
   Classes, SysUtils, IniFiles, Forms, Controls, Graphics, Dialogs, Menus,
   ActnList, ComCtrls, TAGraph, TASources, TASeries, TACustomSource, TATools,
-  lcvtypes, Types;
+  Types, lcvtypes, unitDFT;
 
 type
 
@@ -114,11 +114,9 @@ type
     procedure UDFSrcModelGetChartDataItem(ASource: TUserDefinedChartSource; AIndex: Integer; var AItem: TChartDataItem);
   private
     FCalculationInProgress: Boolean;
-    //FSavedChartColor: TColor;
     FFileName: string;
     FObjectName: string;
     FPeriodogramFirstRun: Boolean;
-    FDFTThreadTerminated: Boolean;
     FFitFormula: string;
     FFitInfo: string;
     FFitAtPoints: TFitColumnArray;
@@ -148,7 +146,8 @@ type
     procedure SetAxisBoundaries(Xmin, Xmax, Ymin, Ymax: Double);
     procedure Periodogram;
     procedure DoPolyFit;
-    procedure DoDCDFT(params: Pointer);
+    procedure DoDCDFT(DCDFTparameters: TDCDFTparameters);
+    procedure ShowPeriodogram(DCDFTparameters: TDCDFTparameters);
     procedure DCDFTThreadOnTerminate(Sender: TObject);
     procedure DFTGlobalTerminate;
     procedure ProgressCaptionProc(const Msg: string);
@@ -167,7 +166,7 @@ implementation
 
 uses
   math, TACustomSeries, TAChartUtils, unitPhaseDialog, unitFitParamDialog,
-  unitDFTparamDialog, unitDFTdialog, unitDFT, unitTableDialog,
+  unitDFTparamDialog, unitDFTdialog, unitTableDialog,
   unitModelInfoDialog, unitAbout, dftThread, dataio, sortutils, formatutils,
   miscutils, fitproc;
 
@@ -1032,27 +1031,27 @@ end;
 
 procedure TFormMain.Periodogram;
 var
-  DialogCaption: string;
-  t0: TDateTime;
-  params: TDCDFTparameters;
+  DCDFTparameters: TDCDFTparameters;
   Item: PChartDataItem;
   Interval, Freq: Double;
   I: Integer;
 begin
   if LCSrcData.Count > 0 then begin
-    SetLength(params.X, LCSrcData.Count);
-    SetLength(params.Y, LCSrcData.Count);
+    SetLength(DCDFTparameters.X, LCSrcData.Count);
+    SetLength(DCDFTparameters.Y, LCSrcData.Count);
     for I := 0 to LCSrcData.Count - 1 do begin
       Item := LCSrcData.Item[I];
-      params.X[I] := Item^.X;
-      params.Y[I] := Item^.Y;
+      DCDFTparameters.X[I] := Item^.X;
+      DCDFTparameters.Y[I] := Item^.Y;
     end;
     if FPeriodogramFirstRun then begin
       if not unitDftParamDialog.IsResolutionDefined then begin
         unitDftParamDialog.SetCurrentFrequencyResolution(
-          GetRecommendedFrequencyResolution(MinValue(params.X), MaxValue(params.X), unitDftParamDialog.GetCurrentTrigPolyDegree));
+          GetRecommendedFrequencyResolution(MinValue(DCDFTparameters.X),
+                                            MaxValue(DCDFTparameters.X),
+                                            unitDftParamDialog.GetCurrentTrigPolyDegree));
         unitDftParamDialog.SetCurrentFrequencyMin(0.0);
-        Interval := GetMedianInterval(params.X);
+        Interval := GetMedianInterval(DCDFTparameters.X);
         if not IsNan(Interval) and (Interval > 0) then begin
           Freq := 1.0/Interval/2.0; // Approximate Nyquist
           if Freq > 50.0 then
@@ -1062,42 +1061,51 @@ begin
       end;
       FPeriodogramFirstRun := False;
     end;
-    if not GetDFTparams(params.X, params.FrequencyMin, params.FrequencyMax, params.FrequencyResolution, params.TrendDegree, params.TrigPolyDegree) then
+    if not GetDFTparams(DCDFTparameters.X,
+                        DCDFTparameters.FrequencyMin, DCDFTparameters.FrequencyMax,
+                        DCDFTparameters.FrequencyResolution,
+                        DCDFTparameters.TrendDegree,
+                        DCDFTparameters.TrigPolyDegree)
+    then
       Exit;
     SaveDataSettings;
     //CloseDFTdialogs;
-    params.Error := '';
-    t0 := Now;
+    DCDFTparameters.Error := '';
+    DCDFTparameters.StartTime := Now;
     LongOpStart;
     try
-      try
-        DoDCDFT(@params);
-      except
-        on E: Exception do begin
-          ShowMessage(E.Message);
-          Exit;
-        end;
+      DoDCDFT(DCDFTparameters);
+    except
+      on E: Exception do begin
+        ShowMessage(E.Message);
+        LongOpStop;
+        Exit;
       end;
-    finally
-      LongOpStop;
     end;
-    if params.Error <> '' then begin
-      ShowMessage('Error:'^M^J + params.Error);
-      Exit;
-    end;
-    //ShowMessage('Done!');
-    DialogCaption := Format('Periodogram | Trend degree = %d; Trig. Polynomial Degree = %d | CalcTime = %fs | %s',
-                            [params.TrendDegree,
-                             params.TrigPolyDegree,
-                             (Now - t0) * 24 * 60 * 60,
-                             ExtractFileName(FFileName)]);
-    PlotDFTresult(DialogCaption, params.frequencies, params.power);
   end;
 end;
 
 procedure TFormMain.DCDFTThreadOnTerminate(Sender: TObject);
 begin
-  FDFTThreadTerminated := True;
+  LongOpStop;
+  Assert(Sender is TDFTThread);
+  if TDFTThread(Sender).Params.Error <> '' then begin
+    ShowMessage('Error:'^M^J + TDFTThread(Sender).Params.Error);
+    Exit;
+  end;
+  ShowPeriodogram(TDFTThread(Sender).Params);
+end;
+
+procedure TFormMain.ShowPeriodogram(DCDFTparameters: TDCDFTparameters);
+var
+  DialogCaption: string;
+begin
+  DialogCaption := Format('Periodogram | Trend degree = %d; Trig. Polynomial Degree = %d | CalcTime = %fs | %s',
+                          [DCDFTparameters.TrendDegree,
+                           DCDFTparameters.TrigPolyDegree,
+                           (Now - DCDFTparameters.StartTime) * 24 * 60 * 60,
+                           ExtractFileName(FFileName)]);
+  PlotDFTresult(DialogCaption, DCDFTparameters.frequencies, DCDFTparameters.power);
 end;
 
 procedure TFormMain.DFTGlobalTerminate;
@@ -1116,8 +1124,6 @@ var
 begin
   FCalculationInProgress := True;
   Chart.Enabled := False;
-  //FSavedChartColor := Chart.BackColor;
-  //Chart.BackColor := clGray;
   StatusBar.Panels[2].Text := 'Calculating...';
   for I := 0 to ActionList.ActionCount - 1 do begin
     ActionList.UpdateAction(ActionList.Actions[I]);
@@ -1129,25 +1135,19 @@ procedure TFormMain.LongOpStop;
 begin
   FCalculationInProgress := False;
   Chart.Enabled := True;
-  //Chart.BackColor := FSavedChartColor;
   StatusBar.Panels[2].Text := '';
   if Self.WindowState = wsMinimized then
     Application.Restore;
 end;
 
-procedure TFormMain.DoDCDFT(params: Pointer);
+procedure TFormMain.DoDCDFT(DCDFTparameters: TDCDFTparameters);
 var
   DCDFTThread: TDFTThread;
 begin
-  FDFTThreadTerminated := False;
-  DCDFTThread := TDFTThread.Create(PDCDFTparameters(params), @DCDFTThreadOnTerminate, @ProgressCaptionProc);
+  DCDFTThread := TDFTThread.Create(DCDFTparameters, @DCDFTThreadOnTerminate, @ProgressCaptionProc);
   if Assigned(DCDFTThread.FatalException) then
     raise DCDFTThread.FatalException;
   DCDFTThread.Start;
-  while not FDFTThreadTerminated do begin
-    Application.ProcessMessages;
-    Sleep(1);
-  end;
 end;
 
 
