@@ -48,7 +48,7 @@ begin
                FParams.TrendDegree, FParams.TrigPolyDegree,
                0,
                FProgressCaptionProc,
-               FParams.frequencies, FParams.periods, FParams.power);
+               FParams.frequencies, FParams.power);
   except
     on E: Exception do begin
       FParams.Error := E.Message;

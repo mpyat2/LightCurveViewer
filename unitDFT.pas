@@ -20,7 +20,6 @@ type
     TrendDegree: Integer;
     TrigPolyDegree: Integer;
     frequencies: TDoubleArray;
-    periods: TDoubleArray;
     power: TDoubleArray;
     StartTime: Double;
     Error: string;
@@ -34,7 +33,7 @@ procedure dcdft_proc(
           TrigPolyDegree: Integer;
           CmdLineNumberOfThreads: Integer;
           ProgressCaptionProc: TProgressCaptionProc;
-          out frequencies, periods, power: TDoubleArray);
+          out frequencies, power: TDoubleArray);
 
 procedure SetGlobalTerminateAllThreads(AValue: Boolean);
 
@@ -125,21 +124,19 @@ type
     Fn_freq: Integer;
     FTrendDegree: Integer;
     FTrigPolyDegree: Integer;
-    Fpartial_frequencies, Fpartial_periods, Fpartial_power: TDoubleArray;
+    Fpartial_frequencies, Fpartial_power: TDoubleArray;
     FExecuteCompleted: Boolean;
     FTotalNfreq: Integer;
     FProgressCaptionProc: TProgressCaptionProc;
     FInfoMessage: string;
   private
     function GetFreq(I: Integer): Double;
-    function GetPeriod(I: Integer): Double;
     function GetPower(I: Integer): Double;
   public
     property AThreadNo: Integer read FThreadNo;
     property ExecuteCompleted: Boolean read FExecuteCompleted;
     property An_freq: Integer read Fn_freq;
     property Freq[I: Integer]: Double read GetFreq;
-    property Period[I: Integer]: Double read GetPeriod;
     property Power[I: Integer]: Double read GetPower;
   private
     procedure InfoMessageProc;
@@ -161,11 +158,6 @@ type
 function TCalcThread.GetFreq(I: Integer): Double;
 begin
   Result := Fpartial_frequencies[I];
-end;
-
-function TCalcThread.GetPeriod(I: Integer): Double;
-begin
-  Result := Fpartial_periods[I];
 end;
 
 function TCalcThread.GetPower(I: Integer): Double;
@@ -198,7 +190,6 @@ begin
   FTrendDegree := trendDegree;
   FTrigPolyDegree := trigPolyDegree;
   SetLength(Fpartial_frequencies, Fn_freq);
-  SetLength(Fpartial_periods, Fn_freq);
   SetLength(Fpartial_power, Fn_freq);
   FProgressCaptionProc := ProgressCaptionProc;
   FTotalNfreq := TotalNfreq;
@@ -228,27 +219,20 @@ procedure TCalcThread.dcdft_proc_1;
 var
   ndata: Integer;
   nu: Double;
-  pwr: Double;
   I, II, III, Idx: Integer;
   meanTime: Double;
   times: TDoubleArray;
   temp_mags: TDoubleArray;
-  fit: TDoubleArray;
   N, Nrest: Integer;
   NofParameters: Integer;
   angle: Double;
-  a: TDoubleArray;
+  // TArbFloatArray for compatibility with NumLib
+  a: TArbFloatArray;
+  magArbFloatArray: TArbFloatArray;
+  fit: TArbFloatArray;
 begin
   if Length(Ft) <> Length(FMag) then
     CalcError('X and Y arrays myst be of equal length');
-
-  ndata := Length(Ft);
-  SetLength(times, ndata);
-  SetLength(temp_mags, ndata);
-  meanTime := Mean(Ft);
-  for II := 0 to ndata - 1 do begin
-    times[II] := Ft[II] - meanTime;
-  end;
 
   if (FTrendDegree < 0) then
     CalcError('Trend degree must be >= 0');
@@ -260,6 +244,16 @@ begin
 
   if NofParameters > 51 then
     CalcError('Too many parameters. Please reduce trend or trigonometric polynomial degree');
+
+  ndata := Length(Ft);
+  SetLength(times, ndata);
+  SetLength(temp_mags, ndata);
+  SetLength(magArbFloatArray, ndata);
+  meanTime := Mean(Ft);
+  for I := 0 to ndata - 1 do begin
+    times[I] := Ft[I] - meanTime;
+    magArbFloatArray[I] := Fmag[I]; // for compatibility with NumLib
+  end;
 
   SetLength(a, ndata * NofParameters);
 
@@ -283,7 +277,6 @@ begin
 
     if nu > 0.0 then begin
       Fpartial_frequencies[I] := nu;
-      Fpartial_periods[I] := 1 / nu;
 
       // Trigonometric polinomial
       for II := 0 to ndata - 1 do begin
@@ -295,15 +288,13 @@ begin
         end;
       end;
 
-      PolyFit(a, Fmag, FTrendDegree, FTrigPolyDegree, fit);
+      PolyFit(a, magArbFloatArray, FTrendDegree, FTrigPolyDegree, fit);
 
       for II := 0 to ndata - 1 do begin
-        temp_mags[II] := Fmag[II] - fit[II];
+        temp_mags[II] := magArbFloatArray[II] - fit[II];
       end;
 
-      pwr := PopnVariance(temp_mags); // \sigma^2_{O-C}
-
-      Fpartial_power[I] := pwr;
+      Fpartial_power[I] := PopnVariance(temp_mags); // \sigma^2_{O-C}
 
       if (I + 1) mod GlobalCounterIncrement = 0 then begin
         N := IncrementGlobalCounter(GlobalCounterIncrement);
@@ -313,7 +304,6 @@ begin
       end;
     end
     else begin
-      Fpartial_periods[I] := NaN;
       Fpartial_power[I] := NaN;
     end;
     nu := nu + Ffreq_step;
@@ -327,6 +317,50 @@ begin
   //OutputDebugString(PChar('Thread #' + IntToStr(FThreadNo) + ' finished!'));
 end;
 
+// For normalizing
+function CalcSigmaSquaredO(const t, mag: TDoubleArray;
+                           TrendDegree: Integer): Double;
+var
+  times: TDoubleArray;
+  temp_mags: TDoubleArray;
+  meanTime: Double;
+  ndata: Integer;
+  I, II, Idx: Integer;
+  // For compatibility with NumLib
+  a: TArbFloatArray;
+  magArbFloatArray: TArbFloatArray;
+  fit: TArbFloatArray;
+begin
+  // Trend
+  ndata := Length(mag);
+  SetLength(times, ndata);
+  SetLength(temp_mags, ndata);
+  meanTime := Mean(t);
+  for I := 0 to ndata - 1 do begin
+    times[I] := t[I] - meanTime;
+  end;
+  SetLength(a, ndata * (1 + TrendDegree));
+  for I := 0 to ndata - 1 do begin
+    for II := 0 to TrendDegree do begin
+      Idx := I * (1 + TrendDegree) + II;
+      a[Idx] := math.Power(times[I], II);
+    end;
+  end;
+
+  SetLength(magArbFloatArray, ndata);
+  SetLength(fit, ndata);
+  for I := 0 to ndata - 1 do begin
+    magArbFloatArray[I] := mag[I]; // for compatibility with NumLib
+  end;
+  PolyFit(a, magArbFloatArray, TrendDegree, 0, fit);
+
+  for I := 0 to ndata - 1 do begin
+    temp_mags[I] := magArbFloatArray[I] - fit[I];
+  end;
+
+  Result := PopnVariance(temp_mags);
+end;
+
 procedure dcdft_proc(
           const t, mag: TDoubleArray;
           lowfreq, hifreq: Double;
@@ -335,17 +369,11 @@ procedure dcdft_proc(
           TrigPolyDegree: Integer;
           CmdLineNumberOfThreads: Integer;
           ProgressCaptionProc: TProgressCaptionProc;
-          out frequencies, periods, power: TDoubleArray);
+          out frequencies, power: TDoubleArray);
 var
   n_freq: Integer;
-  ndata: Integer;
-  a: TDoubleArray;
-  meanTime: Double;
-  times: TDoubleArray;
-  fit: TDoubleArray;
   sigmaSquaredO: Double;
   startfreq: Double;
-  temp_mags: TDoubleArray;
   NumberOfThreads, StepsPerThread, Remainder, StepsToDo: integer;
   I, II, Idx: Integer;
   Threads: array of TCalcThread;
@@ -353,7 +381,6 @@ begin
   n_freq := Floor((hifreq - lowfreq) / freq_step);
 
   SetLength(frequencies, n_freq + 1);
-  SetLength(periods, n_freq + 1);
   SetLength(power, n_freq + 1);
 
   if CmdLineNumberOfThreads < 1 then
@@ -421,40 +448,9 @@ begin
         for II := 0 to StepsToDo - 1 do begin
            Idx := StepsPerThread * I + II;
            frequencies[Idx] := Threads[I].Freq[II];
-           periods[Idx] := Threads[I].Period[II];
            power[Idx] := Threads[I].Power[II];
         end;
       end;
-
-      // Trend
-      ndata := Length(mag);
-      SetLength(times, ndata);
-      SetLength(temp_mags, ndata);
-      meanTime := Mean(t);
-      for I := 0 to ndata - 1 do begin
-        times[I] := t[I] - meanTime;
-      end;
-      SetLength(a, ndata * (1 + TrendDegree));
-      for I := 0 to ndata - 1 do begin
-        for II := 0 to TrendDegree do begin
-          Idx := I * (1 + TrendDegree) + II;
-          a[Idx] := math.Power(times[I], II);
-        end;
-      end;
-
-      SetLength(fit, ndata);
-      PolyFit(a, mag, TrendDegree, 0, fit);
-
-      for I := 0 to ndata - 1 do begin
-        temp_mags[I] := mag[I] - fit[I];
-      end;
-
-      sigmaSquaredO := PopnVariance(temp_mags);
-
-      for I := 0 to n_freq do begin
-        power[I] := 1.0 - power[I] / sigmaSquaredO;
-      end;
-
     finally
       for I := Length(Threads) - 1 downto 0 do begin
          FreeAndNil(Threads[I]);
@@ -463,6 +459,13 @@ begin
   finally
     DoneCriticalSection(GlobalCounterCriticalSection);
   end;
+
+  sigmaSquaredO := CalcSigmaSquaredO(t, mag, TrendDegree);
+
+  for I := 0 to n_freq do begin
+    power[I] := 1.0 - power[I] / sigmaSquaredO;
+  end;
+
 end;
 
 end.

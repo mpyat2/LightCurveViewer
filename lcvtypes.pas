@@ -6,10 +6,14 @@ unit lcvtypes;
 
 interface
 
+uses
+  typ; // NumLib types
+
 type
   FitColumnType = (x, yFit, yErrors, yObserved);
 
 type
+  TArbFloatArray = array of ArbFloat; // for compatibility with NumLib
   TDoubleArray = array of Double;
   TInt3Array = array[0..2] of Integer;
   TDouble3Array = array[0..2] of Double;
