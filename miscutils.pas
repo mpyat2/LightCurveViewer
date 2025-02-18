@@ -11,7 +11,7 @@ uses
 
 procedure CalcError(const S: string);
 
-function GetMedianInterval(const X: TFloatArray): Double;
+function GetMedianInterval(const X: TDoubleArray): Double;
 
 function GetRecommendedFrequencyResolution(Xmin, Xmax: Double; TrigPolyDegree: Integer): Double;
 
@@ -25,9 +25,9 @@ begin
   raise Exception.Create(S);
 end;
 
-function GetMedianInterval(const X: TFloatArray): Double;
+function GetMedianInterval(const X: TDoubleArray): Double;
 var
-  tempArray, Intervals: TFloatArray;
+  tempArray, Intervals: TDoubleArray;
   Interval: Double;
   I, N: Integer;
 begin

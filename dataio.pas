@@ -9,9 +9,9 @@ interface
 uses
   Classes, SysUtils, lcvtypes;
 
-procedure ReadData(const AFileName: string; out X: TFloatArray; out Y: TFloatArray; out ObjectName: string);
+procedure ReadData(const AFileName: string; out X: TDoubleArray; out Y: TDoubleArray; out ObjectName: string);
 
-procedure WriteData(const AFileName: string; const X: TFloatArray; const Y: TFloatArray);
+procedure WriteData(const AFileName: string; const X: TDoubleArray; const Y: TDoubleArray);
 
 implementation
 
@@ -28,7 +28,7 @@ const
 // The lines contaning less than 2 floating-point values in the first two
 // columns are ignored.
 // The columns are assumed to be separated by tabs or spaces.
-procedure ReadData(const AFileName: string; out X: TFloatArray; out Y: TFloatArray; out ObjectName: string);
+procedure ReadData(const AFileName: string; out X: TDoubleArray; out Y: TDoubleArray; out ObjectName: string);
 var
   Lines, Line: TStrings;
   S: string;
@@ -83,7 +83,7 @@ begin
   end;
 end;
 
-procedure WriteData(const AFileName: string; const X: TFloatArray; const Y: TFloatArray);
+procedure WriteData(const AFileName: string; const X: TDoubleArray; const Y: TDoubleArray);
 var
   Lines: TStrings;
   S: string;

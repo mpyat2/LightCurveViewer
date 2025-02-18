@@ -28,8 +28,8 @@ type
     procedure ActionSelectAllExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
-    FX: TFloatArray;
-    FY: TFloatArray;
+    FX: TDoubleArray;
+    FY: TDoubleArray;
     FXname, FYname: string;
     function GetGridCell(Grid: TDrawGrid; C, R: Integer): string;
     procedure GridDrawCell(Sender: TObject; aCol, aRow: Integer; aRect: TRect; aState: TGridDrawState);
@@ -37,7 +37,7 @@ type
 
   end;
 
-procedure ShowTable(const X, Y: TFloatArray; const Xname, Yname: string);
+procedure ShowTable(const X, Y: TDoubleArray; const Xname, Yname: string);
 
 implementation
 
@@ -46,7 +46,7 @@ implementation
 uses
   Clipbrd, guiutils;
 
-procedure ShowTable(const X, Y: TFloatArray; const Xname, Yname: string);
+procedure ShowTable(const X, Y: TDoubleArray; const Xname, Yname: string);
 var
   F: TFormTable;
 begin

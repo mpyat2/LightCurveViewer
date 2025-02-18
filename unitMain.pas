@@ -133,7 +133,7 @@ type
     procedure ClearModelFolded;
     procedure CloseFile;
     procedure OpenFile(const AFileName: string);
-    procedure SaveFileAs(const AFileName: string; const X, Y: TFloatArray);
+    procedure SaveFileAs(const AFileName: string; const X, Y: TDoubleArray);
     procedure SaveDataSettings;
     procedure LoadDataSettings;
     procedure SaveChartSettings(const Ini: TIniFile; const Section: string);
@@ -280,7 +280,7 @@ procedure TFormMain.ActionSaveVisibleExecute(Sender: TObject);
   end;
 
 var
-  X1, Y1: TFloatArray;
+  X1, Y1: TDoubleArray;
   ItemX, ItemY: Double;
   Item: PChartDataItem;
   N, I: Integer;
@@ -349,7 +349,7 @@ end;
 
 procedure TFormMain.ActionObservationsExecute(Sender: TObject);
 var
-  X1, Y1: TFloatArray;
+  X1, Y1: TDoubleArray;
   Item: PChartDataItem;
   I: Integer;
 begin
@@ -606,7 +606,7 @@ end;
 
 procedure TFormMain.OpenFile(const AFileName: string);
 var
-  X, Y: TFloatArray;
+  X, Y: TDoubleArray;
   TempObjectName: string;
   I: Integer;
 begin
@@ -639,7 +639,7 @@ begin
   PlotData;
 end;
 
-procedure TFormMain.SaveFileAs(const AFileName: string; const X, Y: TFloatArray);
+procedure TFormMain.SaveFileAs(const AFileName: string; const X, Y: TDoubleArray);
 var
   PropsFileName: string;
   Ini: TIniFile;
@@ -892,8 +892,8 @@ procedure TFormMain.DoPolyFit;
   end;
 
 var
-  X: TFloatArray;
-  Y: TFloatArray;
+  X: TDoubleArray;
+  Y: TDoubleArray;
   TrendDegree: Integer;
   TrigPolyDegrees: TInt3Array;
   Frequencies: TDouble3Array;

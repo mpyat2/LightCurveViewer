@@ -11,9 +11,9 @@ uses
 
 procedure SortModelPoints(var Fit: TFitColumnArray);
 
-procedure SortDataPoints(var X, Y: TFloatArray);
+procedure SortDataPoints(var X, Y: TDoubleArray);
 
-procedure SortFloatArray(var X: TFloatArray);
+procedure SortFloatArray(var X: TDoubleArray);
 
 implementation
 
@@ -96,7 +96,7 @@ begin
   end;
 end;
 
-procedure SortDataPoints(var X, Y: TFloatArray);
+procedure SortDataPoints(var X, Y: TDoubleArray);
 var
   List: TList;
   I: Integer;
@@ -121,7 +121,7 @@ begin
   end;
 end;
 
-procedure SortFloatArray(var X: TFloatArray);
+procedure SortFloatArray(var X: TDoubleArray);
 var
   List: TList;
   I: Integer;

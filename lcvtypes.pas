@@ -10,11 +10,10 @@ type
   FitColumnType = (x, yFit, yErrors, yObserved);
 
 type
-  PFloatArray = ^TFloatArray;
-  TFloatArray = array of Double;
+  TDoubleArray = array of Double;
   TInt3Array = array[0..2] of Integer;
   TDouble3Array = array[0..2] of Double;
-  TFitColumnArray = array[FitColumnType] of TFloatArray;
+  TFitColumnArray = array[FitColumnType] of TDoubleArray;
 
 type
   TFitPoint = class

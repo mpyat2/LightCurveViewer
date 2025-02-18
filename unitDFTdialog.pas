@@ -62,7 +62,7 @@ type
 
   end;
 
-procedure PlotDFTresult(const Caption: string; const frequencies, power: TFloatArray);
+procedure PlotDFTresult(const Caption: string; const frequencies, power: TDoubleArray);
 //procedure CloseDFTdialogs;
 
 implementation
@@ -89,7 +89,7 @@ uses
 //  end;
 //end;
 
-procedure PlotDFTresult(const Caption: string; const frequencies, power: TFloatArray);
+procedure PlotDFTresult(const Caption: string; const frequencies, power: TDoubleArray);
 var
   F: TFormDFTDialog;
   I: Integer;

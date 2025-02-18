@@ -12,29 +12,29 @@ uses
 type
   //PDCDFTparameters = ^TDCDFTparameters;
   TDCDFTparameters = record
-    X: TFloatArray;
-    Y: TFloatArray;
+    X: TDoubleArray;
+    Y: TDoubleArray;
     FrequencyMin: Double;
     FrequencyMax: Double;
     FrequencyResolution: Double;
     TrendDegree: Integer;
     TrigPolyDegree: Integer;
-    frequencies: TFloatArray;
-    periods: TFloatArray;
-    power: TFloatArray;
+    frequencies: TDoubleArray;
+    periods: TDoubleArray;
+    power: TDoubleArray;
     StartTime: Double;
     Error: string;
   end;
 
 procedure dcdft_proc(
-          const t, mag: TFloatArray;
+          const t, mag: TDoubleArray;
           lowfreq, hifreq: Double;
           freq_step: Double;
           TrendDegree: Integer;
           TrigPolyDegree: Integer;
           CmdLineNumberOfThreads: Integer;
           ProgressCaptionProc: TProgressCaptionProc;
-          out frequencies, periods, power: TFloatArray);
+          out frequencies, periods, power: TDoubleArray);
 
 procedure SetGlobalTerminateAllThreads(AValue: Boolean);
 
@@ -118,14 +118,14 @@ type
 
   TCalcThread = class(TThread)
   private
-    Ft, Fmag: TFloatArray;
+    Ft, Fmag: TDoubleArray;
     FThreadNo: Integer;
     Flowfreq: Double;
     Ffreq_step: Double;
     Fn_freq: Integer;
     FTrendDegree: Integer;
     FTrigPolyDegree: Integer;
-    Fpartial_frequencies, Fpartial_periods, Fpartial_power: TFloatArray;
+    Fpartial_frequencies, Fpartial_periods, Fpartial_power: TDoubleArray;
     FExecuteCompleted: Boolean;
     FTotalNfreq: Integer;
     FProgressCaptionProc: TProgressCaptionProc;
@@ -148,7 +148,7 @@ type
     procedure Execute; override;
   public
     constructor Create(ThreadNo: Integer;
-                       const t, mag: TFloatArray;
+                       const t, mag: TDoubleArray;
                        lowfreq: Double;
                        freq_step: Double;
                        n_freq: Integer;
@@ -174,7 +174,7 @@ begin
 end;
 
 constructor TCalcThread.Create(ThreadNo: Integer;
-                               const t, mag: TFloatArray;
+                               const t, mag: TDoubleArray;
                                lowfreq: Double;
                                freq_step: Double;
                                n_freq: Integer;
@@ -231,13 +231,13 @@ var
   pwr: Double;
   I, II, III, Idx: Integer;
   meanTime: Double;
-  times: TFloatArray;
-  temp_mags: TFloatArray;
-  fit: TFloatArray;
+  times: TDoubleArray;
+  temp_mags: TDoubleArray;
+  fit: TDoubleArray;
   N, Nrest: Integer;
   NofParameters: Integer;
   angle: Double;
-  a: TFloatArray;
+  a: TDoubleArray;
 begin
   if Length(Ft) <> Length(FMag) then
     CalcError('X and Y arrays myst be of equal length');
@@ -328,24 +328,24 @@ begin
 end;
 
 procedure dcdft_proc(
-          const t, mag: TFloatArray;
+          const t, mag: TDoubleArray;
           lowfreq, hifreq: Double;
           freq_step: Double;
           TrendDegree: Integer;
           TrigPolyDegree: Integer;
           CmdLineNumberOfThreads: Integer;
           ProgressCaptionProc: TProgressCaptionProc;
-          out frequencies, periods, power: TFloatArray);
+          out frequencies, periods, power: TDoubleArray);
 var
   n_freq: Integer;
   ndata: Integer;
-  a: TFloatArray;
+  a: TDoubleArray;
   meanTime: Double;
-  times: TFloatArray;
-  fit: TFloatArray;
+  times: TDoubleArray;
+  fit: TDoubleArray;
   sigmaSquaredO: Double;
   startfreq: Double;
-  temp_mags: TFloatArray;
+  temp_mags: TDoubleArray;
   NumberOfThreads, StepsPerThread, Remainder, StepsToDo: integer;
   I, II, Idx: Integer;
   Threads: array of TCalcThread;

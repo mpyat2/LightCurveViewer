@@ -13,34 +13,34 @@ uses
 
 // It this vestion of PolyFit, the input array (a) must be allocated and
 // initialized. fit must be allocated.
-procedure PolyFit(const a: TFloatArray;       // 'Design matrix' (independent variables)
-                  const Yarray: TFloatArray;  // Observed values
+procedure PolyFit(const a: TDoubleArray;       // 'Design matrix' (independent variables)
+                  const Yarray: TDoubleArray;  // Observed values
                   ATrendDegree: Integer;      // Degree of the algebraic polynomial
                   ATrigPolyDegree: Integer;   // Degree of the (single) trigonometric polynomial
-                  var fit: TFloatArray);      // Approximated values of the observations
+                  var fit: TDoubleArray);      // Approximated values of the observations
 
-procedure PolyFit(const Xarray: TFloatArray;
-                  const Yarray: TFloatArray;
+procedure PolyFit(const Xarray: TDoubleArray;
+                  const Yarray: TDoubleArray;
                   ATrendDegree: Integer;
                   const ATrigPolyDegrees: TInt3Array;
                   const AFrequencies: TDouble3Array;
                   fitXmin, fitXmax, fitXstep: Double;
-                  out Xfit: TFloatArray;
-                  out Yfit: TFloatArray;
-                  out YfitErrors: TFloatArray;
-                  out FitAtPoints: TFloatArray;
-                  out FitAtPointsErrors: TFloatArray;
+                  out Xfit: TDoubleArray;
+                  out Yfit: TDoubleArray;
+                  out YfitErrors: TDoubleArray;
+                  out FitAtPoints: TDoubleArray;
+                  out FitAtPointsErrors: TDoubleArray;
                   out Formula: string;
                   out Info: string);
 
-function CalcResidualSquared(const Observations, Model: TFloatArray): Double;
+function CalcResidualSquared(const Observations, Model: TDoubleArray): Double;
 
 implementation
 
 uses
   math, typ, omv, inv, sle, miscutils, formatutils;
 
-function CalcResidualSquared(const Observations, Model: TFloatArray): Double;
+function CalcResidualSquared(const Observations, Model: TDoubleArray): Double;
 var
   I: Integer;
   R: Double;
@@ -55,10 +55,10 @@ begin
 end;
 
 // The input array (a) must be allocated and initialized.
-procedure PolyFitSolution(const a: TFloatArray;              // 'Design matrix' (independent variables)
-                          const Yarray: TFloatArray;         // Observations
+procedure PolyFitSolution(const a: TDoubleArray;              // 'Design matrix' (independent variables)
+                          const Yarray: TDoubleArray;         // Observations
                           NofParameters: Integer;            // Number of parameters (independent variables)
-                          out solution_vector: TFloatArray); // Solution
+                          out solution_vector: TDoubleArray); // Solution
 var
   ndata: Integer;
   term: typ.ArbInt;
@@ -79,8 +79,8 @@ end;
 procedure PolyFitSolutionToFormula(ATrendDegree: Integer;
                                    const ATrigPolyDegrees: TInt3Array;
                                    const AFrequencies: TDouble3Array;
-                                   const solution_vector: TFloatArray;
-                                   const solution_vector_errors: TFloatArray;
+                                   const solution_vector: TDoubleArray;
+                                   const solution_vector_errors: TDoubleArray;
                                    out Formula: string;
                                    out Info: string);
 var
@@ -126,10 +126,10 @@ begin
 end;
 
 // 'fit' array must be allocated
-procedure CalculateFitAtPoints(const a: TFloatArray;
-                               const solution_vector: TFloatArray;
+procedure CalculateFitAtPoints(const a: TDoubleArray;
+                               const solution_vector: TDoubleArray;
                                ATrendDegree, ATrigPolyDegree: Integer;
-                               var fit: TFloatArray);
+                               var fit: TDoubleArray);
 var
   I, II, Idx, Idx2: Integer;
   NofParameters: Integer;
@@ -151,13 +151,13 @@ end;
 
 // It this vestion of PolyFit, the input array (a) must be allocated and
 // initialized. fit must be allocated.
-procedure PolyFit(const a: TFloatArray;       // 'Design matrix' (independent variables)
-                  const Yarray: TFloatArray;  // Observed values
+procedure PolyFit(const a: TDoubleArray;       // 'Design matrix' (independent variables)
+                  const Yarray: TDoubleArray;  // Observed values
                   ATrendDegree: Integer;      // Degree of the algebraic polynomial
                   ATrigPolyDegree: Integer;   // Degree of the (single) trigonometric polynomial
-                  var fit: TFloatArray);      // Approximated values of the observations
+                  var fit: TDoubleArray);      // Approximated values of the observations
 var
-  solution_vector: TFloatArray;
+  solution_vector: TDoubleArray;
   NofParameters: Integer;
 begin
   NofParameters := 1 + ATrendDegree + ATrigPolyDegree * 2;
@@ -165,15 +165,15 @@ begin
   CalculateFitAtPoints(a, solution_vector, ATrendDegree, ATrigPolyDegree, fit);
 end;
 
-procedure CalculateFitAtPointsExt(const a: TFloatArray;
-                                  const solution_vector: TFloatArray;
+procedure CalculateFitAtPointsExt(const a: TDoubleArray;
+                                  const solution_vector: TDoubleArray;
                                   ATrendDegree: Integer;
                                   const ATrigPolyDegrees: TInt3Array;
                                   SigmaSq: Double;
-                                  const XTXI: TFloatArray;
+                                  const XTXI: TDoubleArray;
                                   ndata: Integer;
-                                  out fit: TFloatArray;
-                                  out fitError: TFloatArray);
+                                  out fit: TDoubleArray;
+                                  out fitError: TDoubleArray);
 var
   I, II, N, Idx, Idx1, Idx2: Integer;
   NofParameters: Integer;
@@ -223,14 +223,14 @@ procedure CalculateFit(fitXmin, fitXmax, fitXstep: Double;
                        ATrendDegree: Integer;
                        const ATrigPolyDegrees: TInt3Array;
                        const AFrequencies: TDouble3Array;
-                       const solution_vector: TFloatArray;
+                       const solution_vector: TDoubleArray;
                        SigmaSq: Double;
-                       const XTXI: TFloatArray;
-                       out Xfit: TFloatArray;
-                       out Yfit: TFloatArray;
-                       out YfitErrors: TFloatArray);
+                       const XTXI: TDoubleArray;
+                       out Xfit: TDoubleArray;
+                       out Yfit: TDoubleArray;
+                       out YfitErrors: TDoubleArray);
 var
-  Xvector: TFloatArray;
+  Xvector: TDoubleArray;
   x, nu, angle: Double;
   I, II, N, Idx, Idx1, Idx2, nfit: Integer;
   NofParameters: Integer;
@@ -288,17 +288,17 @@ begin
   end;
 end;
 
-procedure CalcCoefficientErrors(const Xmatrix: TFloatArray; // design matrix
-                                const Yvector: TFloatArray; // dependent variable
-                                const beta: TFloatArray;    // solution vector
+procedure CalcCoefficientErrors(const Xmatrix: TDoubleArray; // design matrix
+                                const Yvector: TDoubleArray; // dependent variable
+                                const beta: TDoubleArray;    // solution vector
                                 m: Integer;                 // number of equations  (rows in Xmatrix)
                                 n: Integer;                 // number of parameters (columns in Xmatrix)
                                 out SigmaSq: Double;        // Variance of residuals
-                                out XTXI: TFloatArray;      // Variance-Covariance Matrix of the Coefficients
-                                out Errors: TFloatArray);   // errors of the coefficients
+                                out XTXI: TDoubleArray;      // Variance-Covariance Matrix of the Coefficients
+                                out Errors: TDoubleArray);   // errors of the coefficients
 var
-  XmatrixTrans: TFloatArray;
-  YvectorPredicted: TFloatArray;
+  XmatrixTrans: TDoubleArray;
+  YvectorPredicted: TDoubleArray;
   RSS, TempV: Double;
   C, R, Idx: Integer;
   term: typ.ArbInt;
@@ -356,25 +356,25 @@ begin
   end;
 end;
 
-procedure PolyFit(const Xarray: TFloatArray;
-                  const Yarray: TFloatArray;
+procedure PolyFit(const Xarray: TDoubleArray;
+                  const Yarray: TDoubleArray;
                   ATrendDegree: Integer;
                   const ATrigPolyDegrees: TInt3Array;
                   const AFrequencies: TDouble3Array;
                   fitXmin, fitXmax, fitXstep: Double;
-                  out Xfit: TFloatArray;
-                  out Yfit: TFloatArray;
-                  out YfitErrors: TFloatArray;
-                  out FitAtPoints: TFloatArray;
-                  out FitAtPointsErrors: TFloatArray;
+                  out Xfit: TDoubleArray;
+                  out Yfit: TDoubleArray;
+                  out YfitErrors: TDoubleArray;
+                  out FitAtPoints: TDoubleArray;
+                  out FitAtPointsErrors: TDoubleArray;
                   out Formula: string;
                   out Info: string);
 var
-  a: TFloatArray;
-  solution_vector: TFloatArray;
+  a: TDoubleArray;
+  solution_vector: TDoubleArray;
   SigmaSq: Double;
-  XTXI: TFloatArray;
-  solution_vector_errors: TFloatArray;
+  XTXI: TDoubleArray;
+  solution_vector_errors: TDoubleArray;
   nu, angle: Double;
   I, II, N, Idx, Idx2: Integer;
   NofParameters: Integer;

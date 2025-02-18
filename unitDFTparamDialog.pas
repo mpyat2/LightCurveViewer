@@ -39,7 +39,7 @@ type
     FFrequencyResolution: Double;
     FTrendDegree: Integer;
     FTrigPolyDegree: Integer;
-    Xdata: TFloatArray;
+    Xdata: TDoubleArray;
   public
 
   end;
@@ -62,7 +62,7 @@ procedure SaveParameters(const Ini: TCustomIniFile; const Section: string);
 
 procedure LoadParameters(const Ini: TCustomIniFile; const Section: string);
 
-function GetDFTparams(const Xdata: TFloatArray; out AFrequencyMin, AFrequencyMax, AFrequencyResolution: Double; out ATrendDegree, ATrigPolyDegree: Integer): Boolean;
+function GetDFTparams(const Xdata: TDoubleArray; out AFrequencyMin, AFrequencyMax, AFrequencyResolution: Double; out ATrendDegree, ATrigPolyDegree: Integer): Boolean;
 
 implementation
 
@@ -131,7 +131,7 @@ begin
   CurrentTrigPolyDegree := Ini.ReadInteger(Section, 'periodogram.trigpolydegree', 1);
 end;
 
-function GetDFTparams(const Xdata: TFloatArray; out AFrequencyMin, AFrequencyMax, AFrequencyResolution: Double; out ATrendDegree, ATrigPolyDegree: Integer): Boolean;
+function GetDFTparams(const Xdata: TDoubleArray; out AFrequencyMin, AFrequencyMax, AFrequencyResolution: Double; out ATrendDegree, ATrigPolyDegree: Integer): Boolean;
 var
   F: TFormDFTparams;
 begin
