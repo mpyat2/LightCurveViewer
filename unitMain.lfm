@@ -299,10 +299,10 @@ object FormMain: TFormMain
       Caption = 'Show Model'
       OnExecute = ActionShowModelExecute
     end
-    object ActionCopyChart: TAction
-      Category = 'Edit'
+    object ActionCopyChartImage: TAction
+      Category = 'Chart'
       Caption = 'Copy to Clipboard'
-      OnExecute = ActionCopyChartExecute
+      OnExecute = ActionCopyChartImageExecute
     end
     object ActionStop: TAction
       Category = 'Tools'
@@ -310,6 +310,11 @@ object FormMain: TFormMain
       Enabled = False
       ImageIndex = 4
       OnExecute = ActionStopExecute
+    end
+    object ActionSaveChartImageAs: TAction
+      Category = 'Chart'
+      Caption = 'Save as PNG...'
+      OnExecute = ActionSaveChartImageAsExecute
     end
   end
   object OpenDialog: TOpenDialog
@@ -394,7 +399,10 @@ object FormMain: TFormMain
     Left = 80
     Top = 128
     object MenuItemCopyChart: TMenuItem
-      Action = ActionCopyChart
+      Action = ActionCopyChartImage
+    end
+    object MenuItemSavePNG: TMenuItem
+      Action = ActionSaveChartImageAs
     end
   end
   object UDFSrcModel: TUserDefinedChartSource
@@ -426,5 +434,12 @@ object FormMain: TFormMain
     OnGetChartDataItem = UDFSrcModelFoldedGetChartDataItem
     Left = 264
     Top = 504
+  end
+  object SavePictureDialog: TSavePictureDialog
+    DefaultExt = '.png'
+    Filter = 'PNG files (*.png)|*.png|All files (*.*)|*.*'
+    Options = [ofOverwritePrompt, ofPathMustExist, ofEnableSizing, ofViewDetail]
+    Left = 79
+    Top = 408
   end
 end

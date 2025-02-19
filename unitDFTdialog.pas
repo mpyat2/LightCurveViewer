@@ -140,7 +140,7 @@ end;
 
 procedure TFormDFTDialog.ActionCopyChartExecute(Sender: TObject);
 begin
-  Chart1.CopyToClipboard(TPortableNetworkGraphic);
+  Chart1.CopyToClipboard(TBitmap);
 end;
 
 procedure TFormDFTDialog.ActionGridSelectAllExecute(Sender: TObject);

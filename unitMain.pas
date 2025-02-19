@@ -8,16 +8,17 @@ interface
 
 uses
   Classes, SysUtils, IniFiles, Forms, Controls, Graphics, Dialogs, Menus,
-  ActnList, ComCtrls, TAGraph, TASources, TASeries, TACustomSource, TATools,
-  Types, lcvtypes, unitDFT;
+  ActnList, ComCtrls, ExtDlgs, TAGraph, TASources, TASeries, TACustomSource,
+  TATools, Types, lcvtypes, unitDFT;
 
 type
 
   { TFormMain }
 
   TFormMain = class(TForm)
+    ActionSaveChartImageAs: TAction;
     ActionStop: TAction;
-    ActionCopyChart: TAction;
+    ActionCopyChartImage: TAction;
     ActionShowModel: TAction;
     ActionShowData: TAction;
     ActionSaveVisible: TAction;
@@ -48,6 +49,7 @@ type
     LCSrcData: TListChartSource;
     MainMenu: TMainMenu;
     MenuFile: TMenuItem;
+    MenuItemSavePNG: TMenuItem;
     MenuItemCopyChart: TMenuItem;
     MenuItemShowData: TMenuItem;
     MenuItemShowModel: TMenuItem;
@@ -61,6 +63,7 @@ type
     MenuItemObservations: TMenuItem;
     PopupMenuChart: TPopupMenu;
     SaveDialog: TSaveDialog;
+    SavePictureDialog: TSavePictureDialog;
     Separator1: TMenuItem;
     MenuItemPolyFit: TMenuItem;
     MenuAnalyses: TMenuItem;
@@ -87,7 +90,7 @@ type
     UDFSrcModelFolded: TUserDefinedChartSource;
     UDFSrcModelFoldedUpLimit: TUserDefinedChartSource;
     UDFSrcModelFoldedDownLimit: TUserDefinedChartSource;
-    procedure ActionCopyChartExecute(Sender: TObject);
+    procedure ActionCopyChartImageExecute(Sender: TObject);
     procedure ActionListUpdate(AAction: TBasicAction; var Handled: Boolean);
     procedure ActionAboutExecute(Sender: TObject);
     procedure ActionInvertedYExecute(Sender: TObject);
@@ -100,6 +103,7 @@ type
     procedure ActionPhasePlotSimpleExecute(Sender: TObject);
     procedure ActionPolyFitExecute(Sender: TObject);
     procedure ActionRawDataExecute(Sender: TObject);
+    procedure ActionSaveChartImageAsExecute(Sender: TObject);
     procedure ActionSaveVisibleExecute(Sender: TObject);
     procedure ActionShowDataExecute(Sender: TObject);
     procedure ActionShowModelExecute(Sender: TObject);
@@ -304,7 +308,7 @@ begin
     SetLength(X1, N);
     SetLength(Y1, N);
     //ShowTable(X1, Y1, 'X', 'Y');
-    SaveDialog.InitialDir := SaveDialog.InitialDir;
+    SaveDialog.InitialDir := OpenDialog.InitialDir;
     SaveDialog.FileName := '';
     if SaveDialog.Execute then begin
       SaveFileAs(SaveDialog.FileName, X1, Y1);
@@ -372,7 +376,8 @@ begin
      (AAction = ActionExit) or
      (AAction = ActionInvertedY) or
      (AAction = ActionAbout) or
-     (AAction = ActionCopyChart)
+     (AAction = ActionCopyChartImage) or
+     (AAction = ActionSaveChartImageAs)
   then begin
     (AAction as TAction).Enabled := not FCalculationInProgress;
   end
@@ -429,9 +434,25 @@ begin
   end;
 end;
 
-procedure TFormMain.ActionCopyChartExecute(Sender: TObject);
+procedure TFormMain.ActionCopyChartImageExecute(Sender: TObject);
 begin
-  Chart.CopyToClipboard(TPortableNetworkGraphic);
+  Chart.CopyToClipboard(TBitmap);
+end;
+
+procedure TFormMain.ActionSaveChartImageAsExecute(Sender: TObject);
+begin
+  SavePictureDialog.InitialDir := OpenDialog.InitialDir;
+  SavePictureDialog.FileName := '';
+  if SavePictureDialog.Execute then begin
+    try
+      Chart.SaveToFile(TPortableNetworkGraphic, SavePictureDialog.FileName);
+    except
+      on E: Exception do begin
+        ShowMessage(E.Message);
+        Exit;
+      end;
+    end;
+  end;
 end;
 
 procedure TFormMain.UpdateTitle;
