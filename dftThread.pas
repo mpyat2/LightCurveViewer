@@ -7,7 +7,7 @@ unit dftThread;
 interface
 
 uses
-  Classes, SysUtils, lcvtypes, unitDFT;
+  Classes, SysUtils, lcvtypes, math, unitDFT;
 
 type
 
@@ -41,14 +41,24 @@ begin
 end;
 
 procedure TDFTThread.Execute;
+var
+  FPUExceptionMask: TFPUExceptionMask;
 begin
   try
-    dcdft_proc(FParams.X, FParams.Y,
-               FParams.FrequencyMin, FParams.FrequencyMax, FParams.FrequencyResolution,
-               FParams.TrendDegree, FParams.TrigPolyDegree,
-               0,
-               FProgressCaptionProc,
-               FParams.frequencies, FParams.power);
+    // Under Linux, all exceptions get masked (at least sometimes)
+    // For compatibility, we explicitly set the mask
+    FPUExceptionMask := GetExceptionMask;
+    SetExceptionMask([exDenormalized, exUnderflow, exPrecision]);
+    try
+      dcdft_proc(FParams.X, FParams.Y,
+                 FParams.FrequencyMin, FParams.FrequencyMax, FParams.FrequencyResolution,
+                 FParams.TrendDegree, FParams.TrigPolyDegree,
+                 0,
+                 FProgressCaptionProc,
+                 FParams.frequencies, FParams.power);
+    finally
+      SetExceptionMask(FPUExceptionMask);
+    end;
   except
     on E: Exception do begin
       FParams.Error := E.Message;

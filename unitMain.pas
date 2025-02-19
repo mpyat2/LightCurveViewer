@@ -911,43 +911,19 @@ var
   nfit: Integer;
   Item: PChartDataItem;
   I: Integer;
+  FPUExceptionMask: TFPUExceptionMask;
 begin
   if LCSrcData.Count > 0 then begin
     if not GetFitParams(TrendDegree, TrigPolyDegrees, Frequencies) then
       Exit;
     SaveDataSettings;
+
     FFitFormula := '';
     FFitInfo := '';
-    ChartSeriesModelToNil;
-    ClearFitAtPoints;
-    ClearModelData;
-    ClearModelFolded;
-    SetLength(X, LCSrcData.Count);
-    SetLength(Y, LCSrcData.Count);
-    for I := 0 to LCSrcData.Count - 1 do begin
-      Item := LCSrcData.Item[I];
-      X[I] := Item^.X;
-      Y[I] := Item^.Y;
-    end;
-    meanTime := Mean(X);
-    n_points := Length(X);
-    for I := 0 to n_points - 1 do begin
-      X[I] := X[I] - meanTime;
-    end;
-
-    fitXmin := MinValue(X);
-    fitXmax := MaxValue(X);
-    fitXstep := FitStepFromFrequencies(Frequencies);
-    if IsNan(fitXstep) then
-      fitXstep := (fitXmax - fitXmin) / (LCSrcData.Count * 3);
-    nfit := Ceil((fitXmax - fitXmin) / fitXstep);
-    nfit := Ceil(nfit / 10) * 10;
-    if nfit > 100000 then begin
-      nfit := 100000;
-      fitXstep := (fitXmax - fitXmin) / nfit;
-    end;
 
     // Model uses virtual sources
+    ChartSeriesModelToNil;
+    //
     ClearUDFSrcModel;
     ClearUDFSrcModelFolded;
     //
@@ -956,21 +932,55 @@ begin
     //
     ClearFitAtPoints;
     //
+
+    SetLength(X, LCSrcData.Count);
+    SetLength(Y, LCSrcData.Count);
+    for I := 0 to LCSrcData.Count - 1 do begin
+      Item := LCSrcData.Item[I];
+      X[I] := Item^.X;
+      Y[I] := Item^.Y;
+    end;
+
     try
-      PolyFit(X, Y, TrendDegree, TrigPolyDegrees, Frequencies,
-              fitXmin, fitXmax, fitXstep,
-              FModelData[FitColumnType.x],
-              FModelData[FitColumnType.yFit],
-              FModelData[FitColumnType.yErrors],
-              FFitAtPoints[FitColumnType.yFit],
-              FFitAtPoints[FitColumnType.yErrors],
-              FFitFormula, FFitInfo);
-      for I := 0 to Length(FModelData[FitColumnType.x]) - 1 do begin
-        FModelData[FitColumnType.x][I] := FModelData[FitColumnType.x][I] + meanTime;
+      // Under Linux, all exceptions get masked (at least sometimes)
+      // For compatibility, we explicitly set the mask
+      FPUExceptionMask := GetExceptionMask;
+      SetExceptionMask([exDenormalized, exUnderflow, exPrecision]);
+      try
+        meanTime := Mean(X);
+        n_points := Length(X);
+        for I := 0 to n_points - 1 do begin
+          X[I] := X[I] - meanTime;
+        end;
+
+        fitXmin := MinValue(X);
+        fitXmax := MaxValue(X);
+        fitXstep := FitStepFromFrequencies(Frequencies);
+        if IsNan(fitXstep) then
+          fitXstep := (fitXmax - fitXmin) / (Length(X) * 3);
+        nfit := Ceil((fitXmax - fitXmin) / fitXstep);
+        nfit := Ceil(nfit / 10) * 10;
+        if nfit > 100000 then begin
+          nfit := 100000;
+          fitXstep := (fitXmax - fitXmin) / nfit;
+        end;
+        PolyFit(X, Y, TrendDegree, TrigPolyDegrees, Frequencies,
+                fitXmin, fitXmax, fitXstep,
+                FModelData[FitColumnType.x],
+                FModelData[FitColumnType.yFit],
+                FModelData[FitColumnType.yErrors],
+                FFitAtPoints[FitColumnType.yFit],
+                FFitAtPoints[FitColumnType.yErrors],
+                FFitFormula, FFitInfo);
+        for I := 0 to Length(FModelData[FitColumnType.x]) - 1 do begin
+          FModelData[FitColumnType.x][I] := FModelData[FitColumnType.x][I] + meanTime;
+        end;
+      finally
+        SetExceptionMask(FPUExceptionMask);
       end;
     except
       on E: Exception do begin
-        ShowMessage('Error: '^M^J + E.Message);
+        ShowMessage('Error: '^M^J + '[' + E.ClassName + '] ' + E.Message);
         Exit;
       end;
     end;

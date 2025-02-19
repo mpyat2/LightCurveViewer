@@ -11,6 +11,8 @@ uses
 
 procedure CalcError(const S: string);
 
+function GetFPUexceptionAsString: string;
+
 function GetMedianInterval(const X: TDoubleArray): Double;
 
 function GetRecommendedFrequencyResolution(Xmin, Xmax: Double; TrigPolyDegree: Integer): Double;
@@ -23,6 +25,40 @@ uses
 procedure CalcError(const S: string);
 begin
   raise Exception.Create(S);
+end;
+
+
+function FPUexceptionToString(FPUexception: TFPUException): string;
+begin
+  case FPUexception of
+    exInvalidOp:
+      Result := 'InvalidOp';
+    exDenormalized:
+      Result := 'Denormalized';
+    exZeroDivide:
+      Result := 'ZeroDivide';
+    exOverflow:
+      Result := 'Overflow';
+    exUnderflow:
+      Result := 'Underflow';
+    exPrecision:
+      Result := 'Precision';
+  else
+    Result := 'Unknown';
+  end;
+end;
+
+function GetFPUexceptionAsString: string;
+var
+  FPUExceptionMask: TFPUExceptionMask;
+  FPUexception: TFPUException;
+begin
+  FPUExceptionMask := GetExceptionMask;
+  Result := '';
+  for FPUexception := low(TFPUExceptionMask) to high(TFPUExceptionMask) do begin
+    if FPUexception in FPUExceptionMask then
+      Result := Result + FPUexceptionToString(FPUexception) + ' ';
+  end;
 end;
 
 function GetMedianInterval(const X: TDoubleArray): Double;
