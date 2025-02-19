@@ -1,8 +1,8 @@
-program lcv1;
+program lcv;
 
 {$mode objfpc}{$H+}
 
-{$include LCV.inc}
+{$include lcv.inc}
 
 uses
   {$IFDEF UNIX}

@@ -2,7 +2,7 @@ unit fitproc;
 
 {$mode ObjFPC}{$H+}
 
-{$include LCV.inc}
+{$include lcv.inc}
 
 {.$DEFINE Y_ERRORS_WITH_VAR_OF_RESIDUALS}
 

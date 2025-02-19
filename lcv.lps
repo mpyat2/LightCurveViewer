@@ -1,79 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
-  <ProjectOptions>
-    <Version Value="12"/>
+  <ProjectSession>
     <PathDelim Value="\"/>
-    <General>
-      <SessionStorage Value="InProjectDir"/>
-      <Title Value="lcv1"/>
-      <Scaled Value="True"/>
-      <ResourceType Value="res"/>
-      <UseXPManifest Value="True"/>
-      <XPManifest>
-        <DpiAware Value="Per-monitor"/>
-      </XPManifest>
-      <Icon Value="0"/>
-    </General>
-    <VersionInfo>
-      <UseVersionInfo Value="True"/>
-      <AutoIncrementBuild Value="True"/>
-      <RevisionNr Value="1"/>
-      <BuildNr Value="105"/>
-    </VersionInfo>
-    <BuildModes>
-      <Item Name="Default" Default="True"/>
-      <Item Name="NoDebug">
-        <CompilerOptions>
-          <Version Value="11"/>
-          <PathDelim Value="\"/>
-          <Target>
-            <Filename Value="lcv1"/>
-          </Target>
-          <SearchPaths>
-            <IncludeFiles Value="$(ProjOutDir)"/>
-            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
-          </SearchPaths>
-          <CodeGeneration>
-            <SmartLinkUnit Value="True"/>
-            <Optimizations>
-              <OptimizationLevel Value="3"/>
-            </Optimizations>
-          </CodeGeneration>
-          <Linking>
-            <Debugging>
-              <GenerateDebugInfo Value="False"/>
-              <DebugInfoType Value="dsDwarf3"/>
-              <StripSymbols Value="True"/>
-            </Debugging>
-            <LinkSmart Value="True"/>
-            <Options>
-              <Win32>
-                <GraphicApplication Value="True"/>
-              </Win32>
-            </Options>
-          </Linking>
-        </CompilerOptions>
-      </Item>
-    </BuildModes>
-    <PublishOptions>
-      <Version Value="2"/>
-      <UseFileFilters Value="True"/>
-    </PublishOptions>
-    <RunParams>
-      <FormatVersion Value="2"/>
-    </RunParams>
-    <RequiredPackages>
-      <Item>
-        <PackageName Value="TAChartLazarusPkg"/>
-      </Item>
-      <Item>
-        <PackageName Value="LCL"/>
-      </Item>
-    </RequiredPackages>
+    <Version Value="12"/>
+    <BuildModes Active="NoDebug"/>
     <Units>
       <Unit>
-        <Filename Value="lcv1.lpr"/>
+        <Filename Value="lcv.lpr"/>
         <IsPartOfProject Value="True"/>
+        <CursorPos Y="25"/>
+        <UsageCount Value="203"/>
+        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="unitMain.pas"/>
@@ -81,10 +18,24 @@
         <ComponentName Value="FormMain"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="909"/>
+        <CursorPos X="17" Y="926"/>
+        <UsageCount Value="203"/>
+        <Bookmarks Count="2">
+          <Item0 Y="918" ID="2"/>
+          <Item1 Y="1092" ID="1"/>
+        </Bookmarks>
+        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="dataio.pas"/>
         <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="37"/>
+        <CursorPos X="69" Y="54"/>
+        <UsageCount Value="203"/>
       </Unit>
       <Unit>
         <Filename Value="unitPhaseDialog.pas"/>
@@ -92,6 +43,10 @@
         <ComponentName Value="FormPhaseDialog"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="88"/>
+        <CursorPos X="24" Y="153"/>
+        <UsageCount Value="202"/>
       </Unit>
       <Unit>
         <Filename Value="unitDFTdialog.pas"/>
@@ -99,6 +54,9 @@
         <ComponentName Value="FormDFTDialog"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="3" Y="10"/>
+        <UsageCount Value="200"/>
       </Unit>
       <Unit>
         <Filename Value="unitDFTparamDialog.pas"/>
@@ -106,22 +64,38 @@
         <ComponentName Value="FormDFTparams"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="19" Y="5"/>
+        <UsageCount Value="200"/>
       </Unit>
       <Unit>
         <Filename Value="unitDFT.pas"/>
         <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="370"/>
+        <CursorPos X="15" Y="330"/>
+        <UsageCount Value="218"/>
       </Unit>
       <Unit>
         <Filename Value="dftThread.pas"/>
         <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="200"/>
       </Unit>
       <Unit>
         <Filename Value="fitproc.pas"/>
         <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="418"/>
+        <CursorPos X="11" Y="297"/>
+        <UsageCount Value="200"/>
       </Unit>
       <Unit>
-        <Filename Value="LCV.inc"/>
+        <Filename Value="lcv.inc"/>
         <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos Y="2"/>
+        <UsageCount Value="212"/>
       </Unit>
       <Unit>
         <Filename Value="unitFitParamDialog.pas"/>
@@ -129,6 +103,10 @@
         <ComponentName Value="FormFitparams"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="43"/>
+        <CursorPos X="17" Y="61"/>
+        <UsageCount Value="203"/>
       </Unit>
       <Unit>
         <Filename Value="unitTableDialog.pas"/>
@@ -136,6 +114,10 @@
         <ComponentName Value="FormTable"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="24"/>
+        <CursorPos X="20" Y="47"/>
+        <UsageCount Value="218"/>
       </Unit>
       <Unit>
         <Filename Value="unitModelInfoDialog.pas"/>
@@ -143,6 +125,10 @@
         <ComponentName Value="FormInfo"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="127"/>
+        <CursorPos X="32" Y="155"/>
+        <UsageCount Value="218"/>
       </Unit>
       <Unit>
         <Filename Value="unitAbout.pas"/>
@@ -150,48 +136,58 @@
         <ComponentName Value="FormAbout"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="43"/>
+        <CursorPos X="56" Y="68"/>
+        <UsageCount Value="122"/>
       </Unit>
       <Unit>
         <Filename Value="sortutils.pas"/>
         <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="110"/>
+        <CursorPos Y="127"/>
+        <UsageCount Value="41"/>
       </Unit>
       <Unit>
         <Filename Value="lcvtypes.pas"/>
         <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="71" Y="16"/>
+        <UsageCount Value="41"/>
       </Unit>
       <Unit>
         <Filename Value="miscutils.pas"/>
         <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos Y="25"/>
+        <UsageCount Value="41"/>
       </Unit>
       <Unit>
         <Filename Value="formatutils.pas"/>
         <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="18"/>
+        <CursorPos X="27" Y="43"/>
+        <UsageCount Value="41"/>
       </Unit>
       <Unit>
         <Filename Value="guiutils.pas"/>
         <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="19" Y="5"/>
+        <UsageCount Value="41"/>
       </Unit>
     </Units>
-  </ProjectOptions>
-  <CompilerOptions>
-    <Version Value="11"/>
-    <PathDelim Value="\"/>
-    <Target>
-      <Filename Value="lcv1"/>
-    </Target>
-    <SearchPaths>
-      <IncludeFiles Value="$(ProjOutDir)"/>
-      <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
-    </SearchPaths>
-    <Linking>
-      <Debugging>
-        <DebugInfoType Value="dsDwarf3"/>
-      </Debugging>
-      <Options>
-        <Win32>
-          <GraphicApplication Value="True"/>
-        </Win32>
-      </Options>
-    </Linking>
-  </CompilerOptions>
+    <JumpHistory HistoryIndex="-1"/>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes ActiveMode=""/>
+    </RunParams>
+    <HistoryLists>
+      <List Name="LaunchingApplication" Type="File" Count="1">
+        <Item1 Value="C:\WINDOWS\system32\cmd.exe /C ${TargetCmdLine}"/>
+      </List>
+    </HistoryLists>
+  </ProjectSession>
 </CONFIG>

@@ -2,7 +2,7 @@ unit unitMain;
 
 {$mode objfpc}{$H+}
 
-{$include LCV.inc}
+{$include lcv.inc}
 
 interface
 

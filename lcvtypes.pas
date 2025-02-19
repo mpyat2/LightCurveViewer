@@ -2,7 +2,7 @@ unit lcvtypes;
 
 {$mode ObjFPC}{$H+}
 
-{$include LCV.inc}
+{$include lcv.inc}
 
 interface
 

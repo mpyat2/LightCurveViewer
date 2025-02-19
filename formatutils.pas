@@ -2,7 +2,7 @@ unit formatutils;
 
 {$mode ObjFPC}{$H+}
 
-{$include LCV.inc}
+{$include lcv.inc}
 
 interface
 

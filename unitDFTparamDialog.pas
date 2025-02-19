@@ -2,7 +2,7 @@ unit unitDFTparamDialog;
 
 {$mode ObjFPC}{$H+}
 
-{$include LCV.inc}
+{$include lcv.inc}
 
 interface
 
