@@ -590,7 +590,13 @@ begin
   //
   ClearFitAtPoints;
   //
+  ChartLineSeriesData.Active := True;
+  ChartLineSeriesModel.Active := True;
+  ChartLineSeriesModelUpLimit.Active := ChartLineSeriesModel.Active;
+  ChartLineSeriesModelDownLimit.Active := ChartLineSeriesModel.Active;
+  //
   SetAxisBoundaries(-1.0, 1.0, -1.0, 1.0);
+  //
   unitPhaseDialog.SetCurrentEpoch(NaN);
   unitPhaseDialog.SetCurrentPeriod(NaN);
   unitDFTparamDialog.SetCurrentFrequencyMin(NaN);
