@@ -1,4 +1,4 @@
-program LCV;
+program lcv1;
 
 {$mode objfpc}{$H+}
 
