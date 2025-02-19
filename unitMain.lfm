@@ -24,6 +24,11 @@ object FormMain: TFormMain
         Intervals.Tolerance = 1
         Arrow.Inverted = True
         Inverted = True
+        Marks.LabelFont.CharSet = RUSSIAN_CHARSET
+        Marks.LabelFont.Height = -16
+        Marks.LabelFont.Name = 'Times New Roman'
+        Marks.LabelFont.Pitch = fpVariable
+        Marks.LabelFont.Quality = fqDraft
         Marks.LabelBrush.Style = bsClear
         Minors = <>
         Title.LabelFont.Orientation = 900
@@ -32,17 +37,27 @@ object FormMain: TFormMain
       item
         Grid.Color = clSilver
         Intervals.Count = 10
-        Intervals.MaxLength = 200
-        Intervals.MinLength = 50
+        Intervals.MaxLength = 400
+        Intervals.MinLength = 100
         Intervals.NiceSteps = '0.01|0.1|1'
         Intervals.Options = [aipUseCount, aipUseMaxLength, aipUseMinLength, aipUseNiceSteps]
         Intervals.Tolerance = 10
         Alignment = calBottom
+        Marks.LabelFont.CharSet = RUSSIAN_CHARSET
+        Marks.LabelFont.Height = -16
+        Marks.LabelFont.Name = 'Times New Roman'
+        Marks.LabelFont.Pitch = fpVariable
+        Marks.LabelFont.Quality = fqDraft
         Marks.LabelBrush.Style = bsClear
         Minors = <>
         Title.LabelBrush.Style = bsClear
       end>
     BackColor = clWhite
+    Title.Font.CharSet = RUSSIAN_CHARSET
+    Title.Font.Height = -21
+    Title.Font.Name = 'Times New Roman'
+    Title.Font.Pitch = fpVariable
+    Title.Font.Quality = fqDraft
     Title.Text.Strings = (
       'LCV'
     )
@@ -143,6 +158,22 @@ object FormMain: TFormMain
       Top = 2
       Action = ActionStop
     end
+  end
+  object PanelCalculatingMessage: TPanel
+    Left = 872
+    Height = 24
+    Top = 32
+    Width = 122
+    Anchors = [akTop, akRight]
+    Caption = 'Calculating...'
+    Color = clYellow
+    Font.Color = clRed
+    Font.Style = [fsBold]
+    ParentBackground = False
+    ParentColor = False
+    ParentFont = False
+    TabOrder = 3
+    Visible = False
   end
   object MainMenu: TMainMenu
     Images = ImageList
@@ -386,6 +417,10 @@ object FormMain: TFormMain
     object ChartToolsetDataPointClickTool1: TDataPointClickTool
       Shift = [ssLeft]
       OnPointClick = ChartToolsetDataPointClickTool1PointClick
+    end
+    object ChartToolsetDataPointClickTool2: TDataPointClickTool
+      Shift = [ssShift, ssLeft]
+      OnPointClick = ChartToolsetDataPointClickTool2PointClick
     end
   end
   object SaveDialog: TSaveDialog

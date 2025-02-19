@@ -8,8 +8,8 @@ interface
 
 uses
   Classes, SysUtils, IniFiles, Forms, Controls, Graphics, Dialogs, Menus,
-  ActnList, ComCtrls, ExtDlgs, TAGraph, TASources, TASeries, TACustomSource,
-  TATools, Types, lcvtypes, unitDFT;
+  ActnList, ComCtrls, ExtDlgs, StdCtrls, ExtCtrls, TAGraph, TASources, TASeries,
+  TACustomSource, TATools, Types, lcvtypes, unitDFT;
 
 type
 
@@ -41,6 +41,7 @@ type
     ChartLineSeriesData: TLineSeries;
     ChartToolset: TChartToolset;
     ChartToolsetDataPointClickTool1: TDataPointClickTool;
+    ChartToolsetDataPointClickTool2: TDataPointClickTool;
     ChartToolsetPanDragTool1: TPanDragTool;
     ChartToolsetZoomDragTool1: TZoomDragTool;
     ChartToolsetZoomMouseWheelTool1: TZoomMouseWheelTool;
@@ -61,6 +62,7 @@ type
     MenuHelp: TMenuItem;
     MenuItemAbout: TMenuItem;
     MenuItemObservations: TMenuItem;
+    PanelCalculatingMessage: TPanel;
     PopupMenuChart: TPopupMenu;
     SaveDialog: TSaveDialog;
     SavePictureDialog: TSavePictureDialog;
@@ -112,6 +114,7 @@ type
     procedure ChartMouseLeave(Sender: TObject);
     procedure ChartMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure ChartToolsetDataPointClickTool1PointClick(ATool: TChartTool; APoint: TPoint);
+    procedure ChartToolsetDataPointClickTool2PointClick(ATool: TChartTool; APoint: TPoint);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure FormCreate(Sender: TObject);
     procedure UDFSrcModelFoldedGetChartDataItem(ASource: TUserDefinedChartSource; AIndex: Integer; var AItem: TChartDataItem);
@@ -120,6 +123,7 @@ type
     FCalculationInProgress: Boolean;
     FFileName: string;
     FObjectName: string;
+    FChartSubtitle: string;
     FPeriodogramFirstRun: Boolean;
     FFitFormula: string;
     FFitInfo: string;
@@ -171,7 +175,7 @@ implementation
 uses
   math, TACustomSeries, TAChartUtils, unitPhaseDialog, unitFitParamDialog,
   unitDFTparamDialog, unitDFTdialog, unitTableDialog,
-  unitModelInfoDialog, unitAbout, dftThread, dataio, sortutils, formatutils,
+  unitModelInfoDialog, floattextform, unitAbout, dftThread, dataio, sortutils, formatutils,
   miscutils, fitproc;
 
 { TFormMain }
@@ -223,12 +227,35 @@ begin
     Series := Tool.Series as TLineSeries;
     X := Series.GetXValue(Tool.PointIndex);
     Y := Series.GetYValue(Tool.PointIndex);
-    S1 := Format('x = %f'#13#10'y = %f', [X, Y]);
+    S1 := Format('x = %g'#13#10'y = %g', [X, Y]);
     S := Series.ListSource.Item[Tool.PointIndex]^.Text;
     if S = S1 then
       Series.ListSource.SetText(Tool.PointIndex, '')
     else
       Series.ListSource.SetText(Tool.PointIndex, S1);
+  end;
+end;
+
+procedure TFormMain.ChartToolsetDataPointClickTool2PointClick(ATool: TChartTool; APoint: TPoint);
+var
+  Tool: TDatapointClickTool;
+  Series: TLineSeries;
+  S1: String;
+  X, Y: Double;
+begin
+  Tool := ATool as TDatapointClickTool;
+  if Tool.Series = ChartLineSeriesData then begin
+    Series := Tool.Series as TLineSeries;
+    X := Series.GetXValue(Tool.PointIndex);
+    Y := Series.GetYValue(Tool.PointIndex);
+    S1 := Format('x = %g'#13#10'y = %g', [X, Y]);
+    Series.ListSource.SetText(Tool.PointIndex, S1);
+    floattextform.AddText('x = '^I + FloatToStr(X) + ^I + 'y = '^I + FloatToStr(Y));
+    //S := Series.ListSource.Item[Tool.PointIndex]^.Text;
+    //if S = S1 then
+    //  Series.ListSource.SetText(Tool.PointIndex, '')
+    //else
+    //  Series.ListSource.SetText(Tool.PointIndex, S1);
   end;
 end;
 
@@ -461,7 +488,10 @@ begin
   Chart.Title.Text.Text := 'LCV';
   if FFileName <> '' then begin
     Caption := ExtractFileName(FFileName) + ' - ' + Caption;
-    Chart.Title.Text.Text := FObjectName;
+    if FChartSubtitle = '' then
+      Chart.Title.Text.Text := FObjectName + ^M^J + ' '
+    else
+      Chart.Title.Text.Text := FObjectName + ^M^J + FChartSubtitle;
   end;
 end;
 
@@ -594,6 +624,7 @@ var
 begin
   FFileName := '';
   FObjectName := '';
+  FChartSubtitle := '';
   UpdateTitle;
   FFitFormula := '';
   FFitInfo := '';
@@ -748,6 +779,8 @@ begin
   if LCSrcData.Count > 0 then begin
     StatusBar.Panels[0].Text := '';
     StatusBar.Panels[1].Text := '';
+    FChartSubtitle := '';
+    UpdateTitle;
     ChartLineSeriesData.Source := nil;
     ChartSeriesModelToNil;
     SourceExtent := LCSrcData.Extent;
@@ -782,6 +815,8 @@ var
 begin
   StatusBar.Panels[0].Text := '';
   StatusBar.Panels[1].Text := '';
+  FChartSubtitle := '';
+  UpdateTitle;
   ChartLineSeriesData.Source := nil;
   ChartSeriesModelToNil;
   SourceExtent := LCSrcFoldedData.Extent;
@@ -791,6 +826,8 @@ begin
     ChartSeriesModelToModelFolded;
   end;
   StatusBar.Panels[1].Text := ' P= ' + FloatToStr(unitPhaseDialog.GetCurrentPeriod) + ^I' E= ' + FloatToStr(unitPhaseDialog.GetCurrentEpoch) + ' ';
+  FChartSubtitle := 'Period ' + FloatToStr(unitPhaseDialog.GetCurrentPeriod) + ', Epoch ' + FloatToStr(unitPhaseDialog.GetCurrentEpoch) + ' ';
+  UpdateTitle;
 end;
 
 procedure TFormMain.CalculateModelPhasePlot;
@@ -844,6 +881,8 @@ begin
   SaveDataSettings;
   StatusBar.Panels[0].Text := '';
   StatusBar.Panels[1].Text := '';
+  FChartSubtitle := '';
+  UpdateTitle;
   if (LCSrcData.Count > 0) then begin
     Period := unitPhaseDialog.GetCurrentPeriod;
     Epoch := unitPhaseDialog.GetCurrentEpoch;
@@ -1165,7 +1204,7 @@ begin
   for I := 0 to ActionList.ActionCount - 1 do begin
     ActionList.UpdateAction(ActionList.Actions[I]);
   end;
-  Application.ProcessMessages;
+  PanelCalculatingMessage.Visible := True;
 end;
 
 procedure TFormMain.LongOpStop;
@@ -1173,6 +1212,7 @@ begin
   FCalculationInProgress := False;
   Chart.Enabled := True;
   StatusBar.Panels[2].Text := '';
+  PanelCalculatingMessage.Visible := False;
   if Self.WindowState = wsMinimized then
     Application.Restore;
 end;

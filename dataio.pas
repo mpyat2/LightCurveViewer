@@ -35,7 +35,7 @@ var
   FX, FY: Double;
   I, N: Integer;
 begin
-  ObjectName := ExtractFileName(AFileName);
+  ObjectName := ChangeFileExt(ExtractFileName(AFileName), '');
   Lines := TStringList.Create;
   try
     Lines.LoadFromFile(AFileName);
