@@ -174,7 +174,6 @@ object FormDFTDialog: TFormDFTDialog
       Top = 8
       Width = 75
       Anchors = [akTop, akRight]
-      Cancel = True
       Caption = 'Close'
       TabOrder = 0
       OnClick = ButtonCloseClick
@@ -216,7 +215,7 @@ object FormDFTDialog: TFormDFTDialog
     Left = 128
     Top = 200
     object ChartToolset1PanDragTool1: TPanDragTool
-      Shift = [ssCtrl, ssRight]
+      Shift = [ssShift, ssLeft]
     end
     object ChartToolset1ZoomDragTool1: TZoomDragTool
       Shift = [ssCtrl, ssLeft]

@@ -409,7 +409,7 @@ object FormMain: TFormMain
       Brush.Style = bsClear
     end
     object ChartToolsetPanDragTool1: TPanDragTool
-      Shift = [ssCtrl, ssRight]
+      Shift = [ssShift, ssLeft]
     end
     object ChartToolsetZoomMouseWheelTool1: TZoomMouseWheelTool
       ZoomFactor = 0.95
@@ -419,7 +419,7 @@ object FormMain: TFormMain
       OnPointClick = ChartToolsetDataPointClickTool1PointClick
     end
     object ChartToolsetDataPointClickTool2: TDataPointClickTool
-      Shift = [ssShift, ssLeft]
+      Shift = [ssShift, ssCtrl, ssLeft]
       OnPointClick = ChartToolsetDataPointClickTool2PointClick
     end
   end
