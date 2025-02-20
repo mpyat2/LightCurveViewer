@@ -1,0 +1,62 @@
+object FormFloatText: TFormFloatText
+  Left = 780
+  Height = 240
+  Top = 380
+  Width = 320
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsSizeToolWin
+  Caption = 'Points'
+  ClientHeight = 240
+  ClientWidth = 320
+  FormStyle = fsStayOnTop
+  OnClose = FormClose
+  LCLVersion = '3.2.0.0'
+  object Memo1: TMemo
+    Left = 0
+    Height = 200
+    Top = 0
+    Width = 320
+    Align = alClient
+    Font.CharSet = RUSSIAN_CHARSET
+    Font.Name = 'Courier New'
+    Font.Pitch = fpFixed
+    Font.Quality = fqDraft
+    ParentFont = False
+    ReadOnly = True
+    ScrollBars = ssBoth
+    TabOrder = 0
+    WantReturns = False
+    WordWrap = False
+  end
+  object Panel1: TPanel
+    Left = 0
+    Height = 40
+    Top = 200
+    Width = 320
+    Align = alBottom
+    ClientHeight = 40
+    ClientWidth = 320
+    TabOrder = 1
+    object ButtonClose: TButton
+      Left = 240
+      Height = 25
+      Top = 8
+      Width = 75
+      Anchors = [akTop, akRight]
+      Cancel = True
+      Caption = 'Close'
+      Default = True
+      TabOrder = 1
+      OnClick = ButtonCloseClick
+    end
+    object ButtonClear: TButton
+      Left = 152
+      Height = 25
+      Top = 8
+      Width = 75
+      Caption = 'Clear'
+      TabOrder = 0
+      OnClick = ButtonClearClick
+    end
+  end
+end

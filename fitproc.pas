@@ -41,6 +41,9 @@ function CalcResidualSquared(const Observations, Model: TDoubleArray): Double;
 implementation
 
 uses
+{$if defined(windows)}
+  Windows,
+{$endif}
   math, typ, omv, inv, sle, miscutils, formatutils;
 
 function CalcResidualSquared(const Observations, Model: TDoubleArray): Double;
@@ -65,7 +68,14 @@ procedure PolyFitSolution(const a: TArbFloatArray;              // 'Design matri
 var
   ndata: Integer;
   term: Integer;
+  msg: string;
 begin
+  msg := {$I %CURRENTROUTINE%} + ': SizeOf(ArbFloat) = ' + IntToStr(SizeOf(ArbFloat));
+{$if defined(windows)}
+  OutputDebugString(PChar(msg));
+{$elseif defined(linux)}
+  WriteLn(msg);
+{$endif}
   ndata := Length(Yarray);
   SetLength(solution_vector, NofParameters);
   // solve for overdetermined matrices

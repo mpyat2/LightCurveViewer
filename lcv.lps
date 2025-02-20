@@ -18,14 +18,12 @@
         <ComponentName Value="FormMain"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <TopLine Value="444"/>
         <CursorPos X="3" Y="473"/>
         <UsageCount Value="203"/>
-        <Bookmarks Count="2">
+        <Bookmarks Count="1">
           <Item0 X="23" Y="647" ID="2"/>
-          <Item1 X="17" Y="785" ID="1"/>
         </Bookmarks>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -75,24 +73,32 @@
       <Unit>
         <Filename Value="unitDFT.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="436"/>
-        <CursorPos X="3" Y="381"/>
+        <EditorIndex Value="8"/>
+        <TopLine Value="26"/>
+        <CursorPos X="25" Y="45"/>
         <UsageCount Value="218"/>
+        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="dftThread.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="22"/>
+        <EditorIndex Value="7"/>
+        <TopLine Value="34"/>
         <CursorPos X="18" Y="21"/>
         <UsageCount Value="200"/>
+        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="fitproc.pas"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="5"/>
+        <TopLine Value="56"/>
+        <CursorPos X="13" Y="73"/>
         <UsageCount Value="200"/>
+        <Bookmarks Count="1">
+          <Item0 X="5" Y="80" ID="1"/>
+        </Bookmarks>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -143,10 +149,11 @@
         <ComponentName Value="FormAbout"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="43"/>
+        <EditorIndex Value="6"/>
+        <TopLine Value="31"/>
         <CursorPos X="56" Y="68"/>
         <UsageCount Value="130"/>
+        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="sortutils.pas"/>
@@ -201,7 +208,24 @@
         <LoadedDesigner Value="True"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="-1"/>
+    <JumpHistory HistoryIndex="3">
+      <Position>
+        <Filename Value="fitproc.pas"/>
+        <Caret Line="25" Column="19" TopLine="16"/>
+      </Position>
+      <Position>
+        <Filename Value="fitproc.pas"/>
+        <Caret Line="407" Column="3" TopLine="424"/>
+      </Position>
+      <Position>
+        <Filename Value="dftThread.pas"/>
+        <Caret Line="21" Column="18" TopLine="34"/>
+      </Position>
+      <Position>
+        <Filename Value="fitproc.pas"/>
+        <Caret Line="73" Column="12" TopLine="52"/>
+      </Position>
+    </JumpHistory>
     <RunParams>
       <FormatVersion Value="2"/>
       <Modes ActiveMode=""/>
