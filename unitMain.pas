@@ -335,7 +335,8 @@ begin
     SetLength(X1, N);
     SetLength(Y1, N);
     //ShowTable(X1, Y1, 'X', 'Y');
-    SaveDialog.InitialDir := OpenDialog.InitialDir;
+    if SaveDialog.InitialDir = '' then
+      SaveDialog.InitialDir := OpenDialog.InitialDir;
     SaveDialog.FileName := '';
     if SaveDialog.Execute then begin
       SaveFileAs(SaveDialog.FileName, X1, Y1);
@@ -468,7 +469,8 @@ end;
 
 procedure TFormMain.ActionSaveChartImageAsExecute(Sender: TObject);
 begin
-  SavePictureDialog.InitialDir := OpenDialog.InitialDir;
+  if SavePictureDialog.InitialDir = '' then
+    SavePictureDialog.InitialDir := OpenDialog.InitialDir;
   SavePictureDialog.FileName := '';
   if SavePictureDialog.Execute then begin
     try

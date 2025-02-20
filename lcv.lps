@@ -20,12 +20,12 @@
         <ResourceBaseClass Value="Form"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="1195"/>
-        <CursorPos X="44" Y="1215"/>
+        <TopLine Value="444"/>
+        <CursorPos X="3" Y="473"/>
         <UsageCount Value="203"/>
         <Bookmarks Count="2">
-          <Item0 X="23" Y="645" ID="2"/>
-          <Item1 X="17" Y="783" ID="1"/>
+          <Item0 X="23" Y="647" ID="2"/>
+          <Item1 X="17" Y="785" ID="1"/>
         </Bookmarks>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -55,7 +55,7 @@
         <ComponentName Value="FormDFTDialog"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="3"/>
         <TopLine Value="92"/>
         <CursorPos X="3" Y="97"/>
         <UsageCount Value="200"/>
@@ -91,7 +91,7 @@
       <Unit>
         <Filename Value="fitproc.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="11"/>
+        <EditorIndex Value="5"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
       </Unit>
@@ -130,7 +130,7 @@
         <ComponentName Value="FormInfo"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="7"/>
+        <EditorIndex Value="4"/>
         <TopLine Value="121"/>
         <CursorPos X="19" Y="154"/>
         <UsageCount Value="218"/>
@@ -193,7 +193,7 @@
         <ComponentName Value="FormFloatText"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="2"/>
         <TopLine Value="21"/>
         <CursorPos X="22" Y="42"/>
         <UsageCount Value="21"/>
