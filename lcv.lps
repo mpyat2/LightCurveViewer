@@ -208,16 +208,7 @@
         <LoadedDesigner Value="True"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="1">
-      <Position>
-        <Filename Value="fitproc.pas"/>
-        <Caret Line="25" Column="19" TopLine="16"/>
-      </Position>
-      <Position>
-        <Filename Value="fitproc.pas"/>
-        <Caret Line="73" Column="12" TopLine="52"/>
-      </Position>
-    </JumpHistory>
+    <JumpHistory HistoryIndex="-1"/>
     <RunParams>
       <FormatVersion Value="2"/>
       <Modes ActiveMode=""/>
