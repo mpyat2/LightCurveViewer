@@ -10,7 +10,7 @@ object FormMain: TFormMain
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   Position = poDefaultPosOnly
-  LCLVersion = '3.2.0.0'
+  LCLVersion = '3.8.0.0'
   object Chart: TChart
     Cursor = crCross
     Left = 0
@@ -238,6 +238,12 @@ object FormMain: TFormMain
     end
     object MenuHelp: TMenuItem
       Caption = '&Help'
+      object MenuItemUserManual: TMenuItem
+        Action = ActionUserManual
+      end
+      object Separator4: TMenuItem
+        Caption = '-'
+      end
       object MenuItemAbout: TMenuItem
         Action = ActionAbout
       end
@@ -346,6 +352,11 @@ object FormMain: TFormMain
       Category = 'Chart'
       Caption = 'Save as PNG...'
       OnExecute = ActionSaveChartImageAsExecute
+    end
+    object ActionUserManual: TAction
+      Category = 'Help'
+      Caption = 'User Manual...'
+      OnExecute = ActionUserManualExecute
     end
   end
   object OpenDialog: TOpenDialog

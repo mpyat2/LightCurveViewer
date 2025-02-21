@@ -16,6 +16,7 @@ type
   { TFormMain }
 
   TFormMain = class(TForm)
+    ActionUserManual: TAction;
     ActionSaveChartImageAs: TAction;
     ActionStop: TAction;
     ActionCopyChartImage: TAction;
@@ -50,6 +51,7 @@ type
     LCSrcData: TListChartSource;
     MainMenu: TMainMenu;
     MenuFile: TMenuItem;
+    MenuItemUserManual: TMenuItem;
     MenuItemSavePNG: TMenuItem;
     MenuItemCopyChart: TMenuItem;
     MenuItemShowData: TMenuItem;
@@ -77,6 +79,7 @@ type
     OpenDialog: TOpenDialog;
     Separator2: TMenuItem;
     Separator3: TMenuItem;
+    Separator4: TMenuItem;
     StatusBar: TStatusBar;
     ToolBar: TToolBar;
     ToolButton1: TToolButton;
@@ -110,6 +113,7 @@ type
     procedure ActionShowDataExecute(Sender: TObject);
     procedure ActionShowModelExecute(Sender: TObject);
     procedure ActionStopExecute(Sender: TObject);
+    procedure ActionUserManualExecute(Sender: TObject);
     procedure ChartMouseEnter(Sender: TObject);
     procedure ChartMouseLeave(Sender: TObject);
     procedure ChartMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
@@ -173,7 +177,7 @@ implementation
 {$R *.lfm}
 
 uses
-  math, TACustomSeries, TAChartUtils, unitPhaseDialog, unitFitParamDialog,
+  lclintf, math, TACustomSeries, TAChartUtils, unitPhaseDialog, unitFitParamDialog,
   unitDFTparamDialog, unitDFTdialog, unitTableDialog,
   unitModelInfoDialog, floattextform, unitAbout, dftThread, dataio, sortutils, formatutils,
   miscutils, fitproc;
@@ -367,6 +371,11 @@ begin
   SaveDataSettings;
 end;
 
+procedure TFormMain.ActionUserManualExecute(Sender: TObject);
+begin
+  OpenDocument('https://github.com/mpyat2/LightCurveViewer/blob/main/doc/LightCurveViewer.pdf');
+end;
+
 procedure TFormMain.ActionAboutExecute(Sender: TObject);
 begin
   About;
@@ -404,6 +413,7 @@ begin
      (AAction = ActionExit) or
      (AAction = ActionInvertedY) or
      (AAction = ActionAbout) or
+     (AAction = ActionUserManual) or
      (AAction = ActionCopyChartImage) or
      (AAction = ActionSaveChartImageAs)
   then begin
