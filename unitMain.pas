@@ -177,10 +177,10 @@ implementation
 {$R *.lfm}
 
 uses
-  lclintf, math, TACustomSeries, TAChartUtils, unitPhaseDialog, unitFitParamDialog,
-  unitDFTparamDialog, unitDFTdialog, unitTableDialog,
-  unitModelInfoDialog, floattextform, unitAbout, dftThread, dataio, sortutils, formatutils,
-  miscutils, fitproc;
+  lclintf, math, TACustomSeries, TAChartUtils, guiutils, unitPhaseDialog,
+  unitFitParamDialog, unitDFTparamDialog, unitDFTdialog, unitTableDialog,
+  unitModelInfoDialog, floattextform, unitAbout, dftThread, dataio, sortutils,
+  formatutils, miscutils, fitproc;
 
 { TFormMain }
 
@@ -984,11 +984,14 @@ var
   Item: PChartDataItem;
   I: Integer;
   FPUExceptionMask: TFPUExceptionMask;
+  Intf: IUnknown;
 begin
   if LCSrcData.Count > 0 then begin
     if not GetFitParams(TrendDegree, TrigPolyDegrees, Frequencies) then
       Exit;
     SaveDataSettings;
+
+    Intf := TWaitCursor.Create as IUnknown; // will be freed automatically
 
     FFitFormula := '';
     FFitInfo := '';

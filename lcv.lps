@@ -20,8 +20,8 @@
         <ResourceBaseClass Value="Form"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="347"/>
-        <CursorPos Y="376"/>
+        <TopLine Value="973"/>
+        <CursorPos Y="1121"/>
         <UsageCount Value="203"/>
         <Bookmarks Count="1">
           <Item0 X="23" Y="657" ID="2"/>
@@ -54,9 +54,9 @@
         <ComponentName Value="FormDFTDialog"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="7"/>
         <TopLine Value="92"/>
-        <CursorPos X="23" Y="104"/>
+        <CursorPos X="9" Y="104"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -74,7 +74,7 @@
       <Unit>
         <Filename Value="unitDFT.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="10"/>
+        <EditorIndex Value="12"/>
         <TopLine Value="26"/>
         <CursorPos X="25" Y="45"/>
         <UsageCount Value="218"/>
@@ -83,7 +83,7 @@
       <Unit>
         <Filename Value="dftThread.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="9"/>
+        <EditorIndex Value="11"/>
         <TopLine Value="34"/>
         <CursorPos X="18" Y="21"/>
         <UsageCount Value="200"/>
@@ -92,9 +92,9 @@
       <Unit>
         <Filename Value="fitproc.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="7"/>
-        <TopLine Value="56"/>
-        <CursorPos X="13" Y="73"/>
+        <EditorIndex Value="9"/>
+        <TopLine Value="46"/>
+        <CursorPos Y="79"/>
         <UsageCount Value="200"/>
         <Bookmarks Count="1">
           <Item0 X="5" Y="80" ID="1"/>
@@ -136,7 +136,7 @@
         <ComponentName Value="FormInfo"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="8"/>
         <TopLine Value="121"/>
         <CursorPos X="19" Y="154"/>
         <UsageCount Value="218"/>
@@ -149,10 +149,10 @@
         <ComponentName Value="FormAbout"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="8"/>
+        <EditorIndex Value="10"/>
         <TopLine Value="31"/>
         <CursorPos X="56" Y="68"/>
-        <UsageCount Value="132"/>
+        <UsageCount Value="133"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -161,7 +161,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="110"/>
         <CursorPos Y="127"/>
-        <UsageCount Value="51"/>
+        <UsageCount Value="52"/>
       </Unit>
       <Unit>
         <Filename Value="lcvtypes.pas"/>
@@ -169,7 +169,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="40"/>
         <CursorPos Y="73"/>
-        <UsageCount Value="51"/>
+        <UsageCount Value="52"/>
       </Unit>
       <Unit>
         <Filename Value="miscutils.pas"/>
@@ -177,7 +177,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="10"/>
         <CursorPos Y="27"/>
-        <UsageCount Value="51"/>
+        <UsageCount Value="52"/>
       </Unit>
       <Unit>
         <Filename Value="formatutils.pas"/>
@@ -185,14 +185,16 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="18"/>
         <CursorPos X="27" Y="43"/>
-        <UsageCount Value="51"/>
+        <UsageCount Value="52"/>
       </Unit>
       <Unit>
         <Filename Value="guiutils.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <CursorPos X="19" Y="5"/>
-        <UsageCount Value="51"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="20"/>
+        <CursorPos Y="49"/>
+        <UsageCount Value="52"/>
+        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="floattextform.pas"/>
@@ -200,75 +202,163 @@
         <ComponentName Value="FormFloatText"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="6"/>
         <TopLine Value="21"/>
         <CursorPos X="22" Y="42"/>
-        <UsageCount Value="23"/>
+        <UsageCount Value="24"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="C:\lazarus64\lcl\lclintf.pas"/>
         <UnitName Value="LCLIntf"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="4"/>
         <TopLine Value="64"/>
         <CursorPos X="22" Y="84"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="C:\lazarus64\lcl\include\sysenvapis_win.inc"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="5"/>
         <TopLine Value="310"/>
         <CursorPos X="10" Y="310"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus64\fpc\3.2.2\source\rtl\inc\objpash.inc"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="281"/>
+        <CursorPos X="8" Y="299"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
       </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus64\lcl\controls.pp"/>
+        <UnitName Value="Controls"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="211"/>
+        <CursorPos X="3" Y="229"/>
+        <UsageCount Value="10"/>
+      </Unit>
     </Units>
-    <JumpHistory HistoryIndex="10">
+    <JumpHistory HistoryIndex="29">
       <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="473" Column="3" TopLine="444"/>
+        <Filename Value="guiutils.pas"/>
+        <Caret Line="40" Column="3" TopLine="21"/>
+      </Position>
+      <Position>
+        <Filename Value="guiutils.pas"/>
+        <Caret Line="20" Column="5"/>
+      </Position>
+      <Position>
+        <Filename Value="guiutils.pas"/>
+        <Caret Line="42" Column="3" TopLine="40"/>
+      </Position>
+      <Position>
+        <Filename Value="guiutils.pas"/>
+        <Caret Line="20" Column="6" TopLine="2"/>
+      </Position>
+      <Position>
+        <Filename Value="guiutils.pas"/>
+        <Caret Line="42" Column="31" TopLine="25"/>
+      </Position>
+      <Position>
+        <Filename Value="guiutils.pas"/>
+        <Caret Line="20" Column="17" TopLine="2"/>
+      </Position>
+      <Position>
+        <Filename Value="guiutils.pas"/>
+        <Caret Line="49" Column="3" TopLine="22"/>
+      </Position>
+      <Position>
+        <Filename Value="guiutils.pas"/>
+        <Caret Line="10" Column="32"/>
       </Position>
       <Position>
         <Filename Value="unitMain.pas"/>
-        <Caret Line="408" Column="33" TopLine="394"/>
+        <Caret Line="1135" TopLine="1066"/>
       </Position>
       <Position>
         <Filename Value="unitMain.pas"/>
-        <Caret Line="409" Column="33" TopLine="395"/>
       </Position>
       <Position>
         <Filename Value="unitMain.pas"/>
-        <Caret Line="416" Column="33" TopLine="402"/>
+        <Caret Line="29" Column="18"/>
       </Position>
       <Position>
         <Filename Value="unitMain.pas"/>
-        <Caret Line="376" Column="10" TopLine="356"/>
+        <Caret Line="72" Column="20" TopLine="44"/>
       </Position>
       <Position>
         <Filename Value="unitMain.pas"/>
-        <Caret Line="180" Column="10" TopLine="162"/>
+        <Caret Line="109" Column="28" TopLine="81"/>
       </Position>
       <Position>
         <Filename Value="unitMain.pas"/>
-        <Caret Line="376" Column="9" TopLine="347"/>
+        <Caret Line="160" Column="24" TopLine="133"/>
       </Position>
       <Position>
-        <Filename Value="C:\lazarus64\lcl\lclintf.pas"/>
-        <Caret Line="84" Column="10" TopLine="66"/>
+        <Filename Value="unitMain.pas"/>
+        <Caret Line="955" Column="30" TopLine="953"/>
       </Position>
       <Position>
-        <Filename Value="C:\lazarus64\lcl\lclintf.pas"/>
-        <Caret Line="41" Column="60" TopLine="16"/>
+        <Filename Value="unitMain.pas"/>
       </Position>
       <Position>
-        <Filename Value="C:\lazarus64\lcl\lclintf.pas"/>
-        <Caret Line="84" Column="22" TopLine="64"/>
+        <Filename Value="unitMain.pas"/>
+        <Caret Line="160" Column="24" TopLine="133"/>
       </Position>
       <Position>
-        <Filename Value="C:\lazarus64\lcl\include\sysenvapis_win.inc"/>
-        <Caret Line="353" Column="3" TopLine="319"/>
+        <Filename Value="unitMain.pas"/>
+        <Caret Line="298" Column="6" TopLine="269"/>
+      </Position>
+      <Position>
+        <Filename Value="unitMain.pas"/>
+        <Caret Line="993" Column="5" TopLine="942"/>
+      </Position>
+      <Position>
+        <Filename Value="unitMain.pas"/>
+        <Caret Line="177" Column="11" TopLine="157"/>
+      </Position>
+      <Position>
+        <Filename Value="unitMain.pas"/>
+        <Caret Line="993" Column="16" TopLine="965"/>
+      </Position>
+      <Position>
+        <Filename Value="guiutils.pas"/>
+        <Caret Line="21" Column="15"/>
+      </Position>
+      <Position>
+        <Filename Value="unitMain.pas"/>
+        <Caret Line="994" Column="43" TopLine="965"/>
+      </Position>
+      <Position>
+        <Filename Value="guiutils.pas"/>
+        <Caret Line="49" TopLine="20"/>
+      </Position>
+      <Position>
+        <Filename Value="fitproc.pas"/>
+        <Caret Line="342" Column="5" TopLine="322"/>
+      </Position>
+      <Position>
+        <Filename Value="fitproc.pas"/>
+      </Position>
+      <Position>
+        <Filename Value="fitproc.pas"/>
+        <Caret Line="45" Column="7" TopLine="18"/>
+      </Position>
+      <Position>
+        <Filename Value="guiutils.pas"/>
+        <Caret Line="52" TopLine="44"/>
+      </Position>
+      <Position>
+        <Filename Value="guiutils.pas"/>
+      </Position>
+      <Position>
+        <Filename Value="guiutils.pas"/>
+        <Caret Line="36" TopLine="7"/>
       </Position>
     </JumpHistory>
     <RunParams>

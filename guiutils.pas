@@ -7,7 +7,19 @@ unit guiutils;
 interface
 
 uses
-  Classes, SysUtils, StdCtrls, Grids, Dialogs;
+  SysUtils, Classes, Controls, StdCtrls, Grids, Forms, Dialogs;
+
+type
+
+  { TWaitCursor }
+
+  TWaitCursor = class(TInterfacedObject)
+  private
+    FCursor: TCursor;
+  public
+    constructor Create;
+    destructor Destroy; override;
+  end;
 
 type
   TGetGridCell = function(Grid: TDrawGrid; C, R: Integer): string of object;
@@ -22,6 +34,21 @@ implementation
 
 uses
   math;
+
+{ TWaitCursor }
+
+constructor TWaitCursor.Create;
+begin
+  inherited;
+  FCursor := Screen.Cursor;
+  Screen.Cursor := crHourGlass;
+end;
+
+destructor TWaitCursor.Destroy;
+begin
+  Screen.Cursor := FCursor;
+  inherited Destroy;
+end;
 
 function GetFieldValue(const Field: TEdit; Min, Max: Double; const FieldName: string; out V: Double): Boolean;
 var

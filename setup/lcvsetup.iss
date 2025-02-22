@@ -4,12 +4,13 @@
 #define MyAppVersion "0.01"
 #define MyAppPublisher "Observatory Osokorky"
 #define MyAppURL "https://www.osokorky-observatory.com/"
+#define MyAppName "LCV"
 #ifdef lcv64
   #define MyAppExeName "lcv64.exe"
-  #define MyAppName "LCV64"
+;  #define MyAppName "LCV64"
 #else
   #define MyAppExeName "lcv32.exe"
-  #define MyAppName "LCV32"
+;  #define MyAppName "LCV32"
 #endif
 
 [Setup]
@@ -43,6 +44,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 [Files]
 Source: "..\out\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\testdata\*"; DestDir: "{userdocs}\lcv_testdata"; Flags: ignoreversion
+Source: "..\LICENSE"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]

@@ -334,9 +334,12 @@ begin
   // Mult. the transposed mutrix by the original one
   omvmmm(XmatrixTrans[0], n, m, m, Xmatrix[0], n, n, XTXI[0], n);
   // Invert the symmetric XTXI matrix
-  if n > 1 then begin
+  //if n > 1 then begin
     // invgsy causes ACCESS VIOLATION if n = 1 so, we treat n = 1 as a special case. (invgen works normally even in this extreme case)
-    invgsy(n, n, XTXI[0], term);
+    // also, invgsy causes memory leaks.
+    // invgsy(n, n, XTXI[0], term);
+    // use invgen instead (performance penalty)
+    invgen(n, n, XTXI[0], term);
     case term of
       1: ; // successful completion, the solution vector x is valid
       2: CalcError('"invgsy" error: ' + IntToStr(term) + ': the inverse could not be calculated because the input matrix is (almost) singular.');
@@ -344,9 +347,9 @@ begin
     else
       CalcError('"invgsy" error: ' + IntToStr(term));
     end;
-  end
-  else
-    XTXI[0] := 1 / XTXI[0];
+  //end
+  //else
+  //  XTXI[0] := 1 / XTXI[0];
 
   // Calculate the predicted Y vector
   SetLength(YvectorPredicted, Length(Yvector));
