@@ -631,8 +631,8 @@ end;
 
 procedure TFormMain.CloseFile;
 var
-  tempDArray: TDouble3Array = (NaN, NaN, NaN);
-  tempIArray: TInt3Array = (0, 0, 0);
+  tempDArray: TDouble5Array = (NaN, NaN, NaN, NaN, NaN);
+  tempIArray: TInt5Array = (0, 0, 0, 0, 0);
 begin
   FFileName := '';
   FObjectName := '';
@@ -954,7 +954,7 @@ end;
 
 procedure TFormMain.DoPolyFit;
 
-  function FitStepFromFrequencies(Freq: TDouble3Array): Double;
+  function FitStepFromFrequencies(Freq: TDouble5Array): Double;
   var
     I: Integer;
     F: Double;
@@ -973,8 +973,8 @@ var
   X: TDoubleArray;
   Y: TDoubleArray;
   TrendDegree: Integer;
-  TrigPolyDegrees: TInt3Array;
-  Frequencies: TDouble3Array;
+  TrigPolyDegrees: TInt5Array;
+  Frequencies: TDouble5Array;
   NofParameters: Integer;
   n_points: Integer;
   OCsquared: Double;

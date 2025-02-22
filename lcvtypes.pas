@@ -15,8 +15,8 @@ type
 type
   TArbFloatArray = array of ArbFloat; // for compatibility with NumLib
   TDoubleArray = array of Double;
-  TInt3Array = array[0..2] of Integer;
-  TDouble3Array = array[0..2] of Double;
+  TInt5Array = array[0..4] of Integer;
+  TDouble5Array = array[0..4] of Double;
   TFitColumnArray = array[FitColumnType] of TDoubleArray;
 
 type

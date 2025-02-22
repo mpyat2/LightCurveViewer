@@ -17,7 +17,15 @@ type
   TFormFitparams = class(TForm)
     ButtonOk: TButton;
     ButtonCancel: TButton;
+    EditPeriod4: TEdit;
+    EditPeriod5: TEdit;
+    EditTrigDeg4: TEdit;
+    EditTrigDeg5: TEdit;
+    LabelPeriod4: TLabel;
+    LabelPeriod5: TLabel;
     LabelTrendDegree: TLabel;
+    LabelTrigDeg4: TLabel;
+    LabelTrigDeg5: TLabel;
     LabelTrigPoly: TLabel;
     LabelPeriod1: TLabel;
     LabelPeriod2: TLabel;
@@ -35,23 +43,23 @@ type
     procedure ButtonOkClick(Sender: TObject);
   private
     FTrendDegree: Integer;
-    FPeriods: TDouble3Array;
-    FTrigPolyDegrees: TInt3Array;
+    FPeriods: TDouble5Array;
+    FTrigPolyDegrees: TInt5Array;
   public
 
   end;
 
 procedure SetCurrentTrendDegree(AValue: Integer);
 
-procedure SetCurrentPeriods(const AValue: TDouble3Array);
+procedure SetCurrentPeriods(const AValue: TDouble5Array);
 
-procedure SetCurrentTrigPolyDegrees(const AValue: TInt3Array);
+procedure SetCurrentTrigPolyDegrees(const AValue: TInt5Array);
 
 procedure SaveParameters(const Ini: TCustomIniFile; const Section: string);
 
 procedure LoadParameters(const Ini: TCustomIniFile; const Section: string);
 
-function GetFitParams(out ATrendDegree: Integer; out ATrigPolyDegrees: TInt3Array; out AFrequencies: TDouble3Array): Boolean;
+function GetFitParams(out ATrendDegree: Integer; out ATrigPolyDegrees: TInt5Array; out AFrequencies: TDouble5Array): Boolean;
 
 implementation
 
@@ -62,20 +70,20 @@ uses
 
 var
   CurrentTrendDegree: Integer = 1;
-  CurrentPeriods: TDouble3Array = (NaN, NaN, NaN);
-  CurrentTrigPolyDegrees: TInt3Array = (0, 0, 0);
+  CurrentPeriods: TDouble5Array = (NaN, NaN, NaN, NaN, NaN);
+  CurrentTrigPolyDegrees: TInt5Array = (0, 0, 0, 0, 0);
 
 procedure SetCurrentTrendDegree(AValue: Integer);
 begin
   CurrentTrendDegree := AValue;
 end;
 
-procedure SetCurrentPeriods(const AValue: TDouble3Array);
+procedure SetCurrentPeriods(const AValue: TDouble5Array);
 begin
   CurrentPeriods := AValue;
 end;
 
-procedure SetCurrentTrigPolyDegrees(const AValue: TInt3Array);
+procedure SetCurrentTrigPolyDegrees(const AValue: TInt5Array);
 begin
   CurrentTrigPolyDegrees := AValue;
 end;
@@ -102,7 +110,7 @@ begin
     CurrentTrigPolyDegrees[I] := Ini.ReadInteger(Section, 'fit.trigpolydegree' + IntToStr(I + 1), 0);
 end;
 
-function GetFitParams(out ATrendDegree: Integer; out ATrigPolyDegrees: TInt3Array; out AFrequencies: TDouble3Array): Boolean;
+function GetFitParams(out ATrendDegree: Integer; out ATrigPolyDegrees: TInt5Array; out AFrequencies: TDouble5Array): Boolean;
 var
   Edit: TEdit;
   F: TFormFitParams;
@@ -114,11 +122,13 @@ begin
     F.EditTrendDegree.Text := IntToStr(CurrentTrendDegree);
     for I := 0 to Length(CurrentPeriods) - 1 do begin
       Edit := F.FindComponent('EditPeriod' + IntToStr(I+1)) as TEdit;
+      Assert(Edit <> nil);
       if not IsNan(CurrentPeriods[I]) then
         Edit.Text := FloatToStr(CurrentPeriods[I])
       else
         Edit.Text := '';
       Edit := F.FindComponent('EditTrigDeg' + IntToStr(I+1)) as TEdit;
+      Assert(Edit <> nil);
       Edit.Text := IntToStr(CurrentTrigPolyDegrees[I]);
     end;
     F.ShowModal;
@@ -147,8 +157,8 @@ procedure TFormFitparams.ButtonOkClick(Sender: TObject);
 var
   Edit: TEdit;
   Lab: TLabel;
-  Periods: TDouble3Array;
-  TrigPolyDegrees: TInt3Array;
+  Periods: TDouble5Array;
+  TrigPolyDegrees: TInt5Array;
   TrendDegree: Integer;
   I: Integer;
 begin
@@ -157,12 +167,16 @@ begin
     Exit;
   for I := 0 to Length(FPeriods) - 1 do begin
     Edit := FindComponent('EditPeriod' + IntToStr(I+1)) as TEdit;
+    Assert(Edit <> nil);
     Lab := FindComponent('LabelPeriod' + IntToStr(I+1)) as TLabel;
+    Assert(Lab <> nil);
     if Trim(Edit.Text) <> '' then begin
       if not GetFieldValue(Edit, 0.000001, NaN, Lab.Caption, Periods[I]) then
         Exit;
       Edit := FindComponent('EditTrigDeg' + IntToStr(I+1)) as TEdit;
+      Assert(Edit <> nil);
       Lab := FindComponent('LabelTrigDeg' + IntToStr(I+1)) as TLabel;
+      Assert(Lab <> nil);
       if not GetFieldValue(Edit, 0, 25, Lab.Caption, TrigPolyDegrees[I]) then
         Exit;
     end
