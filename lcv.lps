@@ -18,14 +18,17 @@
         <ComponentName Value="FormMain"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="55"/>
-        <CursorPos Y="69"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="6"/>
+        <TopLine Value="1129"/>
+        <CursorPos X="36" Y="1153"/>
         <UsageCount Value="203"/>
         <Bookmarks Count="2">
           <Item0 X="3" Y="845" ID="2"/>
           <Item1 X="49" Y="843" ID="1"/>
         </Bookmarks>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="dataio.pas"/>
@@ -90,13 +93,11 @@
       <Unit>
         <Filename Value="fitproc.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="370"/>
-        <CursorPos X="47" Y="389"/>
+        <EditorIndex Value="7"/>
+        <TopLine Value="123"/>
+        <CursorPos X="13" Y="144"/>
         <UsageCount Value="200"/>
-        <Bookmarks Count="1">
-          <Item0 X="5" Y="80" ID="1"/>
-        </Bookmarks>
+        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="lcv.inc"/>
@@ -148,7 +149,7 @@
         <ResourceBaseClass Value="Form"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="56" Y="68"/>
-        <UsageCount Value="182"/>
+        <UsageCount Value="184"/>
       </Unit>
       <Unit>
         <Filename Value="sortutils.pas"/>
@@ -156,14 +157,14 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="110"/>
         <CursorPos Y="127"/>
-        <UsageCount Value="101"/>
+        <UsageCount Value="103"/>
       </Unit>
       <Unit>
         <Filename Value="lcvtypes.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="9" Y="13"/>
-        <UsageCount Value="101"/>
+        <UsageCount Value="103"/>
       </Unit>
       <Unit>
         <Filename Value="miscutils.pas"/>
@@ -171,7 +172,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="10"/>
         <CursorPos Y="27"/>
-        <UsageCount Value="101"/>
+        <UsageCount Value="103"/>
       </Unit>
       <Unit>
         <Filename Value="formatutils.pas"/>
@@ -179,16 +180,15 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="18"/>
         <CursorPos X="27" Y="43"/>
-        <UsageCount Value="101"/>
+        <UsageCount Value="103"/>
       </Unit>
       <Unit>
         <Filename Value="guiutils.pas"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="5"/>
         <TopLine Value="129"/>
         <CursorPos Y="161"/>
-        <UsageCount Value="101"/>
+        <UsageCount Value="103"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -200,7 +200,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="21"/>
         <CursorPos X="22" Y="42"/>
-        <UsageCount Value="73"/>
+        <UsageCount Value="75"/>
       </Unit>
       <Unit>
         <Filename Value="unitFormChartprops.pas"/>
@@ -211,7 +211,7 @@
         <EditorIndex Value="1"/>
         <TopLine Value="67"/>
         <CursorPos X="26" Y="85"/>
-        <UsageCount Value="68"/>
+        <UsageCount Value="70"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -341,31 +341,7 @@
         <UsageCount Value="10"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="22">
-      <Position>
-        <Filename Value="unitFormChartprops.pas"/>
-        <Caret Line="145" TopLine="117"/>
-      </Position>
-      <Position>
-        <Filename Value="unitFormChartprops.pas"/>
-        <Caret Line="112" Column="28" TopLine="84"/>
-      </Position>
-      <Position>
-        <Filename Value="unitFormChartprops.pas"/>
-        <Caret Line="71" Column="33" TopLine="48"/>
-      </Position>
-      <Position>
-        <Filename Value="unitFormChartprops.pas"/>
-        <Caret Line="67" Column="22" TopLine="49"/>
-      </Position>
-      <Position>
-        <Filename Value="unitFormChartprops.pas"/>
-        <Caret Line="71" Column="23" TopLine="53"/>
-      </Position>
-      <Position>
-        <Filename Value="unitFormChartprops.pas"/>
-        <Caret Line="70" Column="9" TopLine="54"/>
-      </Position>
+    <JumpHistory HistoryIndex="29">
       <Position>
         <Filename Value="unitFormChartprops.pas"/>
         <Caret Line="85" Column="13" TopLine="54"/>
@@ -433,6 +409,58 @@
       <Position>
         <Filename Value="unitPhaseDialog.pas"/>
         <Caret Line="21" Column="16" TopLine="5"/>
+      </Position>
+      <Position>
+        <Filename Value="unitMain.pas"/>
+        <Caret Line="69" TopLine="69"/>
+      </Position>
+      <Position>
+        <Filename Value="unitMain.pas"/>
+        <Caret Line="137" Column="16" TopLine="109"/>
+      </Position>
+      <Position>
+        <Filename Value="unitMain.pas"/>
+        <Caret Line="393" Column="40" TopLine="364"/>
+      </Position>
+      <Position>
+        <Filename Value="unitMain.pas"/>
+        <Caret Line="680" Column="14" TopLine="651"/>
+      </Position>
+      <Position>
+        <Filename Value="unitMain.pas"/>
+        <Caret Line="1056" Column="16" TopLine="1028"/>
+      </Position>
+      <Position>
+        <Filename Value="unitMain.pas"/>
+        <Caret Line="1109" Column="28" TopLine="1081"/>
+      </Position>
+      <Position>
+        <Filename Value="unitMain.pas"/>
+        <Caret Line="1070" Column="11" TopLine="1064"/>
+      </Position>
+      <Position>
+        <Filename Value="unitMain.pas"/>
+        <Caret Line="1109" Column="28" TopLine="1081"/>
+      </Position>
+      <Position>
+        <Filename Value="fitproc.pas"/>
+        <Caret Line="25" Column="11" TopLine="8"/>
+      </Position>
+      <Position>
+        <Filename Value="fitproc.pas"/>
+        <Caret Line="410" Column="3" TopLine="437"/>
+      </Position>
+      <Position>
+        <Filename Value="fitproc.pas"/>
+        <Caret Line="146" Column="137" TopLine="114"/>
+      </Position>
+      <Position>
+        <Filename Value="fitproc.pas"/>
+        <Caret Line="103" Column="34" TopLine="89"/>
+      </Position>
+      <Position>
+        <Filename Value="fitproc.pas"/>
+        <Caret Line="139" Column="36" TopLine="122"/>
       </Position>
     </JumpHistory>
     <RunParams>

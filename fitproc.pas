@@ -100,6 +100,7 @@ var
   I, N, Idx, Idx2: Integer;
   Sign: string;
   S, S2: string;
+  Amplitudes: array of array[0..1] of Double;
 begin
   Formula := '';
   Info := ' Coefficients'^M^J;
@@ -119,6 +120,7 @@ begin
     Info := Info + ^M^J;
   end;
   // Trigonometric
+  SetLength(Amplitudes, 0);
   Idx2 := 1 + ATrendDegree;
   for N := 0 to Length(ATrigPolyDegrees) - 1 do begin
     if ATrigPolyDegrees[N] > 0 then begin
@@ -132,9 +134,16 @@ begin
         if solution_vector[Idx + 1] < 0 then Sign := ' - ' else Sign := ' + ';
         Formula := Formula + Sign + FloatToStrLocaleIndependent(Abs(solution_vector[Idx + 1])) + ' * math.sin(' + S + ') \' + ^M^J;
         Info := Info + FloatToStrMod(solution_vector[Idx + 1]) + ^I'[+-' + Trim(FloatToStrMod(solution_vector_errors[Idx + 1])) + ']'^I' * sin(' + S2 + ')' + ^M^J;
+        SetLength(Amplitudes, Length(Amplitudes) + 1);
+        Amplitudes[Length(Amplitudes) - 1][0] := I * AFrequencies[N];
+        Amplitudes[Length(Amplitudes) - 1][1] := Sqrt(solution_vector[Idx] * solution_vector[Idx] + solution_vector[Idx + 1] * solution_vector[Idx + 1]);
       end;
       Idx2 := Idx2 + 2 * ATrigPolyDegrees[N];
     end;
+  end;
+  Info := Info + ^M^J;
+  for N := 0 to Length(Amplitudes) - 1 do begin
+    Info := Info + 'Period = '^I + FloatToStrMod(1.0 / Amplitudes[N][0]) + ^I + ' Amplitude = ' + FloatToStrMod(Amplitudes[N][1]) + ^M^J;
   end;
 end;
 

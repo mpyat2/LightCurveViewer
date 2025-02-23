@@ -1150,10 +1150,10 @@ begin
                    'plt.show()' + ^M^J;
 
     FFitInfo := FFitInfo + ^M^J + 'timeZeroPoint = ' + Trim(FloatToStrMod(meanTime)) + ^M^J^M^J;
-    FFitInfo := FFitInfo + '(O - C)^2 = ' + Trim(FloatToStrMod(OCsquared)) + ^M^J^M^J;
+    FFitInfo := FFitInfo + 'Sum((O-C)^2) = ' + Trim(FloatToStrMod(OCsquared)) + ^M^J^M^J;
     FFitInfo := FFitInfo + 'Number of data points = ' + IntToStr(n_points) + ^M^J;
     FFitInfo := FFitInfo + 'Number of parameters = ' + IntToStr(NofParameters) + ^M^J;
-    FFitInfo := FFitInfo + 'sigma = ' + Trim(FloatToStrMod(Power(OCsquared * Double(NofParameters) / Double(n_points) / Double(n_points - NofParameters), 0.5))) + ^M^J;
+    FFitInfo := FFitInfo + 'sigma[x_c] = ' + Trim(FloatToStrMod(Power(OCsquared * Double(NofParameters) / Double(n_points) / Double(n_points - NofParameters), 0.5))) + ^M^J;
 
 
     UDFSrcModel.PointsNumber := Length(FModelData[FitColumnType.x]);
