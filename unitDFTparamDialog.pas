@@ -31,6 +31,7 @@ type
     LabelFrequencyResolution: TLabel;
     procedure ButtonOkClick(Sender: TObject);
     procedure EditTrigPolyDegreeChange(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure UpdateRecommendedResolution;
   private
@@ -168,6 +169,11 @@ begin
 end;
 
 { TFormDFTparams }
+
+procedure TFormDFTparams.FormCreate(Sender: TObject);
+begin
+  RearrangeButtons(ButtonOK, ButtonCancel);
+end;
 
 procedure TFormDFTparams.UpdateRecommendedResolution;
 var

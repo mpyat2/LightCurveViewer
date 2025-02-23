@@ -8,6 +8,7 @@ object FormFitparams: TFormFitparams
   Caption = 'Parameters'
   ClientHeight = 318
   ClientWidth = 308
+  OnCreate = FormCreate
   Position = poMainFormCenter
   LCLVersion = '3.8.0.0'
   object EditPeriod1: TEdit

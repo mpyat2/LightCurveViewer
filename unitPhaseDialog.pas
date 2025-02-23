@@ -20,13 +20,14 @@ type
   TFormPhaseDialog = class(TForm)
     ButtonApply: TButton;
     ButtonOK: TButton;
-    ButtonCamcel: TButton;
+    ButtonCancel: TButton;
     EditPeriod: TEdit;
     EditEpoch: TEdit;
     LabelPeriod: TLabel;
     LabelEpoch: TLabel;
     procedure ButtonApplyClick(Sender: TObject);
     procedure ButtonOKClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
     function GetEpoch: Double;
@@ -57,6 +58,9 @@ function GetCurrentPeriod: Double;
 implementation
 
 {$R *.lfm}
+
+uses
+  guiutils;
 
 var
   CurrentEpoch: Double = NaN;
@@ -119,6 +123,11 @@ begin
 end;
 
 { TFormPhaseDialog }
+
+procedure TFormPhaseDialog.FormCreate(Sender: TObject);
+begin
+  RearrangeButtons(ButtonOK, ButtonCancel, ButtonApply);
+end;
 
 procedure TFormPhaseDialog.ButtonOKClick(Sender: TObject);
 begin

@@ -37,6 +37,7 @@ type
     procedure ButtonModelColorClick(Sender: TObject);
     procedure ButtonModelUpDownColorClick(Sender: TObject);
     procedure ButtonOKClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
     FChart: TChart;
     FChartSeriesData: TLineSeries;
@@ -51,13 +52,16 @@ type
 
   end;
 
-function ChartProperties(const Chart: TChart; var ObjectName: string): Boolean;
+function ChartProperties(Chart: TChart; var ObjectName: string): Boolean;
 
 implementation
 
 {$R *.lfm}
 
-function ChartProperties(const Chart: TChart; var ObjectName: string): Boolean;
+uses
+  guiutils;
+
+function ChartProperties(Chart: TChart; var ObjectName: string): Boolean;
 var
   F: TFormChartProperties;
 begin
@@ -75,6 +79,11 @@ begin
 end;
 
 { TFormChartProperties }
+
+procedure TFormChartProperties.FormCreate(Sender: TObject);
+begin
+  RearrangeButtons(ButtonOK, ButtonCancel);
+end;
 
 procedure TFormChartProperties.InitProps;
 var

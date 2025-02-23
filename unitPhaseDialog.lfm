@@ -8,9 +8,10 @@ object FormPhaseDialog: TFormPhaseDialog
   Caption = 'Phase Plot'
   ClientHeight = 130
   ClientWidth = 321
+  OnCreate = FormCreate
   OnShow = FormShow
   Position = poMainFormCenter
-  LCLVersion = '3.2.0.0'
+  LCLVersion = '3.8.0.0'
   object LabelPeriod: TLabel
     Left = 24
     Height = 15
@@ -49,7 +50,7 @@ object FormPhaseDialog: TFormPhaseDialog
     TabOrder = 2
     OnClick = ButtonOKClick
   end
-  object ButtonCamcel: TButton
+  object ButtonCancel: TButton
     Left = 120
     Height = 25
     Top = 88

@@ -8,9 +8,10 @@ object FormDFTparams: TFormDFTparams
   Caption = 'Parameters'
   ClientHeight = 303
   ClientWidth = 308
+  OnCreate = FormCreate
   OnShow = FormShow
   Position = poMainFormCenter
-  LCLVersion = '3.2.0.0'
+  LCLVersion = '3.8.0.0'
   object LabelFrequencyMin: TLabel
     Left = 24
     Height = 15

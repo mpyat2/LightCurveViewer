@@ -30,6 +30,10 @@ function GetFieldValue(const Field: TEdit; Min, Max: Integer; const FieldName: s
 
 function GetGridSelectionAsText(Grid: TDrawGrid; GetGridCell: TGetGridCell): string;
 
+procedure RearrangeButtons(ButtonOK, ButtonCancel: TButton);
+
+procedure RearrangeButtons(ButtonOK, ButtonCancel, ButtonApply: TButton);
+
 implementation
 
 uses
@@ -121,6 +125,40 @@ begin
     end;
     Result := Result + S2 + ^M^J;
   end;
+end;
+
+procedure RearrangeButtons(ButtonOK, ButtonCancel: TButton);
+{$IF defined(linux)}
+var
+  LOK: Integer;
+{$ENDIF}
+begin
+{$IF defined(linux)}
+  LOK := ButtonOK.Left;
+  ButtonOK.Left := ButtonCancel.Left;
+  ButtonCancel.Left := LOK;
+  if ButtonCancel.Left < ButtonOK.Left then
+    ButtonCancel.TabOrder := ButtonOK.TabOrder;
+{$ENDIF}
+end;
+
+procedure RearrangeButtons(ButtonOK, ButtonCancel, ButtonApply: TButton);
+{$IF defined(linux)}
+var
+  LOK, LCancel: Integer;
+{$ENDIF}
+begin
+{$IF defined(linux)}
+  LOK := ButtonOK.Left;
+  LCancel := ButtonCancel.Left;
+  ButtonOK.Left := ButtonApply.Left;
+  ButtonApply.Left := LCancel;
+  ButtonCancel.Left := LOK;
+  if ButtonCancel.Left < ButtonOK.Left then
+    ButtonCancel.TabOrder := ButtonOK.TabOrder;
+  if ButtonApply.Left < ButtonOK.Left then
+    ButtonApply.TabOrder := ButtonOK.TabOrder;
+{$ENDIF}
 end;
 
 end.

@@ -41,6 +41,7 @@ type
     EditTrigDeg2: TEdit;
     EditTrigDeg3: TEdit;
     procedure ButtonOkClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
     FTrendDegree: Integer;
     FPeriods: TDouble5Array;
@@ -152,6 +153,11 @@ begin
 end;
 
 { TFormFitparams }
+
+procedure TFormFitparams.FormCreate(Sender: TObject);
+begin
+  RearrangeButtons(ButtonOK, ButtonCancel);
+end;
 
 procedure TFormFitparams.ButtonOkClick(Sender: TObject);
 var
