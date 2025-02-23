@@ -22,16 +22,17 @@ object FormMain: TFormMain
         Grid.Color = clSilver
         Intervals.Options = [aipUseCount, aipUseMaxLength, aipUseMinLength, aipUseNiceSteps]
         Intervals.Tolerance = 1
-        Arrow.Inverted = True
-        Inverted = True
-        Marks.LabelFont.CharSet = RUSSIAN_CHARSET
         Marks.LabelFont.Height = -16
         Marks.LabelFont.Name = 'Times New Roman'
         Marks.LabelFont.Pitch = fpVariable
         Marks.LabelFont.Quality = fqDraft
         Marks.LabelBrush.Style = bsClear
         Minors = <>
+        Title.LabelFont.Height = -19
+        Title.LabelFont.Name = 'Times New Roman'
         Title.LabelFont.Orientation = 900
+        Title.LabelFont.Pitch = fpVariable
+        Title.LabelFont.Quality = fqDraft
         Title.LabelBrush.Style = bsClear
       end    
       item
@@ -43,17 +44,17 @@ object FormMain: TFormMain
         Intervals.Options = [aipUseCount, aipUseMaxLength, aipUseMinLength, aipUseNiceSteps]
         Intervals.Tolerance = 10
         Alignment = calBottom
-        Marks.LabelFont.CharSet = RUSSIAN_CHARSET
         Marks.LabelFont.Height = -16
         Marks.LabelFont.Name = 'Times New Roman'
         Marks.LabelFont.Pitch = fpVariable
         Marks.LabelFont.Quality = fqDraft
         Marks.LabelBrush.Style = bsClear
         Minors = <>
+        Title.LabelFont.Height = -19
+        Title.LabelFont.Name = 'Times New Roman'
         Title.LabelBrush.Style = bsClear
       end>
     BackColor = clWhite
-    Title.Font.CharSet = RUSSIAN_CHARSET
     Title.Font.Height = -21
     Title.Font.Name = 'Times New Roman'
     Title.Font.Pitch = fpVariable
@@ -69,8 +70,8 @@ object FormMain: TFormMain
     OnMouseEnter = ChartMouseEnter
     OnMouseLeave = ChartMouseLeave
     OnMouseMove = ChartMouseMove
-    object ChartLineSeriesData: TLineSeries
-      LinePen.Color = clPurple
+    object ChartSeriesData: TLineSeries
+      LinePen.Color = clDefault
       LineType = ltNone
       Marks.Format = '%2:s'
       Marks.LinkPen.Color = clBlack
@@ -83,13 +84,13 @@ object FormMain: TFormMain
       Pointer.Visible = True
       ShowPoints = True
     end
-    object ChartLineSeriesModel: TLineSeries
+    object ChartSeriesModel: TLineSeries
       LinePen.Color = clLime
     end
-    object ChartLineSeriesModelUpLimit: TLineSeries
+    object ChartSeriesModelUpLimit: TLineSeries
       LinePen.Color = clRed
     end
-    object ChartLineSeriesModelDownLimit: TLineSeries
+    object ChartSeriesModelDownLimit: TLineSeries
       LinePen.Color = clRed
     end
   end
@@ -226,6 +227,12 @@ object FormMain: TFormMain
           Action = ActionShowModel
         end
       end
+      object Separator5: TMenuItem
+        Caption = '-'
+      end
+      object MenuItemChartProperties: TMenuItem
+        Action = ActionChartProperties
+      end
     end
     object MenuAnalyses: TMenuItem
       Caption = '&Analyses'
@@ -357,6 +364,11 @@ object FormMain: TFormMain
       Category = 'Help'
       Caption = 'User Manual...'
       OnExecute = ActionUserManualExecute
+    end
+    object ActionChartProperties: TAction
+      Category = 'View'
+      Caption = 'Chart Properties...'
+      OnExecute = ActionChartPropertiesExecute
     end
   end
   object OpenDialog: TOpenDialog

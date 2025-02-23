@@ -9,13 +9,15 @@ interface
 uses
   Classes, SysUtils, IniFiles, Forms, Controls, Graphics, Dialogs, Menus,
   ActnList, ComCtrls, ExtDlgs, StdCtrls, ExtCtrls, TAGraph, TASources, TASeries,
-  TACustomSource, TATools, Types, lcvtypes, unitDFT;
+  TACustomSource, TATools, TAChartUtils, TACustomSeries, Types, lcvtypes,
+  unitDFT, TADrawUtils;
 
 type
 
   { TFormMain }
 
   TFormMain = class(TForm)
+    ActionChartProperties: TAction;
     ActionUserManual: TAction;
     ActionSaveChartImageAs: TAction;
     ActionStop: TAction;
@@ -36,10 +38,10 @@ type
     ActionExit: TAction;
     ActionList: TActionList;
     Chart: TChart;
-    ChartLineSeriesModelDownLimit: TLineSeries;
-    ChartLineSeriesModelUpLimit: TLineSeries;
-    ChartLineSeriesModel: TLineSeries;
-    ChartLineSeriesData: TLineSeries;
+    ChartSeriesModelDownLimit: TLineSeries;
+    ChartSeriesModelUpLimit: TLineSeries;
+    ChartSeriesModel: TLineSeries;
+    ChartSeriesData: TLineSeries;
     ChartToolset: TChartToolset;
     ChartToolsetDataPointClickTool1: TDataPointClickTool;
     ChartToolsetDataPointClickTool2: TDataPointClickTool;
@@ -51,6 +53,7 @@ type
     LCSrcData: TListChartSource;
     MainMenu: TMainMenu;
     MenuFile: TMenuItem;
+    MenuItemChartProperties: TMenuItem;
     MenuItemUserManual: TMenuItem;
     MenuItemSavePNG: TMenuItem;
     MenuItemCopyChart: TMenuItem;
@@ -80,6 +83,7 @@ type
     Separator2: TMenuItem;
     Separator3: TMenuItem;
     Separator4: TMenuItem;
+    Separator5: TMenuItem;
     StatusBar: TStatusBar;
     ToolBar: TToolBar;
     ToolButton1: TToolButton;
@@ -95,6 +99,7 @@ type
     UDFSrcModelFolded: TUserDefinedChartSource;
     UDFSrcModelFoldedUpLimit: TUserDefinedChartSource;
     UDFSrcModelFoldedDownLimit: TUserDefinedChartSource;
+    procedure ActionChartPropertiesExecute(Sender: TObject);
     procedure ActionCopyChartImageExecute(Sender: TObject);
     procedure ActionListUpdate(AAction: TBasicAction; var Handled: Boolean);
     procedure ActionAboutExecute(Sender: TObject);
@@ -149,6 +154,7 @@ type
     procedure SaveDataSettings;
     procedure LoadDataSettings;
     procedure SaveChartSettings(const Ini: TIniFile; const Section: string);
+    procedure LoadChartSettings(const Ini: TIniFile; const Section: string);
     procedure PlotData;
     procedure PlotFolded;
     procedure PlotFoldedSimple;
@@ -177,10 +183,10 @@ implementation
 {$R *.lfm}
 
 uses
-  lclintf, math, TACustomSeries, TAChartUtils, guiutils, unitPhaseDialog,
+  lclintf, math, guiutils, unitPhaseDialog,
   unitFitParamDialog, unitDFTparamDialog, unitDFTdialog, unitTableDialog,
-  unitModelInfoDialog, floattextform, unitAbout, dftThread, dataio, sortutils,
-  formatutils, miscutils, fitproc;
+  unitModelInfoDialog, floattextform, unitFormChartprops, unitAbout, dftThread,
+  dataio, sortutils, formatutils, miscutils, fitproc;
 
 { TFormMain }
 
@@ -206,7 +212,7 @@ var
   Pg: TDoublePoint;
 begin
   try
-    if (ChartLineSeriesData.Source <> nil) and (ChartLineSeriesData.Source.Count > 0) then begin
+    if (ChartSeriesData.Source <> nil) and (ChartSeriesData.Source.Count > 0) then begin
       P := Chart.ScreenToClient(Mouse.CursorPos);
       Pg := Chart.ImageToGraph(P);
       StatusBar.Panels[0].Text := Format(' %g'^I' %g ', [Pg.X, Pg.Y]);
@@ -227,7 +233,7 @@ var
   X, Y: Double;
 begin
   Tool := ATool as TDatapointClickTool;
-  if Tool.Series = ChartLineSeriesData then begin
+  if Tool.Series = ChartSeriesData then begin
     Series := Tool.Series as TLineSeries;
     X := Series.GetXValue(Tool.PointIndex);
     Y := Series.GetYValue(Tool.PointIndex);
@@ -248,7 +254,7 @@ var
   X, Y: Double;
 begin
   Tool := ATool as TDatapointClickTool;
-  if Tool.Series = ChartLineSeriesData then begin
+  if Tool.Series = ChartSeriesData then begin
     Series := Tool.Series as TLineSeries;
     X := Series.GetXValue(Tool.PointIndex);
     Y := Series.GetYValue(Tool.PointIndex);
@@ -320,7 +326,7 @@ var
   Item: PChartDataItem;
   N, I: Integer;
 begin
-  if (LCSrcData.Count > 0) and (ChartLineSeriesData.Source = LCSrcData) then begin
+  if (LCSrcData.Count > 0) and (ChartSeriesData.Source = LCSrcData) then begin
     SetLength(X1, LCSrcData.Count);
     SetLength(Y1, LCSrcData.Count);
     N := 0;
@@ -350,14 +356,14 @@ end;
 
 procedure TFormMain.ActionShowDataExecute(Sender: TObject);
 begin
-  ChartLineSeriesData.Active := not ChartLineSeriesData.Active;
+  ChartSeriesData.Active := not ChartSeriesData.Active;
 end;
 
 procedure TFormMain.ActionShowModelExecute(Sender: TObject);
 begin
-  ChartLineSeriesModel.Active := not ChartLineSeriesModel.Active;
-  ChartLineSeriesModelUpLimit.Active := ChartLineSeriesModel.Active;
-  ChartLineSeriesModelDownLimit.Active := ChartLineSeriesModel.Active;
+  ChartSeriesModel.Active := not ChartSeriesModel.Active;
+  ChartSeriesModelUpLimit.Active := ChartSeriesModel.Active;
+  ChartSeriesModelDownLimit.Active := ChartSeriesModel.Active;
 end;
 
 procedure TFormMain.ActionStopExecute(Sender: TObject);
@@ -406,12 +412,63 @@ begin
   end;
 end;
 
+procedure TFormMain.ActionCopyChartImageExecute(Sender: TObject);
+begin
+  Chart.CopyToClipboard(TBitmap);
+end;
+
+//procedure TFormMain.ActionDayColorExecute(Sender: TObject);
+//var
+//  PointColors: array[0..6] of TColor = (clRed, clLime, clYellow, clBlue, clFuchsia, clAqua, clPurple);
+//  I, N: Integer;
+//begin
+//  if LCSrcData.Count > 0 then begin
+//    if LCSrcData.Item[0]^.Color = ChartSeriesData.SeriesColor then begin
+//      N := 0;
+//      for I := 0 to LCSrcData.Count - 1 do begin
+//        LCSrcData.Item[0]^.Color := PointColors[N];
+//        Inc(N);
+//        if N > Length(PointColors) - 1 then
+//          N := 0;
+//      end;
+//    end
+//    else begin
+//      for I := 0 to LCSrcData.Count - 1 do begin
+//        LCSrcData.Item[0]^.Color := ChartSeriesData.SeriesColor;
+//      end;
+//    end;
+//  end;
+//end;
+
+procedure TFormMain.ActionSaveChartImageAsExecute(Sender: TObject);
+begin
+  if SavePictureDialog.InitialDir = '' then
+    SavePictureDialog.InitialDir := OpenDialog.InitialDir;
+  SavePictureDialog.FileName := '';
+  if SavePictureDialog.Execute then begin
+    try
+      Chart.SaveToFile(TPortableNetworkGraphic, SavePictureDialog.FileName);
+    except
+      on E: Exception do begin
+        ShowMessage(E.Message);
+        Exit;
+      end;
+    end;
+  end;
+end;
+
+procedure TFormMain.ActionChartPropertiesExecute(Sender: TObject);
+begin
+  if ChartProperties(Chart, FObjectName) then begin
+    UpdateTitle;
+    SaveDataSettings;
+  end;
+end;
+
 procedure TFormMain.ActionListUpdate(AAction: TBasicAction; var Handled: Boolean);
 begin
   if (AAction = ActionOpen) or
-     (AAction = ActionSaveVisible) or
      (AAction = ActionExit) or
-     (AAction = ActionInvertedY) or
      (AAction = ActionAbout) or
      (AAction = ActionUserManual) or
      (AAction = ActionCopyChartImage) or
@@ -421,8 +478,12 @@ begin
   end
   else
   if AAction = ActionInvertedY then begin
-    (AAction as TAction).Enabled := FCalculationInProgress;
+    (AAction as TAction).Enabled := (LCSrcData.Count > 0) and not FCalculationInProgress;
     (AAction as TAction).Checked := Chart.AxisList[0].Inverted;
+  end
+  else
+  if AAction = ActionChartProperties then begin
+    (AAction as TAction).Enabled := (LCSrcData.Count > 0) and not FCalculationInProgress;
   end
   else
   if AAction = ActionRawData then begin
@@ -454,43 +515,21 @@ begin
   end
   else
   if AAction = ActionSaveVisible then begin
-    (AAction as TAction).Enabled := (LCSrcData.Count > 0) and (ChartLineSeriesData.Source = LCSrcData) and not FCalculationInProgress;
+    (AAction as TAction).Enabled := (LCSrcData.Count > 0) and (ChartSeriesData.Source = LCSrcData) and not FCalculationInProgress;
   end
   else
   if AAction = ActionShowData then begin
     (AAction as TAction).Enabled := (LCSrcData.Count > 0) and not FCalculationInProgress;
-    (AAction as TAction).Checked := ChartLineSeriesData.Active;
+    (AAction as TAction).Checked := ChartSeriesData.Active;
   end
   else
   if AAction = ActionShowModel then begin
     (AAction as TAction).Enabled := (UDFSrcModel.Count > 0) and not FCalculationInProgress;
-    (AAction as TAction).Checked := ChartLineSeriesModel.Active;
+    (AAction as TAction).Checked := ChartSeriesModel.Active;
   end
   else
   if AAction = ActionStop then begin
     (AAction as TAction).Enabled := FCalculationInProgress;
-  end;
-end;
-
-procedure TFormMain.ActionCopyChartImageExecute(Sender: TObject);
-begin
-  Chart.CopyToClipboard(TBitmap);
-end;
-
-procedure TFormMain.ActionSaveChartImageAsExecute(Sender: TObject);
-begin
-  if SavePictureDialog.InitialDir = '' then
-    SavePictureDialog.InitialDir := OpenDialog.InitialDir;
-  SavePictureDialog.FileName := '';
-  if SavePictureDialog.Execute then begin
-    try
-      Chart.SaveToFile(TPortableNetworkGraphic, SavePictureDialog.FileName);
-    except
-      on E: Exception do begin
-        ShowMessage(E.Message);
-        Exit;
-      end;
-    end;
   end;
 end;
 
@@ -563,23 +602,23 @@ end;
 
 procedure TFormMain.ChartSeriesModelToNil;
 begin
-  ChartLineSeriesModel.Source := nil;
-  ChartLineSeriesModelUpLimit.Source := nil;
-  ChartLineSeriesModelDownLimit.Source := nil;
+  ChartSeriesModel.Source := nil;
+  ChartSeriesModelUpLimit.Source := nil;
+  ChartSeriesModelDownLimit.Source := nil;
 end;
 
 procedure TFormMain.ChartSeriesModelToModel;
 begin
-  ChartLineSeriesModel.Source := UDFSrcModel;
-  ChartLineSeriesModelUpLimit.Source := UDFSrcModelUpLimit;
-  ChartLineSeriesModelDownLimit.Source := UDFSrcModelDownLimit;
+  ChartSeriesModel.Source := UDFSrcModel;
+  ChartSeriesModelUpLimit.Source := UDFSrcModelUpLimit;
+  ChartSeriesModelDownLimit.Source := UDFSrcModelDownLimit;
 end;
 
 procedure TFormMain.ChartSeriesModelToModelFolded;
 begin
-  ChartLineSeriesModel.Source := UDFSrcModelFolded;
-  ChartLineSeriesModelUpLimit.Source := UDFSrcModelFoldedUpLimit;
-  ChartLineSeriesModelDownLimit.Source := UDFSrcModelFoldedDownLimit;;
+  ChartSeriesModel.Source := UDFSrcModelFolded;
+  ChartSeriesModelUpLimit.Source := UDFSrcModelFoldedUpLimit;
+  ChartSeriesModelDownLimit.Source := UDFSrcModelFoldedDownLimit;;
 end;
 
 procedure TFormMain.ClearUDFSrcModel;
@@ -642,7 +681,7 @@ begin
   FFitInfo := '';
   FPeriodogramFirstRun := True;
   // Data
-  ChartLineSeriesData.Source := nil;
+  ChartSeriesData.Source := nil;
   LCSrcData.Clear;
   LCSrcFoldedData.Clear;
   // Model (virtual sources)
@@ -654,10 +693,10 @@ begin
   //
   ClearFitAtPoints;
   //
-  ChartLineSeriesData.Active := True;
-  ChartLineSeriesModel.Active := True;
-  ChartLineSeriesModelUpLimit.Active := ChartLineSeriesModel.Active;
-  ChartLineSeriesModelDownLimit.Active := ChartLineSeriesModel.Active;
+  ChartSeriesData.Active := True;
+  ChartSeriesModel.Active := True;
+  ChartSeriesModelUpLimit.Active := ChartSeriesModel.Active;
+  ChartSeriesModelDownLimit.Active := ChartSeriesModel.Active;
   //
   SetAxisBoundaries(-1.0, 1.0, -1.0, 1.0);
   //
@@ -724,6 +763,7 @@ begin
     Ini := TMemIniFile.Create(PropsFileName);
     try
       SaveChartSettings(Ini, 'SETTINGS');
+      Ini.UpdateFile;
     finally
       FreeAndNil(Ini);
     end;
@@ -745,7 +785,7 @@ begin
       unitFitParamDialog.LoadParameters(Ini, 'SETTINGS');
       unitDFTparamDialog.LoadParameters(Ini, 'SETTINGS');
       unitPhaseDialog.LoadParameters(Ini, 'SETTINGS');
-      Chart.AxisList[0].Inverted := Ini.ReadBool('SETTINGS', 'Yinverted', True);
+      LoadChartSettings(Ini, 'SETTINGS');
     finally
       FreeAndNil(Ini);
     end;
@@ -782,6 +822,26 @@ end;
 procedure TFormMain.SaveChartSettings(const Ini: TIniFile; const Section: string);
 begin
   Ini.WriteBool(Section, 'Yinverted', Chart.AxisList[0].Inverted);
+  Ini.WriteInteger(Section, 'DataColor', ChartSeriesData.Pointer.Brush.Color);
+  Ini.WriteInteger(Section, 'ModelColor', ChartSeriesModel.LinePen.Color);
+  Ini.WriteInteger(Section, 'ModelUpLimitColor', ChartSeriesModelUpLimit.LinePen.Color);
+  Ini.WriteInteger(Section, 'ModelDownLimitColor', ChartSeriesModelDownLimit.LinePen.Color);
+  Ini.WriteString(Section, 'XTitle', Chart.AxisList[1].Title.Caption);
+  Ini.WriteString(Section, 'YTitle', Chart.AxisList[0].Title.Caption);
+  Ini.WriteString(Section, 'Object', FObjectName);
+end;
+
+procedure TFormMain.LoadChartSettings(const Ini: TIniFile; const Section: string);
+begin
+  Chart.AxisList[0].Inverted := Ini.ReadBool('SETTINGS', 'Yinverted', True);
+  ChartSeriesData.Pointer.Brush.Color := TColor(Ini.ReadInteger('SETTINGS', 'DataColor', clPurple));
+  ChartSeriesData.Pointer.Pen.Color := ChartSeriesData.Pointer.Brush.Color;
+  ChartSeriesModel.LinePen.Color := TColor(Ini.ReadInteger('SETTINGS', 'ModelColor', clLime));
+  ChartSeriesModelUpLimit.LinePen.Color := TColor(Ini.ReadInteger('SETTINGS', 'ModelUpLimitColor', clRed));
+  ChartSeriesModelUpLimit.LinePen.Color := TColor(Ini.ReadInteger('SETTINGS', 'ModelDownLimitColor', clRed));
+  Chart.AxisList[1].Title.Caption := Ini.ReadString(Section, 'XTitle', '');
+  Chart.AxisList[0].Title.Caption := Ini.ReadString(Section, 'YTitle', '');
+  FObjectName := Ini.ReadString(Section, 'Object', FObjectName);
 end;
 
 procedure TFormMain.PlotData;
@@ -793,11 +853,11 @@ begin
     StatusBar.Panels[1].Text := '';
     FChartSubtitle := '';
     UpdateTitle;
-    ChartLineSeriesData.Source := nil;
+    ChartSeriesData.Source := nil;
     ChartSeriesModelToNil;
     SourceExtent := LCSrcData.Extent;
     SetAxisBoundaries(SourceExtent.coords[1], SourceExtent.coords[3], SourceExtent.coords[2], SourceExtent.coords[4]);
-    ChartLineSeriesData.Source := LCSrcData;
+    ChartSeriesData.Source := LCSrcData;
     if UDFSrcModel.Count > 0 then begin
       ChartSeriesModelToModel;
     end;
@@ -829,11 +889,11 @@ begin
   StatusBar.Panels[1].Text := '';
   FChartSubtitle := '';
   UpdateTitle;
-  ChartLineSeriesData.Source := nil;
+  ChartSeriesData.Source := nil;
   ChartSeriesModelToNil;
   SourceExtent := LCSrcFoldedData.Extent;
   SetAxisBoundaries(-1.0, 1.0, SourceExtent.coords[2], SourceExtent.coords[4]);
-  ChartLineSeriesData.Source := LCSrcFoldedData;
+  ChartSeriesData.Source := LCSrcFoldedData;
   if UDFSrcModelFolded.Count > 0 then begin
     ChartSeriesModelToModelFolded;
   end;
@@ -1102,11 +1162,11 @@ begin
     UDFSrcModelUpLimit.Reset;
     UDFSrcModelDownLimit.PointsNumber := UDFSrcModel.PointsNumber;
     UDFSrcModelDownLimit.Reset;
-    if ChartLineSeriesData.Source = LCSrcData then begin
+    if ChartSeriesData.Source = LCSrcData then begin
       ChartSeriesModelToModel;
     end
     else
-    if ChartLineSeriesData.Source = LCSrcFoldedData then begin
+    if ChartSeriesData.Source = LCSrcFoldedData then begin
       CalculateModelPhasePlot;
       ChartSeriesModelToModelFolded;
     end
@@ -1114,9 +1174,9 @@ begin
       ChartSeriesModelToNil;
     end;
 
-    ChartLineSeriesModel.Active := True;
-    ChartLineSeriesModelUpLimit.Active := ChartLineSeriesModel.Active;
-    ChartLineSeriesModelDownLimit.Active := ChartLineSeriesModel.Active;
+    ChartSeriesModel.Active := True;
+    ChartSeriesModelUpLimit.Active := ChartSeriesModel.Active;
+    ChartSeriesModelDownLimit.Active := ChartSeriesModel.Active;
   end;
 end;
 

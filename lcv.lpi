@@ -219,6 +219,13 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit>
+      <Unit>
+        <Filename Value="unitFormChartprops.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormChartProperties"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

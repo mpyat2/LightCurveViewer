@@ -1,0 +1,200 @@
+object FormChartProperties: TFormChartProperties
+  Left = 626
+  Height = 292
+  Top = 272
+  Width = 343
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsDialog
+  Caption = 'Chart Properties'
+  ClientHeight = 292
+  ClientWidth = 343
+  Position = poMainFormCenter
+  LCLVersion = '3.8.0.0'
+  object PanelButtons: TPanel
+    Left = 0
+    Height = 46
+    Top = 246
+    Width = 343
+    Align = alBottom
+    ClientHeight = 46
+    ClientWidth = 343
+    TabOrder = 1
+    object ButtonOK: TButton
+      Left = 152
+      Height = 25
+      Top = 8
+      Width = 75
+      Caption = 'OK'
+      Default = True
+      TabOrder = 0
+      OnClick = ButtonOKClick
+    end
+    object ButtonCancel: TButton
+      Left = 248
+      Height = 25
+      Top = 8
+      Width = 75
+      Cancel = True
+      Caption = 'Cancel'
+      ModalResult = 2
+      TabOrder = 1
+    end
+  end
+  object PanelOptions: TPanel
+    Left = 0
+    Height = 246
+    Top = 0
+    Width = 343
+    Align = alClient
+    ClientHeight = 246
+    ClientWidth = 343
+    TabOrder = 0
+    object LabelDataColor: TLabel
+      Left = 16
+      Height = 15
+      Top = 20
+      Width = 86
+      Caption = 'Data series color'
+    end
+    object ButtonDataColor: TButton
+      Left = 296
+      Height = 25
+      Top = 18
+      Width = 27
+      Caption = '...'
+      TabOrder = 1
+      OnClick = ButtonDataColorClick
+    end
+    object PanelDataColor: TPanel
+      Left = 216
+      Height = 23
+      Top = 20
+      Width = 67
+      ParentBackground = False
+      ParentColor = False
+      ParentFont = False
+      TabOrder = 0
+    end
+    object LabelModelColor: TLabel
+      Left = 16
+      Height = 15
+      Top = 52
+      Width = 131
+      Caption = 'Approximation line color'
+    end
+    object PanelModelColor: TPanel
+      Left = 216
+      Height = 23
+      Top = 49
+      Width = 67
+      ParentBackground = False
+      ParentColor = False
+      ParentFont = False
+      TabOrder = 2
+    end
+    object ButtonModelColor: TButton
+      Left = 296
+      Height = 25
+      Top = 49
+      Width = 27
+      Caption = '...'
+      TabOrder = 3
+      OnClick = ButtonModelColorClick
+    end
+    object LabelModelUpDownColor: TLabel
+      Left = 16
+      Height = 15
+      Top = 84
+      Width = 182
+      Caption = 'Approximation error corridor color'
+    end
+    object PanelModelUpDownColor: TPanel
+      Left = 216
+      Height = 23
+      Top = 81
+      Width = 67
+      ParentBackground = False
+      ParentColor = False
+      ParentFont = False
+      TabOrder = 4
+    end
+    object ButtonModelUpDownColor: TButton
+      Left = 296
+      Height = 25
+      Top = 80
+      Width = 27
+      Caption = '...'
+      TabOrder = 5
+      OnClick = ButtonModelUpDownColorClick
+    end
+    object LabelXtitle: TLabel
+      Left = 16
+      Height = 15
+      Top = 171
+      Width = 30
+      Caption = 'X title'
+    end
+    object EditXtitle: TEdit
+      Left = 67
+      Height = 23
+      Top = 168
+      Width = 256
+      TabOrder = 7
+    end
+    object LabelYtitle: TLabel
+      Left = 16
+      Height = 15
+      Top = 211
+      Width = 30
+      Caption = 'Y title'
+    end
+    object EditYtitle: TEdit
+      Left = 67
+      Height = 23
+      Top = 208
+      Width = 256
+      TabOrder = 8
+    end
+    object LabelObjectName: TLabel
+      Left = 16
+      Height = 15
+      Top = 131
+      Width = 35
+      Caption = 'Object'
+    end
+    object EditObjectName: TEdit
+      Left = 67
+      Height = 23
+      Top = 128
+      Width = 256
+      TabOrder = 6
+    end
+  end
+  object ColorDialog: TColorDialog
+    Color = clBlack
+    CustomColors.Strings = (
+      'ColorA=000000'
+      'ColorB=000080'
+      'ColorC=008000'
+      'ColorD=008080'
+      'ColorE=800000'
+      'ColorF=800080'
+      'ColorG=808000'
+      'ColorH=808080'
+      'ColorI=C0C0C0'
+      'ColorJ=0000FF'
+      'ColorK=00FF00'
+      'ColorL=00FFFF'
+      'ColorM=FF0000'
+      'ColorN=FF00FF'
+      'ColorO=FFFF00'
+      'ColorP=FFFFFF'
+      'ColorQ=C0DCC0'
+      'ColorR=F0CAA6'
+      'ColorS=F0FBFF'
+      'ColorT=A4A0A0'
+    )
+    Left = 16
+    Top = 296
+  end
+end

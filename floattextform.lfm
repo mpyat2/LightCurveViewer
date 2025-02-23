@@ -17,7 +17,6 @@ object FormFloatText: TFormFloatText
     Top = 0
     Width = 320
     Align = alClient
-    Font.CharSet = RUSSIAN_CHARSET
     Font.Name = 'Courier New'
     Font.Pitch = fpFixed
     Font.Quality = fqDraft
