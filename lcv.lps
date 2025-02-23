@@ -20,8 +20,8 @@
         <ResourceBaseClass Value="Form"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="6"/>
-        <TopLine Value="1129"/>
-        <CursorPos X="36" Y="1153"/>
+        <TopLine Value="353"/>
+        <CursorPos X="10" Y="382"/>
         <UsageCount Value="203"/>
         <Bookmarks Count="2">
           <Item0 X="3" Y="845" ID="2"/>
@@ -448,10 +448,6 @@
       </Position>
       <Position>
         <Filename Value="fitproc.pas"/>
-        <Caret Line="410" Column="3" TopLine="437"/>
-      </Position>
-      <Position>
-        <Filename Value="fitproc.pas"/>
         <Caret Line="146" Column="137" TopLine="114"/>
       </Position>
       <Position>
@@ -461,6 +457,10 @@
       <Position>
         <Filename Value="fitproc.pas"/>
         <Caret Line="139" Column="36" TopLine="122"/>
+      </Position>
+      <Position>
+        <Filename Value="unitMain.pas"/>
+        <Caret Column="5"/>
       </Position>
     </JumpHistory>
     <RunParams>

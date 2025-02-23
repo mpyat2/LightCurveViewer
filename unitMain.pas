@@ -379,7 +379,7 @@ end;
 
 procedure TFormMain.ActionUserManualExecute(Sender: TObject);
 begin
-  OpenDocument('https://github.com/mpyat2/LightCurveViewer/blob/main/doc/LightCurveViewer.pdf');
+  OpenURL('https://github.com/mpyat2/LightCurveViewer/blob/main/doc/LightCurveViewer.pdf');
 end;
 
 procedure TFormMain.ActionAboutExecute(Sender: TObject);
