@@ -33,8 +33,8 @@ begin
     Maximized := IniFile.ReadBool(F.Name, 'Maximized', False);
     Left := IniFile.ReadInteger(F.Name, 'Left', F.Left);
     Top := IniFile.ReadInteger(F.Name, 'Top', F.Top);
-    Width := IniFile.ReadInteger(F.Name, 'Right', F.Width);
-    Height := IniFile.ReadInteger(F.Name, 'Bottom', F.Height);
+    Width := IniFile.ReadInteger(F.Name, 'Width', F.Width);
+    Height := IniFile.ReadInteger(F.Name, 'Height', F.Height);
 
     if Left < 0 then
       Left := 0
