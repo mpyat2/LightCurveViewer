@@ -2,6 +2,8 @@ unit unitFormChartprops;
 
 {$mode ObjFPC}{$H+}
 
+{$include lcv.inc}
+
 interface
 
 uses

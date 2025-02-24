@@ -9,14 +9,15 @@ interface
 uses
   Classes, SysUtils, IniFiles, Forms, Controls, Graphics, Dialogs, Menus,
   ActnList, ComCtrls, ExtDlgs, StdCtrls, ExtCtrls, TAGraph, TASources, TASeries,
-  TACustomSource, TATools, TAChartUtils, TACustomSeries, Types, lcvtypes,
-  unitDFT, TADrawUtils;
+  TACustomSource, TATools, TAChartUtils, TACustomSeries, Types, lcvconsts,
+  lcvtypes, unitDFT, TADrawUtils;
 
 type
 
   { TFormMain }
 
   TFormMain = class(TForm)
+    ActionUserManualLocal: TAction;
     ActionChartProperties: TAction;
     ActionUserManual: TAction;
     ActionSaveChartImageAs: TAction;
@@ -53,6 +54,7 @@ type
     LCSrcData: TListChartSource;
     MainMenu: TMainMenu;
     MenuFile: TMenuItem;
+    MenuItemUserManualLocal: TMenuItem;
     MenuItemChartProperties: TMenuItem;
     MenuItemUserManual: TMenuItem;
     MenuItemSavePNG: TMenuItem;
@@ -119,13 +121,16 @@ type
     procedure ActionShowModelExecute(Sender: TObject);
     procedure ActionStopExecute(Sender: TObject);
     procedure ActionUserManualExecute(Sender: TObject);
+    procedure ActionUserManualLocalExecute(Sender: TObject);
     procedure ChartMouseEnter(Sender: TObject);
     procedure ChartMouseLeave(Sender: TObject);
     procedure ChartMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure ChartToolsetDataPointClickTool1PointClick(ATool: TChartTool; APoint: TPoint);
     procedure ChartToolsetDataPointClickTool2PointClick(ATool: TChartTool; APoint: TPoint);
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure UDFSrcModelFoldedGetChartDataItem(ASource: TUserDefinedChartSource; AIndex: Integer; var AItem: TChartDataItem);
     procedure UDFSrcModelGetChartDataItem(ASource: TUserDefinedChartSource; AIndex: Integer; var AItem: TChartDataItem);
   private
@@ -188,7 +193,7 @@ uses
   lclintf, math, guiutils, unitPhaseDialog,
   unitFitParamDialog, unitDFTparamDialog, unitDFTdialog, unitTableDialog,
   unitModelInfoDialog, floattextform, unitFormChartprops, unitAbout, dftThread,
-  dataio, sortutils, formatutils, miscutils, fitproc;
+  dataio, sortutils, formatutils, miscutils, fitproc, settings;
 
 { TFormMain }
 
@@ -196,6 +201,25 @@ procedure TFormMain.FormCreate(Sender: TObject);
 begin
   ToolBar.Images := ImageList;
   CloseFile;
+  try
+    LoadFormPosition(Self);
+  except
+    // nothing
+  end;
+end;
+
+procedure TFormMain.FormDestroy(Sender: TObject);
+begin
+  //
+end;
+
+procedure TFormMain.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+begin
+  try
+    SaveFormPosition(Self);
+  except
+    // nothing;
+  end;
 end;
 
 procedure TFormMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -205,6 +229,7 @@ end;
 
 procedure TFormMain.ActionExitExecute(Sender: TObject);
 begin
+  CloseFile;
   Close;
 end;
 
@@ -381,7 +406,17 @@ end;
 
 procedure TFormMain.ActionUserManualExecute(Sender: TObject);
 begin
-  OpenURL('https://github.com/mpyat2/LightCurveViewer/blob/main/doc/LightCurveViewer.pdf');
+  if not OpenURL(defRemoteManual) then
+    ShowMessage('Cannot open ' + defRemoteManual);
+end;
+
+procedure TFormMain.ActionUserManualLocalExecute(Sender: TObject);
+var
+  DocName: string;
+begin
+  DocName := ExtractFilePath(ParamStr(0)) + defLocalManual;
+  if not OpenDocument(DocName) then
+    ShowMessage('Cannot open ' + DocName);
 end;
 
 procedure TFormMain.ActionAboutExecute(Sender: TObject);
@@ -419,29 +454,6 @@ begin
   Chart.CopyToClipboard(TBitmap);
 end;
 
-//procedure TFormMain.ActionDayColorExecute(Sender: TObject);
-//var
-//  PointColors: array[0..6] of TColor = (clRed, clLime, clYellow, clBlue, clFuchsia, clAqua, clPurple);
-//  I, N: Integer;
-//begin
-//  if LCSrcData.Count > 0 then begin
-//    if LCSrcData.Item[0]^.Color = ChartSeriesData.SeriesColor then begin
-//      N := 0;
-//      for I := 0 to LCSrcData.Count - 1 do begin
-//        LCSrcData.Item[0]^.Color := PointColors[N];
-//        Inc(N);
-//        if N > Length(PointColors) - 1 then
-//          N := 0;
-//      end;
-//    end
-//    else begin
-//      for I := 0 to LCSrcData.Count - 1 do begin
-//        LCSrcData.Item[0]^.Color := ChartSeriesData.SeriesColor;
-//      end;
-//    end;
-//  end;
-//end;
-
 procedure TFormMain.ActionSaveChartImageAsExecute(Sender: TObject);
 begin
   if SavePictureDialog.InitialDir = '' then
@@ -473,6 +485,7 @@ begin
      (AAction = ActionExit) or
      (AAction = ActionAbout) or
      (AAction = ActionUserManual) or
+     (AAction = ActionUserManualLocal) or
      (AAction = ActionCopyChartImage) or
      (AAction = ActionSaveChartImageAs)
   then begin
@@ -1319,7 +1332,7 @@ begin
   StatusBar.Panels[2].Text := '';
   PanelCalculatingMessage.Visible := False;
   if Self.WindowState = wsMinimized then
-    Application.Restore;
+    Self.WindowState := wsNormal;
 end;
 
 procedure TFormMain.DoDCDFT(DCDFTparameters: TDCDFTparameters);
