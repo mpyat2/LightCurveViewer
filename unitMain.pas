@@ -1331,8 +1331,10 @@ begin
   Chart.Enabled := True;
   StatusBar.Panels[2].Text := '';
   PanelCalculatingMessage.Visible := False;
-  if Self.WindowState = wsMinimized then
-    Self.WindowState := wsNormal;
+  if Self.WindowState = wsMinimized then begin
+    //Self.WindowState := wsNormal;
+    Application.Restore;
+  end;
 end;
 
 procedure TFormMain.DoDCDFT(DCDFTparameters: TDCDFTparameters);

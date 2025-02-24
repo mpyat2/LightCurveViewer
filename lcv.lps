@@ -3,7 +3,7 @@
   <ProjectSession>
     <PathDelim Value="\"/>
     <Version Value="12"/>
-    <BuildModes Active="MemoryLeakCheck"/>
+    <BuildModes Active="NoDebug"/>
     <Units>
       <Unit>
         <Filename Value="lcv.lpr"/>
@@ -18,9 +18,10 @@
         <ComponentName Value="FormMain"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="208"/>
-        <CursorPos X="15" Y="219"/>
+        <TopLine Value="1305"/>
+        <CursorPos X="18" Y="1335"/>
         <UsageCount Value="203"/>
         <Bookmarks Count="2">
           <Item0 Y="213" ID="2"/>
@@ -222,7 +223,6 @@
       <Unit>
         <Filename Value="settings.pas"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="3"/>
         <TopLine Value="39"/>
         <CursorPos Y="55"/>
@@ -230,10 +230,13 @@
         <Loaded Value="True"/>
       </Unit>
     </Units>
-    <JumpHistory>
+    <JumpHistory HistoryIndex="1">
       <Position>
-        <Filename Value="settings.pas"/>
-        <Caret Line="54" TopLine="36"/>
+        <Filename Value="unitMain.pas"/>
+        <Caret Line="219" TopLine="208"/>
+      </Position>
+      <Position>
+        <Filename Value="unitMain.pas"/>
       </Position>
     </JumpHistory>
     <RunParams>
