@@ -133,6 +133,8 @@ type
     FFileName: string;
     FObjectName: string;
     FChartSubtitle: string;
+    FChartXtitle: string;
+    FChartYtitle: string;
     FPeriodogramFirstRun: Boolean;
     FFitFormula: string;
     FFitInfo: string;
@@ -459,7 +461,7 @@ end;
 
 procedure TFormMain.ActionChartPropertiesExecute(Sender: TObject);
 begin
-  if ChartProperties(Chart, FObjectName) then begin
+  if ChartProperties(Chart, FObjectName, FChartXtitle, FChartYtitle) then begin
     UpdateTitle;
     SaveDataSettings;
   end;
@@ -534,16 +536,41 @@ begin
 end;
 
 procedure TFormMain.UpdateTitle;
+const
+  defCaption = 'LCV';
 begin
-  Caption := 'LCV';
-  Chart.Title.Text.Text := 'LCV';
   if FFileName <> '' then begin
-    Caption := ExtractFileName(FFileName) + ' - ' + Caption;
+    Caption := ExtractFileName(FFileName) + ' - ' + defCaption;
+  end
+  else begin
+    Caption := defCaption;
+  end;
+
+  if FObjectName <> '' then begin
     if FChartSubtitle = '' then
       Chart.Title.Text.Text := FObjectName + ^M^J + ' '
     else
       Chart.Title.Text.Text := FObjectName + ^M^J + FChartSubtitle;
+  end
+  else begin
+    Chart.Title.Text.Text := defCaption;
   end;
+
+  Chart.AxisList[0].Title.Caption := FChartYtitle;
+  Chart.AxisList[0].Title.Visible := FChartYtitle <> '';
+
+  if FChartXtitle <> '' then begin
+    if ChartSeriesData.Source = LCSrcFoldedData then begin
+      Chart.AxisList[1].Title.Caption := 'Phase (' + FChartXtitle + ')';
+    end
+    else begin
+      Chart.AxisList[1].Title.Caption := FChartXtitle;
+    end;
+  end
+  else begin
+    Chart.AxisList[1].Title.Caption := '';
+  end;
+  Chart.AxisList[1].Title.Visible := FChartXtitle <> '';
 end;
 
 procedure TFormMain.UDFSrcModelGetChartDataItem(
@@ -676,6 +703,8 @@ begin
   FFileName := '';
   FObjectName := '';
   FChartSubtitle := '';
+  FChartXtitle := '';
+  FChartYtitle := '';
   UpdateTitle;
   FFitFormula := '';
   FFitInfo := '';
@@ -739,12 +768,12 @@ begin
 
   FFileName := AFileName;
   FObjectName := TempObjectName;
-  UpdateTitle;
   unitPhaseDialog.SetCurrentEpoch((MaxValue(X) + MinValue(X)) / 2.0);
   for I := 0 to Length(X) - 1 do begin
     LCSrcData.Add(X[I], Y[I]);
   end;
   LoadDataSettings;
+  UpdateTitle;
   PlotData;
 end;
 
@@ -826,8 +855,8 @@ begin
   Ini.WriteInteger(Section, 'ModelColor', ChartSeriesModel.LinePen.Color);
   Ini.WriteInteger(Section, 'ModelUpLimitColor', ChartSeriesModelUpLimit.LinePen.Color);
   Ini.WriteInteger(Section, 'ModelDownLimitColor', ChartSeriesModelDownLimit.LinePen.Color);
-  Ini.WriteString(Section, 'XTitle', Chart.AxisList[1].Title.Caption);
-  Ini.WriteString(Section, 'YTitle', Chart.AxisList[0].Title.Caption);
+  Ini.WriteString(Section, 'XTitle', FChartXtitle);
+  Ini.WriteString(Section, 'YTitle', FChartYtitle);
   Ini.WriteString(Section, 'Object', FObjectName);
 end;
 
@@ -839,8 +868,8 @@ begin
   ChartSeriesModel.LinePen.Color := TColor(Ini.ReadInteger('SETTINGS', 'ModelColor', clLime));
   ChartSeriesModelUpLimit.LinePen.Color := TColor(Ini.ReadInteger('SETTINGS', 'ModelUpLimitColor', clRed));
   ChartSeriesModelUpLimit.LinePen.Color := TColor(Ini.ReadInteger('SETTINGS', 'ModelDownLimitColor', clRed));
-  Chart.AxisList[1].Title.Caption := Ini.ReadString(Section, 'XTitle', '');
-  Chart.AxisList[0].Title.Caption := Ini.ReadString(Section, 'YTitle', '');
+  FChartXtitle := Ini.ReadString(Section, 'XTitle', '');
+  FChartYtitle := Ini.ReadString(Section, 'YTitle', '');
   FObjectName := Ini.ReadString(Section, 'Object', FObjectName);
 end;
 
@@ -852,15 +881,16 @@ begin
     StatusBar.Panels[0].Text := '';
     StatusBar.Panels[1].Text := '';
     FChartSubtitle := '';
-    UpdateTitle;
     ChartSeriesData.Source := nil;
     ChartSeriesModelToNil;
+    UpdateTitle;
     SourceExtent := LCSrcData.Extent;
     SetAxisBoundaries(SourceExtent.coords[1], SourceExtent.coords[3], SourceExtent.coords[2], SourceExtent.coords[4]);
     ChartSeriesData.Source := LCSrcData;
     if UDFSrcModel.Count > 0 then begin
       ChartSeriesModelToModel;
     end;
+    UpdateTitle;
   end;
 end;
 

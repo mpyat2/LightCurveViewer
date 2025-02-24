@@ -44,15 +44,12 @@ type
     FChartSeriesModel: TLineSeries;
     FChartSeriesModelUpLimit: TLineSeries;
     FChartSeriesModelDownLimit: TLineSeries;
-    FXAxis: TChartAxis;
-    FYAxis: TChartAxis;
-    FObjectName: string;
     procedure InitProps;
   public
 
   end;
 
-function ChartProperties(Chart: TChart; var ObjectName: string): Boolean;
+function ChartProperties(Chart: TChart; var ObjectName, ChartXtitle, ChartYtitle: string): Boolean;
 
 implementation
 
@@ -61,18 +58,22 @@ implementation
 uses
   guiutils;
 
-function ChartProperties(Chart: TChart; var ObjectName: string): Boolean;
+function ChartProperties(Chart: TChart; var ObjectName, ChartXtitle, ChartYtitle: string): Boolean;
 var
   F: TFormChartProperties;
 begin
   F := TFormChartProperties.Create(Application);
   try
     F.FChart := Chart;
-    F.FObjectName := ObjectName;
+    F.EditObjectName.Text := ObjectName;
+    F.EditXtitle.Text := ChartXtitle;
+    F.EditYtitle.Text := ChartYtitle;
     F.InitProps;
     Result := F.ShowModal = mrOk;
     if Result then
-      ObjectName := F.FObjectName;
+      ObjectName := F.EditObjectName.Text;
+      ChartXtitle := F.EditXtitle.Text;
+      ChartYtitle := F.EditYtitle.Text;
   finally
     FreeAndNil(F);
   end;
@@ -118,11 +119,6 @@ begin
   if (FChartSeriesModelUpLimit <> nil) and (FChartSeriesModelDownLimit <> nil) then begin
     PanelModelUpDownColor.Color := FChartSeriesModelUpLimit.LinePen.Color;
   end;
-  FXAxis := FChart.AxisList[1];
-  FYAxis := FChart.AxisList[0];
-  EditXTitle.Text := FXAxis.Title.Caption;
-  EditYTitle.Text := FYAxis.Title.Caption;
-  EditObjectName.Text := FObjectName;
 end;
 
 procedure TFormChartProperties.ButtonDataColorClick(Sender: TObject);
@@ -157,11 +153,6 @@ begin
   FChartSeriesModel.LinePen.Color := PanelModelColor.Color;
   FChartSeriesModelUpLimit.LinePen.Color := PanelModelUpDownColor.Color;
   FChartSeriesModelDownLimit.LinePen.Color := FChartSeriesModelUpLimit.LinePen.Color;
-  FXAxis.Title.Caption := EditXTitle.Text;
-  FYAxis.Title.Caption := EditYTitle.Text;
-  FXAxis.Title.Visible := FXAxis.Title.Caption <> '';
-  FYAxis.Title.Visible := FYAxis.Title.Caption <> '';
-  FObjectName := EditObjectName.Text;
   ModalResult := mrOk;
 end;
 
