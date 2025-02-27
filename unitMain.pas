@@ -17,6 +17,7 @@ type
   { TFormMain }
 
   TFormMain = class(TForm)
+    ActionLogicalExtent: TAction;
     ActionUserManualLocal: TAction;
     ActionChartProperties: TAction;
     ActionUserManual: TAction;
@@ -54,6 +55,8 @@ type
     LCSrcData: TListChartSource;
     MainMenu: TMainMenu;
     MenuFile: TMenuItem;
+    MenuItemChartExtent: TMenuItem;
+    MenuItemExtent: TMenuItem;
     MenuItemUserManualLocal: TMenuItem;
     MenuItemChartProperties: TMenuItem;
     MenuItemUserManual: TMenuItem;
@@ -86,6 +89,7 @@ type
     Separator3: TMenuItem;
     Separator4: TMenuItem;
     Separator5: TMenuItem;
+    Separator6: TMenuItem;
     StatusBar: TStatusBar;
     ToolBar: TToolBar;
     ToolButton1: TToolButton;
@@ -106,6 +110,7 @@ type
     procedure ActionListUpdate(AAction: TBasicAction; var Handled: Boolean);
     procedure ActionAboutExecute(Sender: TObject);
     procedure ActionInvertedYExecute(Sender: TObject);
+    procedure ActionLogicalExtentExecute(Sender: TObject);
     procedure ActionModelInfoExecute(Sender: TObject);
     procedure ActionObservationsExecute(Sender: TObject);
     procedure ActionOpenExecute(Sender: TObject);
@@ -192,8 +197,9 @@ implementation
 uses
   lclintf, math, guiutils, unitPhaseDialog,
   unitFitParamDialog, unitDFTparamDialog, unitDFTdialog, unitTableDialog,
-  unitModelInfoDialog, floattextform, unitFormChartprops, unitAbout, dftThread,
-  dataio, sortutils, formatutils, miscutils, fitproc, settings;
+  unitModelInfoDialog, floattextform, unitFormChartprops, unitGetExtent,
+  unitAbout, dftThread, dataio, sortutils, formatutils, miscutils, fitproc,
+  settings;
 
 { TFormMain }
 
@@ -404,6 +410,16 @@ begin
   SaveDataSettings;
 end;
 
+procedure TFormMain.ActionLogicalExtentExecute(Sender: TObject);
+var
+  Extent: TDoubleRect;
+begin
+  Extent := Chart.LogicalExtent;
+  if GetExtent(Extent) then begin
+    Chart.LogicalExtent := Extent;
+  end;
+end;
+
 procedure TFormMain.ActionUserManualExecute(Sender: TObject);
 begin
   if not OpenURL(defRemoteManual) then
@@ -485,9 +501,7 @@ begin
      (AAction = ActionExit) or
      (AAction = ActionAbout) or
      (AAction = ActionUserManual) or
-     (AAction = ActionUserManualLocal) or
-     (AAction = ActionCopyChartImage) or
-     (AAction = ActionSaveChartImageAs)
+     (AAction = ActionUserManualLocal)
   then begin
     (AAction as TAction).Enabled := not FCalculationInProgress;
   end
@@ -495,6 +509,18 @@ begin
   if AAction = ActionInvertedY then begin
     (AAction as TAction).Enabled := (LCSrcData.Count > 0) and not FCalculationInProgress;
     (AAction as TAction).Checked := Chart.AxisList[0].Inverted;
+  end
+  else
+  if AAction = ActionLogicalExtent then begin
+    (AAction as TAction).Enabled := (LCSrcData.Count > 0) and not FCalculationInProgress;
+  end
+  else
+  if AAction = ActionSaveChartImageAs then begin
+    (AAction as TAction).Enabled := (LCSrcData.Count > 0) and not FCalculationInProgress;
+  end
+  else
+  if AAction = ActionCopyChartImage then begin
+    (AAction as TAction).Enabled := (LCSrcData.Count > 0) and not FCalculationInProgress;
   end
   else
   if AAction = ActionChartProperties then begin

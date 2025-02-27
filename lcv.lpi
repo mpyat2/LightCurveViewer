@@ -18,7 +18,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <RevisionNr Value="1"/>
-      <BuildNr Value="109"/>
+      <BuildNr Value="110"/>
     </VersionInfo>
     <BuildModes>
       <Item Name="Default" Default="True"/>
@@ -233,6 +233,13 @@
       <Unit>
         <Filename Value="settings.pas"/>
         <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="unitgetextent.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormGetExtent"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="unitGetExtent"/>
       </Unit>
     </Units>
   </ProjectOptions>

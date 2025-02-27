@@ -235,6 +235,9 @@ object FormMain: TFormMain
       object MenuItemChartProperties: TMenuItem
         Action = ActionChartProperties
       end
+      object MenuItemChartExtent: TMenuItem
+        Action = ActionLogicalExtent
+      end
     end
     object MenuAnalyses: TMenuItem
       Caption = '&Analyses'
@@ -380,6 +383,11 @@ object FormMain: TFormMain
       Caption = 'User Manula (Local)...'
       OnExecute = ActionUserManualLocalExecute
     end
+    object ActionLogicalExtent: TAction
+      Category = 'View'
+      Caption = 'Extent...'
+      OnExecute = ActionLogicalExtentExecute
+    end
   end
   object OpenDialog: TOpenDialog
     Title = ''
@@ -471,6 +479,13 @@ object FormMain: TFormMain
     end
     object MenuItemSavePNG: TMenuItem
       Action = ActionSaveChartImageAs
+    end
+    object Separator6: TMenuItem
+      Caption = '-'
+    end
+    object MenuItemExtent: TMenuItem
+      Action = ActionLogicalExtent
+      Caption = 'Chart Extent...'
     end
   end
   object UDFSrcModel: TUserDefinedChartSource
