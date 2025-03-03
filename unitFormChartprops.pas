@@ -151,7 +151,7 @@ procedure TFormChartProperties.ButtonOKClick(Sender: TObject);
 begin
   ModalResult := mrNone;
   FChartSeriesData.Pointer.Brush.Color := PanelDataColor.Color;
-  FChartSeriesData.Pointer.Pen.Color := FChartSeriesData.Pointer.Brush.Color;
+  //FChartSeriesData.Pointer.Pen.Color := FChartSeriesData.Pointer.Brush.Color;
   FChartSeriesModel.LinePen.Color := PanelModelColor.Color;
   FChartSeriesModelUpLimit.LinePen.Color := PanelModelUpDownColor.Color;
   FChartSeriesModelDownLimit.LinePen.Color := FChartSeriesModelUpLimit.LinePen.Color;

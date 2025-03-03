@@ -1,7 +1,7 @@
 object FormMain: TFormMain
-  Left = 457
+  Left = 522
   Height = 600
-  Top = 202
+  Top = 207
   Width = 1000
   Caption = 'LCV'
   ClientHeight = 600
@@ -73,16 +73,16 @@ object FormMain: TFormMain
     OnMouseLeave = ChartMouseLeave
     OnMouseMove = ChartMouseMove
     object ChartSeriesData: TLineSeries
-      LinePen.Color = clDefault
+      LinePen.Color = clNone
       LineType = ltNone
       Marks.Format = '%2:s'
       Marks.LinkPen.Color = clBlack
       Marks.Style = smsLabel
       Pointer.Brush.Color = clPurple
-      Pointer.HorizSize = 2
-      Pointer.Pen.Color = clPurple
+      Pointer.HorizSize = 3
+      Pointer.Pen.Color = clNone
       Pointer.Style = psCircle
-      Pointer.VertSize = 2
+      Pointer.VertSize = 3
       Pointer.Visible = True
       ShowPoints = True
     end
@@ -122,42 +122,59 @@ object FormMain: TFormMain
     ParentShowHint = False
     ShowHint = True
     TabOrder = 2
-    object ToolButton1: TToolButton
+    object ToolButtonOpen: TToolButton
       Left = 1
       Top = 2
       Action = ActionOpen
     end
-    object ToolButton2: TToolButton
+    object ToolButtonDiv1: TToolButton
       Left = 24
       Height = 22
       Top = 2
-      Caption = 'ToolButton2'
+      Caption = 'ToolButtonDiv1'
       Style = tbsDivider
     end
-    object ToolButton3: TToolButton
+    object ToolButtonRawData: TToolButton
       Left = 29
       Top = 2
       Action = ActionRawData
     end
-    object ToolButton4: TToolButton
+    object ToolButtonPhasePlot: TToolButton
       Left = 52
       Top = 2
       Action = ActionPhasePlotSimple
     end
-    object ToolButton5: TToolButton
+    object ToolButtonDiv2: TToolButton
       Left = 75
+      Height = 22
+      Top = 2
+      Caption = 'ToolButtonDiv2'
+      Style = tbsDivider
+    end
+    object ToolButtonPhasePlotNew: TToolButton
+      Left = 80
       Top = 2
       Action = ActionPhasePlot
     end
-    object ToolButton6: TToolButton
-      Left = 98
+    object ToolButtonPeriodogram: TToolButton
+      Left = 103
+      Top = 2
+      Action = ActionPeriodogram
+    end
+    object ToolButtonPolyFit: TToolButton
+      Left = 126
+      Top = 2
+      Action = ActionPolyFit
+    end
+    object ToolButtonDiv3: TToolButton
+      Left = 149
       Height = 22
       Top = 2
-      Caption = 'ToolButton6'
+      Caption = 'ToolButtonDiv3'
       Style = tbsDivider
     end
-    object ToolButton7: TToolButton
-      Left = 103
+    object ToolButtonStop: TToolButton
+      Left = 154
       Top = 2
       Action = ActionStop
     end
@@ -199,35 +216,26 @@ object FormMain: TFormMain
     end
     object MenuView: TMenuItem
       Caption = '&View'
-      object MenuItemInvertedY: TMenuItem
-        Action = ActionInvertedY
-      end
       object MenuItemRawData: TMenuItem
         Action = ActionRawData
       end
       object MenuItemPhasePlot: TMenuItem
-        Action = ActionPhasePlot
-      end
-      object MenuItemObservations: TMenuItem
-        Action = ActionObservations
+        Action = ActionPhasePlotSimple
       end
       object Separator1: TMenuItem
         Caption = '-'
       end
-      object MenuItemApproximationInfo: TMenuItem
-        Action = ActionModelInfo
+      object MenuItemDayByDayColor: TMenuItem
+        Action = ActionDayByDayColor
       end
-      object Separator3: TMenuItem
-        Caption = '-'
+      object MenuItemShowData: TMenuItem
+        Action = ActionShowData
       end
-      object MenuItemShowSeries: TMenuItem
-        Caption = 'Show Series'
-        object MenuItemShowData: TMenuItem
-          Action = ActionShowData
-        end
-        object MenuItemShowModel: TMenuItem
-          Action = ActionShowModel
-        end
+      object MenuItemShowModel: TMenuItem
+        Action = ActionShowModel
+      end
+      object MenuItemInvertedY: TMenuItem
+        Action = ActionInvertedY
       end
       object Separator5: TMenuItem
         Caption = '-'
@@ -238,14 +246,32 @@ object FormMain: TFormMain
       object MenuItemChartExtent: TMenuItem
         Action = ActionLogicalExtent
       end
+      object Separator3: TMenuItem
+        Caption = '-'
+      end
+      object MenuItemObservations: TMenuItem
+        Action = ActionObservations
+      end
     end
     object MenuAnalyses: TMenuItem
       Caption = '&Analyses'
+      object MenuItemPhasePlotNew: TMenuItem
+        Action = ActionPhasePlot
+      end
+      object Separator7: TMenuItem
+        Caption = '-'
+      end
       object MenuItemPeriodogram: TMenuItem
         Action = ActionPeriodogram
       end
+      object Separator8: TMenuItem
+        Caption = '-'
+      end
       object MenuItemPolyFit: TMenuItem
         Action = ActionPolyFit
+      end
+      object MenuItemModelInfo: TMenuItem
+        Action = ActionModelInfo
       end
     end
     object MenuHelp: TMenuItem
@@ -290,15 +316,15 @@ object FormMain: TFormMain
       OnExecute = ActionInvertedYExecute
     end
     object ActionPhasePlot: TAction
-      Category = 'View'
-      Caption = '&Phase Plot...'
+      Category = 'Tools'
+      Caption = 'P&hase Plot...'
       Hint = 'Create New Phase Plot'
       ImageIndex = 3
       OnExecute = ActionPhasePlotExecute
     end
     object ActionPhasePlotSimple: TAction
       Category = 'View'
-      Caption = 'P&hase Plot'
+      Caption = '&Phase Plot'
       Hint = 'Show Current Phase Plot'
       ImageIndex = 2
       OnExecute = ActionPhasePlotSimpleExecute
@@ -313,16 +339,18 @@ object FormMain: TFormMain
     object ActionPeriodogram: TAction
       Category = 'Tools'
       Caption = '&Periodogram...'
+      ImageIndex = 5
       OnExecute = ActionPeriodogramExecute
     end
     object ActionPolyFit: TAction
       Category = 'Tools'
       Caption = 'Polynomial &Approximation...'
+      ImageIndex = 6
       OnExecute = ActionPolyFitExecute
     end
     object ActionModelInfo: TAction
-      Category = 'View'
-      Caption = 'Approximation Info...'
+      Category = 'Tools'
+      Caption = 'Approximation &Info...'
       Hint = 'Show Approximation Info'
       OnExecute = ActionModelInfoExecute
     end
@@ -385,8 +413,13 @@ object FormMain: TFormMain
     end
     object ActionLogicalExtent: TAction
       Category = 'View'
-      Caption = 'Extent...'
+      Caption = 'Chart Extent...'
       OnExecute = ActionLogicalExtentExecute
+    end
+    object ActionDayByDayColor: TAction
+      Category = 'View'
+      Caption = 'Day-by-Day Color'
+      OnExecute = ActionDayByDayColorExecute
     end
   end
   object OpenDialog: TOpenDialog
@@ -409,37 +442,40 @@ object FormMain: TFormMain
     Left = 79
     Top = 240
     Bitmap = {
-      4C7A050000001000000010000000B90300000000000078DAED97596C4C6114C7
-      2D8FC412CB93A76A9496AA04559528E54584A41534423B4204D15823F6B57652
-      6DA96EA6B1B6528DE219451041A9BD66E6B6D399CE1DD565684D3B83BF73C6BD
-      7533EE35D3D6D28A497EF9BE7BCEF97FCBF9CE77271740177472A28E9BCCF30A
-      6DC27C82DB39F95542749690E8AF5E57240AE7DE0232A7C52FD878C751135750
-      25CC25665FB07A88CDB708B1791661429AC1ACD4C75F12851C8B1B996617D22B
-      9A916672E2A8D189236F1A71F07503F6BD6A40D28BF7D8F9CC816DA5F59879BE
-      4250EAE716588584CB227457ECD05DB623A10511F14C9188051E6C9E36EEA2CD
-      3D2BDF5A19996648627D4C9E5960DF693BFC26A9A4D13DFA50D954D64F3B5B2E
-      E8AE8A3FC49C12815CDB17E8891CEB67645B3E218BC8A87423FE8AAD326CBBD0
-      C793FF2C836565712D4E98DD48278E95BB3CA49A9A9142241B9B28174E1C260E
-      967DC481D71F31E38CF9A1BCFF891986775B1F39C8DE88FDC4DE970DD843EC7E
-      FE01BB881D4FDF633BB1ADD4812D4FEAB1F9B103D199A6AB2DE79F696C60DBA6
-      927A6C2CA9C386477558FFB016EB1ED460ED835AACB95F83D5C4CA7BEF9078AF
-      1A4B6FDA1191FAE688AC9F9C6D7426DEADC60A62F99DB75876DB8EA5C4925B22
-      16DF14B1A8D8868537AAA0BB5E85F86B56C4145660F8A1175365FD98E432F794
-      5C936BB2DED8C2A49306C2E88A92DA6F7CEB87A794B9E5DCFD6DE887F6FC3A9A
-      3E70508D66AC9A4FA997FD6A715ABEDFA5F78ED3F2A9E9D5E6D1F27514BD5ABC
-      56CE943E2DBDBFE7E14BAF76164A1FEB5B5B734ADFAFA8FFF6F22FDD7F7F73EF
-      4BFFB3DAF9D3FA9F8DE14BEF6B0D1D51DF9A77813F7A7FDFBFBEF46A67F12BFF
-      7F3AC3FD9F5E14D0AEF5B755CF3A6FDA72FFFD9D5FAB5EDAABFF7FFFFFDFFF8E
-      74FFD5BE09468C40DFA020CC1A3A14AB870DC32AEE8785C1E7F7CAE0C118489A
-      4CC245C00BB69D080CC400356D703042C85F41341147870CC1D8D050F460C817
-      CE36C957CEB12AF3B2D6426B0DD55A1F8D399263780CEAF797EDF49C4138D94F
-      29E946FDF1DC7EFF46FA6EA3B94751BF99F292CE3ECE0BEF8D9E93F999E68F94
-      F6ABE77849AB671BFBA4F9D2788C8000F496F20CDEAF622EBD3446AE44CB781C
-      43738D936C31C45AEE8784A0A762BD5DA53DC9B9CF55EE876325FB1A096F7D37
-      C5BCBCEE3CB27597FD7486BDD8CEB5416D6C6BD74FFD0879FD72FE8894B6E44F
-      717E4DAD3CBFE38AFD0CE09AE0DAA03C8469D58FA4B51202D14FA57E798C6622
-      95F7C83995721D21AF99B5640BD6A8CFFE5C57529CF7FDF1ACD97B5E35382F9C
-      5B3E1FE98C62E45C79F315FA90458A
+      4C7A0700000010000000100000001C0400000000000078DAED976B6C8C6914C7
+      2D1F77838DCB279FAA7169A94A2C8A8465252242D2CA2242CD8608A2718DB8EC
+      BAEC965DB7545BAA2DA6716D05517C760F22A5EE979A99B79DCE74DE41AB635B
+      D3CEE0EF9CF1BEF5E4F5BE33D34E31954EF2CFF3CC39E7F75CCE739E993C003A
+      A08D6BCC1E9B7DE62997348BC4EDB4A22A695CBE94162E6F2A96A5A3CF015587
+      E4F75873CD533DE34495349DF4FB71674029450E29A5D0218DCAB6D8453EF5B4
+      2CED77F89167F721A7A211D9362F7659BDD8F9AC1EDB9ED6E1DF2775487FF41A
+      9B1E78B0FE5E2DA61CAB90447EFA09A734E78C0CD359374C67DC98D32419A9AC
+      6219B3037205DA19275DFEA945CECA91D99674E6930BED12FB0EB911B6D24BEB
+      FD43B6978D677EE29172C9744EFE2CE6A00C14B8DEC34CDAEF7C877D8EB7C827
+      E556FA917AD65599B841EA1AC87FBEC5B1E4520DF6DAFDC821ED2EF70594656B
+      442629C3DA40B9F06207695BD91B6C7DFA06930FDB6FA9FB1F9D6B79F9D76D0F
+      D9EBF11F69CBE33A6C26FDF3F07FFC4DDA78FF353690D6DFF3E0CFBBB55877C7
+      837179B6734DE79F67AD63DBDAD25AAC297D85D5B75F61D5AD1AAC2CA9C68A92
+      1A2CBF598D65A425375E22EDC60B2CB8EC4652D6B39D2A3F769FD59B76FD0516
+      93165D7B8E8557DD58409A7F45C6BCCB32E65E72E18F8B55305DA842EA792792
+      4F5560C0F647E355FE978C32FF6F0536DF58B3B549BF1EB090ACBE314AFB511F
+      FBC332CBFC6AEEBEB5E883483ED1C6C7F6AA368CD5F389BCEAD78B33F27D295E
+      1B67E4D3E3F5E631F2450BAF176F9433D167C4877B1EA178BDB3107DCC37B7E6
+      445F6BD47FA4FA9EEE7FB8B90FC507AB9DAFCD071B23141F6A0DD1C837E7B720
+      1C3EDCDFDF50BCDE59B4E6FF4F5BB8FF938A63225A7F4B79E6B46AC9FD0F777E
+      A37A89946FBFFFEDF73F9AEEBFDE9B60E040FCDCB72FA6F6EB8765FDFB6329F7
+      131311F2BDD2BB377A129347F291A011DBF6C6C6A2871E1B178778F257901A48
+      BBFAF4C1D08404FCC822DF30B629BE728ED599975907AD35C1687D34E6208EE1
+      31A8DF5DB5D3F75C9297FD94928ED41FC1EDA737D2271BCD3D98FA8D94971CF6
+      715E786FF43D83BFD3FC2395FD9A395E61CD6C639F325F368F1113832E4A9EC1
+      FB15E6322B6314286A1A8F6368AEE18A2D99B482FBF1F1F84958EF0FCA9ED4DC
+      1788FBE158C5BE5C9196EF28CCCBEB2E245B27D54F67D899ED5C1BD4A63477FD
+      D44F52D7AFE68F94D992FC09E7D7D0CCF3DB23ECA707D704D706E521D1A87E14
+      D6499248DD74EA97C7682465F11E39A74AAE93D435334BB63883FAECCE75A5C4
+      69EF4F60CDDA79F5C479E1DCF2F9286794ACE6EA6BBDFF4B268C6EE7A3840F36
+      96C81B31D1C46BC78A84E77E6BF0DCB654EDEFFFB6C91BBD3FC4B749386F1923
+      DE680CAD4FE4455F30DE68FFA24F6F0D7A3695D79B4F1BAF17138C17ED463961
+      3E58BE43E53314DF16EA37127D00CD75FF72
     }
   end
   object ChartToolset: TChartToolset
@@ -485,7 +521,6 @@ object FormMain: TFormMain
     end
     object MenuItemExtent: TMenuItem
       Action = ActionLogicalExtent
-      Caption = 'Chart Extent...'
     end
   end
   object UDFSrcModel: TUserDefinedChartSource

@@ -238,6 +238,7 @@
         <Filename Value="unitgetextent.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FormGetExtent"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="unitGetExtent"/>
       </Unit>

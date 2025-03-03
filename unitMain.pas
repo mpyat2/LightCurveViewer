@@ -17,6 +17,7 @@ type
   { TFormMain }
 
   TFormMain = class(TForm)
+    ActionDayByDayColor: TAction;
     ActionLogicalExtent: TAction;
     ActionUserManualLocal: TAction;
     ActionChartProperties: TAction;
@@ -55,6 +56,11 @@ type
     LCSrcData: TListChartSource;
     MainMenu: TMainMenu;
     MenuFile: TMenuItem;
+    MenuItemPhasePlotNew: TMenuItem;
+    MenuItemModelInfo: TMenuItem;
+    MenuItemDayByDayColor: TMenuItem;
+    MenuItemShowModel: TMenuItem;
+    MenuItemShowData: TMenuItem;
     MenuItemChartExtent: TMenuItem;
     MenuItemExtent: TMenuItem;
     MenuItemUserManualLocal: TMenuItem;
@@ -62,13 +68,9 @@ type
     MenuItemUserManual: TMenuItem;
     MenuItemSavePNG: TMenuItem;
     MenuItemCopyChart: TMenuItem;
-    MenuItemShowData: TMenuItem;
-    MenuItemShowModel: TMenuItem;
-    MenuItemShowSeries: TMenuItem;
     MenuItemSaveVisible: TMenuItem;
     MenuItemOpen: TMenuItem;
     MenuItemPeriodogram: TMenuItem;
-    MenuItemApproximationInfo: TMenuItem;
     MenuHelp: TMenuItem;
     MenuItemAbout: TMenuItem;
     MenuItemObservations: TMenuItem;
@@ -90,15 +92,20 @@ type
     Separator4: TMenuItem;
     Separator5: TMenuItem;
     Separator6: TMenuItem;
+    Separator7: TMenuItem;
+    Separator8: TMenuItem;
     StatusBar: TStatusBar;
     ToolBar: TToolBar;
-    ToolButton1: TToolButton;
-    ToolButton2: TToolButton;
-    ToolButton3: TToolButton;
-    ToolButton4: TToolButton;
-    ToolButton5: TToolButton;
-    ToolButton6: TToolButton;
-    ToolButton7: TToolButton;
+    ToolButtonStop: TToolButton;
+    ToolButtonDiv3: TToolButton;
+    ToolButtonOpen: TToolButton;
+    ToolButtonDiv1: TToolButton;
+    ToolButtonRawData: TToolButton;
+    ToolButtonPhasePlot: TToolButton;
+    ToolButtonPolyFit: TToolButton;
+    ToolButtonDiv2: TToolButton;
+    ToolButtonPhasePlotNew: TToolButton;
+    ToolButtonPeriodogram: TToolButton;
     UDFSrcModel: TUserDefinedChartSource;
     UDFSrcModelUpLimit: TUserDefinedChartSource;
     UDFSrcModelDownLimit: TUserDefinedChartSource;
@@ -107,6 +114,7 @@ type
     UDFSrcModelFoldedDownLimit: TUserDefinedChartSource;
     procedure ActionChartPropertiesExecute(Sender: TObject);
     procedure ActionCopyChartImageExecute(Sender: TObject);
+    procedure ActionDayByDayColorExecute(Sender: TObject);
     procedure ActionListUpdate(AAction: TBasicAction; var Handled: Boolean);
     procedure ActionAboutExecute(Sender: TObject);
     procedure ActionInvertedYExecute(Sender: TObject);
@@ -377,7 +385,6 @@ begin
     end;
     SetLength(X1, N);
     SetLength(Y1, N);
-    //ShowTable(X1, Y1, 'X', 'Y');
     if SaveDialog.InitialDir = '' then
       SaveDialog.InitialDir := OpenDialog.InitialDir;
     SaveDialog.FileName := '';
@@ -408,6 +415,14 @@ procedure TFormMain.ActionInvertedYExecute(Sender: TObject);
 begin
   Chart.AxisList[0].Inverted := not Chart.AxisList[0].Inverted;
   SaveDataSettings;
+end;
+
+procedure TFormMain.ActionDayByDayColorExecute(Sender: TObject);
+begin
+  if ChartSeriesData.ColorEach = ceNone then
+    ChartSeriesData.ColorEach := cePoint
+  else
+    ChartSeriesData.ColorEach := ceNone;
 end;
 
 procedure TFormMain.ActionLogicalExtentExecute(Sender: TObject);
@@ -509,6 +524,11 @@ begin
   if AAction = ActionInvertedY then begin
     (AAction as TAction).Enabled := (LCSrcData.Count > 0) and not FCalculationInProgress;
     (AAction as TAction).Checked := Chart.AxisList[0].Inverted;
+  end
+  else
+  if AAction = ActionDayByDayColor then begin
+    (AAction as TAction).Enabled := (LCSrcData.Count > 0) and not FCalculationInProgress;
+    (AAction as TAction).Checked := ChartSeriesData.ColorEach <> ceNone;
   end
   else
   if AAction = ActionLogicalExtent then begin
@@ -761,6 +781,7 @@ begin
   //
   ClearFitAtPoints;
   //
+  ChartSeriesData.ColorEach := ceNone;
   ChartSeriesData.Active := True;
   ChartSeriesModel.Active := True;
   ChartSeriesModelUpLimit.Active := ChartSeriesModel.Active;
@@ -784,8 +805,9 @@ end;
 procedure TFormMain.OpenFile(const AFileName: string);
 var
   X, Y: TDoubleArray;
+  Xprev: Double;
   TempObjectName: string;
-  I: Integer;
+  N, I: Integer;
 begin
   CloseFile;
   try
@@ -808,9 +830,20 @@ begin
   FFileName := AFileName;
   FObjectName := TempObjectName;
   unitPhaseDialog.SetCurrentEpoch((MaxValue(X) + MinValue(X)) / 2.0);
+
+  // Assume X is a Julian Day: use the color scheme
+  N := 0;
+  Xprev := NaN;
   for I := 0 to Length(X) - 1 do begin
-    LCSrcData.Add(X[I], Y[I]);
+    if (I > 0) and (Int(X[I]) <> Int(Xprev)) then begin
+      Inc(N);
+      if N > Length(DayToDayColors) - 1 then
+        N := 0;
+    end;
+    LCSrcData.Add(X[I], Y[I], '', DayToDayColors[N]);
+    Xprev := X[I];
   end;
+
   LoadDataSettings;
   UpdateTitle;
   PlotData;
@@ -902,8 +935,9 @@ end;
 procedure TFormMain.LoadChartSettings(const Ini: TIniFile; const Section: string);
 begin
   Chart.AxisList[0].Inverted := Ini.ReadBool('SETTINGS', 'Yinverted', True);
+  ChartSeriesData.ColorEach := ceNone;
   ChartSeriesData.Pointer.Brush.Color := TColor(Ini.ReadInteger('SETTINGS', 'DataColor', clPurple));
-  ChartSeriesData.Pointer.Pen.Color := ChartSeriesData.Pointer.Brush.Color;
+  //ChartSeriesData.Pointer.Pen.Color := ChartSeriesData.Pointer.Brush.Color;
   ChartSeriesModel.LinePen.Color := TColor(Ini.ReadInteger('SETTINGS', 'ModelColor', clLime));
   ChartSeriesModelUpLimit.LinePen.Color := TColor(Ini.ReadInteger('SETTINGS', 'ModelUpLimitColor', clRed));
   ChartSeriesModelUpLimit.LinePen.Color := TColor(Ini.ReadInteger('SETTINGS', 'ModelDownLimitColor', clRed));
@@ -1018,6 +1052,8 @@ var
   I: Integer;
   Item: PChartDataItem;
   Period, Epoch, X, Y, Phase: Double;
+  PointColor: TChartColor;
+  PointLabel: string;
 begin
   SaveDataSettings;
   StatusBar.Panels[0].Text := '';
@@ -1035,9 +1071,12 @@ begin
       Item := LCSrcData.Item[I];
       X := Item^.X;
       Y := Item^.Y;
+      PointColor := Item^.Color;
+      //PointLabel := Item^.Color;
+      PointLabel := '';
       Phase := CalculatePhase(X, Period, Epoch);
-      LCSrcFoldedData.Add(Phase, Y);
-      LCSrcFoldedData.Add(Phase - 1.0, Y);
+      LCSrcFoldedData.Add(Phase, Y, PointLabel, PointColor);
+      LCSrcFoldedData.Add(Phase - 1.0, Y, PointLabel, PointColor);
     end;
     CalculateModelPhasePlot;
     PlotFoldedProc;
