@@ -39,6 +39,8 @@ type
     FParamOk: Boolean;
   end;
 
+function CalculateCycle(T, Period, Epoch: Double): Int64; inline;
+
 function CalculatePhase(T, Period, Epoch: Double): Double; inline;
 
 procedure PhasePlot(ApplyPhasePlotParamsProc: TApplyPhasePlotParams);
@@ -86,13 +88,17 @@ begin
   Result := CurrentPeriod;
 end;
 
+function CalculateCycle(T, Period, Epoch: Double): Int64; inline;
+begin
+  Result := Floor64((T - Epoch) / Period);
+end;
+
 function CalculatePhase(T, Period, Epoch: Double): Double; inline;
 var
-  N: Int64;
+  Cycle: Int64;
 begin
-  T := T - Epoch;
-  N := Floor64(T / Period);
-  Result := (T - Period * N) / Period;
+  Cycle := CalculateCycle(T, Period, Epoch);
+  Result := (T - Epoch - Period * Cycle) / Period;
 end;
 
 procedure PhasePlot(ApplyPhasePlotParamsProc: TApplyPhasePlotParams);

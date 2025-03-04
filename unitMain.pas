@@ -17,7 +17,7 @@ type
   { TFormMain }
 
   TFormMain = class(TForm)
-    ActionDayByDayColor: TAction;
+    ActionCycleByCycleColor: TAction;
     ActionLogicalExtent: TAction;
     ActionUserManualLocal: TAction;
     ActionChartProperties: TAction;
@@ -94,6 +94,7 @@ type
     Separator6: TMenuItem;
     Separator7: TMenuItem;
     Separator8: TMenuItem;
+    Separator9: TMenuItem;
     StatusBar: TStatusBar;
     ToolBar: TToolBar;
     ToolButtonStop: TToolButton;
@@ -114,7 +115,7 @@ type
     UDFSrcModelFoldedDownLimit: TUserDefinedChartSource;
     procedure ActionChartPropertiesExecute(Sender: TObject);
     procedure ActionCopyChartImageExecute(Sender: TObject);
-    procedure ActionDayByDayColorExecute(Sender: TObject);
+    procedure ActionCycleByCycleColorExecute(Sender: TObject);
     procedure ActionListUpdate(AAction: TBasicAction; var Handled: Boolean);
     procedure ActionAboutExecute(Sender: TObject);
     procedure ActionInvertedYExecute(Sender: TObject);
@@ -180,6 +181,7 @@ type
     procedure PlotFoldedSimple;
     procedure PlotFoldedProc;
     procedure CalculateModelPhasePlot;
+    procedure CalcFoldedData(Period, Epoch: Double; out AX, AY: TDoubleArray; out Colors: TColorArray);
     procedure CalcAndPlotFoldedProc;
     procedure SetAxisBoundaries(Xmin, Xmax, Ymin, Ymax: Double);
     procedure Periodogram;
@@ -417,7 +419,7 @@ begin
   SaveDataSettings;
 end;
 
-procedure TFormMain.ActionDayByDayColorExecute(Sender: TObject);
+procedure TFormMain.ActionCycleByCycleColorExecute(Sender: TObject);
 begin
   if ChartSeriesData.ColorEach = ceNone then
     ChartSeriesData.ColorEach := cePoint
@@ -526,8 +528,8 @@ begin
     (AAction as TAction).Checked := Chart.AxisList[0].Inverted;
   end
   else
-  if AAction = ActionDayByDayColor then begin
-    (AAction as TAction).Enabled := (LCSrcData.Count > 0) and not FCalculationInProgress;
+  if AAction = ActionCycleByCycleColor then begin
+    (AAction as TAction).Enabled := (ChartSeriesData.Source = LCSrcFoldedData) and not FCalculationInProgress;
     (AAction as TAction).Checked := ChartSeriesData.ColorEach <> ceNone;
   end
   else
@@ -805,9 +807,10 @@ end;
 procedure TFormMain.OpenFile(const AFileName: string);
 var
   X, Y: TDoubleArray;
-  Xprev: Double;
+  //Xprev: Double;
   TempObjectName: string;
-  N, I: Integer;
+  I: Integer;
+  //N: Integer;
 begin
   CloseFile;
   try
@@ -831,17 +834,21 @@ begin
   FObjectName := TempObjectName;
   unitPhaseDialog.SetCurrentEpoch((MaxValue(X) + MinValue(X)) / 2.0);
 
-  // Assume X is a Julian Day: use the color scheme
-  N := 0;
-  Xprev := NaN;
+  //// Assume X is a Julian Day: use the color scheme
+  //N := 0;
+  //Xprev := NaN;
+  //for I := 0 to Length(X) - 1 do begin
+  //  if (I > 0) and (Int(X[I]) <> Int(Xprev)) then begin
+  //    Inc(N);
+  //    if N > Length(CycleByCycleColors) - 1 then
+  //      N := 0;
+  //  end;
+  //  LCSrcData.Add(X[I], Y[I], '', CycleByCycleColors[N]);
+  //  Xprev := X[I];
+  //end;
+
   for I := 0 to Length(X) - 1 do begin
-    if (I > 0) and (Int(X[I]) <> Int(Xprev)) then begin
-      Inc(N);
-      if N > Length(DayToDayColors) - 1 then
-        N := 0;
-    end;
-    LCSrcData.Add(X[I], Y[I], '', DayToDayColors[N]);
-    Xprev := X[I];
+    LCSrcData.Add(X[I], Y[I]);
   end;
 
   LoadDataSettings;
@@ -1047,13 +1054,51 @@ begin
   //
 end;
 
+procedure TFormMain.CalcFoldedData(Period, Epoch: Double; out AX, AY: TDoubleArray; out Colors: TColorArray);
+var
+  Xdata, Ydata: TDoubleArray;
+  Item: PChartDataItem;
+  Phase: Double;
+  L, N, I: Integer;
+  Cycle, PrevCycle: Int64;
+begin
+  L := LCSrcData.Count;
+  SetLength(Xdata, L);
+  SetLength(Ydata, L);
+  for I := 0 to L - 1 do begin
+    Item := LCSrcData.Item[I];
+    Xdata[I] := Item^.X;
+    Ydata[I] := Item^.Y;
+  end;
+  SortDataPoints(Xdata, Ydata); // ensure the data is sorted
+
+  SetLength(AX, L);
+  SetLength(AY, L);
+  SetLength(Colors, L);
+
+  N := 0;
+  PrevCycle := 0;
+  for I := 0 to L - 1 do begin
+    Phase := CalculatePhase(Xdata[I], Period, Epoch);
+    AX[I] := Phase;
+    AY[I] := Ydata[I];
+    Cycle := CalculateCycle(Xdata[I], Period, Epoch);
+    if (I > 0) and (Cycle <> PrevCycle) then begin
+      Inc(N);
+      if N > Length(CycleByCycleColors) - 1 then
+        N := 0;
+    end;
+    Colors[I] := CycleByCycleColors[N];
+    PrevCycle := Cycle;
+  end;
+end;
+
 procedure TFormMain.CalcAndPlotFoldedProc;
 var
+  Xpoints, Ypoints: TDoubleArray;
+  Colors: TColorArray;
+  Period, Epoch: Double;
   I: Integer;
-  Item: PChartDataItem;
-  Period, Epoch, X, Y, Phase: Double;
-  PointColor: TChartColor;
-  PointLabel: string;
 begin
   SaveDataSettings;
   StatusBar.Panels[0].Text := '';
@@ -1067,17 +1112,12 @@ begin
     // Model (virtual sources)
     ClearUDFSrcModelFolded;
     //
-    for I := 0 to LCSrcData.Count - 1 do begin
-      Item := LCSrcData.Item[I];
-      X := Item^.X;
-      Y := Item^.Y;
-      PointColor := Item^.Color;
-      //PointLabel := Item^.Color;
-      PointLabel := '';
-      Phase := CalculatePhase(X, Period, Epoch);
-      LCSrcFoldedData.Add(Phase, Y, PointLabel, PointColor);
-      LCSrcFoldedData.Add(Phase - 1.0, Y, PointLabel, PointColor);
+    CalcFoldedData(Period, Epoch, Xpoints, Ypoints, Colors);
+    for I := 0 to Length(Xpoints) - 1 do begin
+      LCSrcFoldedData.Add(Xpoints[I], Ypoints[I], '', Colors[I]);
+      LCSrcFoldedData.Add(Xpoints[I] - 1.0, Ypoints[I], '', Colors[I]);
     end;
+    //LCSrcFoldedData.Sort;
     CalculateModelPhasePlot;
     PlotFoldedProc;
   end;

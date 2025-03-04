@@ -14,7 +14,7 @@ const
   defLocalManual  = 'doc/LightCurveViewer.pdf';
 
 const
-  DayToDayColors: array of TColor = (clBlack, clRed, clLime, clYellow, clBlue, clFuchsia, clAqua(*, clSkyBlue*));
+  CycleByCycleColors: array of TColor = (clBlack, clRed, clLime, clYellow, clBlue, clFuchsia, clAqua(*, clSkyBlue*));
 
 implementation
 

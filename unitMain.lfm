@@ -222,17 +222,20 @@ object FormMain: TFormMain
       object MenuItemPhasePlot: TMenuItem
         Action = ActionPhasePlotSimple
       end
+      object MenuItemDayByDayColor: TMenuItem
+        Action = ActionCycleByCycleColor
+      end
       object Separator1: TMenuItem
         Caption = '-'
-      end
-      object MenuItemDayByDayColor: TMenuItem
-        Action = ActionDayByDayColor
       end
       object MenuItemShowData: TMenuItem
         Action = ActionShowData
       end
       object MenuItemShowModel: TMenuItem
         Action = ActionShowModel
+      end
+      object Separator9: TMenuItem
+        Caption = '-'
       end
       object MenuItemInvertedY: TMenuItem
         Action = ActionInvertedY
@@ -416,10 +419,10 @@ object FormMain: TFormMain
       Caption = 'Chart Extent...'
       OnExecute = ActionLogicalExtentExecute
     end
-    object ActionDayByDayColor: TAction
+    object ActionCycleByCycleColor: TAction
       Category = 'View'
-      Caption = 'Day-by-Day Color'
-      OnExecute = ActionDayByDayColorExecute
+      Caption = 'Cycle-by-Cycle Color'
+      OnExecute = ActionCycleByCycleColorExecute
     end
   end
   object OpenDialog: TOpenDialog

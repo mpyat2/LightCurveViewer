@@ -7,10 +7,13 @@ unit lcvtypes;
 interface
 
 uses
-  typ; // NumLib types
+  typ, Graphics;
 
 type
   FitColumnType = (x, yFit, yErrors, yObserved);
+
+type
+  TColorArray = array of TColor;
 
 type
   TArbFloatArray = array of ArbFloat; // for compatibility with NumLib
