@@ -962,6 +962,7 @@ begin
     StatusBar.Panels[1].Text := '';
     FChartSubtitle := '';
     ChartSeriesData.Source := nil;
+    ChartSeriesData.ColorEach := ceNone;
     ChartSeriesModelToNil;
     UpdateTitle;
     SourceExtent := LCSrcData.Extent;
