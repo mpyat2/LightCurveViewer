@@ -10,7 +10,7 @@ uses
   Classes, SysUtils, IniFiles, Forms, Controls, Graphics, Dialogs, Menus,
   ActnList, ComCtrls, ExtDlgs, StdCtrls, ExtCtrls, TAGraph, TASources, TASeries,
   TACustomSource, TATools, TAChartUtils, TACustomSeries, Types, lcvconsts,
-  lcvtypes, unitDFT, TADrawUtils;
+  lcvtypes, unitDFT;
 
 type
 

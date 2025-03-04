@@ -20,8 +20,8 @@
         <ResourceBaseClass Value="Form"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="947"/>
-        <CursorPos X="32" Y="965"/>
+        <TopLine Value="206"/>
+        <CursorPos X="4" Y="13"/>
         <UsageCount Value="203"/>
         <Bookmarks Count="2">
           <Item0 Y="229" ID="2"/>
@@ -33,11 +33,10 @@
       <Unit>
         <Filename Value="dataio.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="7"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="50"/>
         <CursorPos X="21" Y="77"/>
         <UsageCount Value="203"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="unitPhaseDialog.pas"/>
@@ -45,11 +44,10 @@
         <ComponentName Value="FormPhaseDialog"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="67"/>
         <CursorPos X="24" Y="96"/>
         <UsageCount Value="202"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="unitDFTdialog.pas"/>
@@ -148,18 +146,16 @@
       <Unit>
         <Filename Value="sortutils.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="-1"/>
         <CursorPos Y="12"/>
         <UsageCount Value="116"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="lcvtypes.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="-1"/>
         <CursorPos X="16" Y="16"/>
         <UsageCount Value="116"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="miscutils.pas"/>
@@ -209,10 +205,9 @@
       <Unit>
         <Filename Value="lcvconsts.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="-1"/>
         <CursorPos X="21" Y="17"/>
         <UsageCount Value="31"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="settings.pas"/>
@@ -237,30 +232,20 @@
       <Unit>
         <Filename Value="C:\lazarus64\components\tachart\tacustomsource.pas"/>
         <UnitName Value="TACustomSource"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="307"/>
         <CursorPos X="15" Y="324"/>
         <UsageCount Value="11"/>
-        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus64\components\tachart\tadrawutils.pas"/>
+        <UnitName Value="TADrawUtils"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="178"/>
+        <UsageCount Value="10"/>
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="29">
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="1078" Column="10" TopLine="1063"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="4" Column="44"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="424" TopLine="437"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="342" Column="3" TopLine="340"/>
-      </Position>
       <Position>
         <Filename Value="unitMain.pas"/>
         <Caret Line="181" Column="15" TopLine="165"/>
@@ -361,7 +346,23 @@
       </Position>
       <Position>
         <Filename Value="unitMain.pas"/>
-        <Caret Line="965" Column="5" TopLine="949"/>
+        <Caret Line="965" Column="5" TopLine="947"/>
+      </Position>
+      <Position>
+        <Filename Value="unitMain.pas"/>
+        <Caret Line="966" Column="5" TopLine="948"/>
+      </Position>
+      <Position>
+        <Filename Value="unitMain.pas"/>
+        <Caret Line="965" Column="5" TopLine="947"/>
+      </Position>
+      <Position>
+        <Filename Value="unitMain.pas"/>
+        <Caret Line="966" Column="4" TopLine="947"/>
+      </Position>
+      <Position>
+        <Filename Value="unitMain.pas"/>
+        <Caret Line="13" Column="11"/>
       </Position>
     </JumpHistory>
     <RunParams>
