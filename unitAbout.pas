@@ -66,6 +66,7 @@ procedure TFormAbout.FormCreate(Sender: TObject);
 begin
   LabelVersion.Caption := '  ' + GetVersionString(ParamStr(0)) +
                           ' | FPC ' + {$I %FPCVERSION%} + ' ' + {$I %FPCTARGETOS%} +
+                          ' | LCL ' + Self.LCLVersion +
                           ' | ' + {$I %DATE%} + ' ' + {$I %TIME%};
   Memo1.Text :=
   ^M^J +

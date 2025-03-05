@@ -10,7 +10,7 @@ object FormAbout: TFormAbout
   ClientWidth = 513
   OnCreate = FormCreate
   Position = poMainFormCenter
-  LCLVersion = '3.2.0.0'
+  LCLVersion = '3.8.0.0'
   object Panel1: TPanel
     Left = 0
     Height = 289
@@ -48,7 +48,7 @@ object FormAbout: TFormAbout
     ClientWidth = 513
     TabOrder = 0
     object Button1: TButton
-      Left = 224
+      Left = 216
       Height = 25
       Top = 10
       Width = 75

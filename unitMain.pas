@@ -399,6 +399,7 @@ end;
 procedure TFormMain.ActionShowDataExecute(Sender: TObject);
 begin
   ChartSeriesData.Active := not ChartSeriesData.Active;
+  ActionList.UpdateAction(Sender as TAction); // Ubuntu bug (check state not always updated)? (GNOME)
 end;
 
 procedure TFormMain.ActionShowModelExecute(Sender: TObject);
@@ -406,6 +407,7 @@ begin
   ChartSeriesModel.Active := not ChartSeriesModel.Active;
   ChartSeriesModelUpLimit.Active := ChartSeriesModel.Active;
   ChartSeriesModelDownLimit.Active := ChartSeriesModel.Active;
+  ActionList.UpdateAction(Sender as TAction); // Ubuntu bug (check state not always updated)? (GNOME)
 end;
 
 procedure TFormMain.ActionStopExecute(Sender: TObject);
@@ -416,6 +418,7 @@ end;
 procedure TFormMain.ActionInvertedYExecute(Sender: TObject);
 begin
   Chart.AxisList[0].Inverted := not Chart.AxisList[0].Inverted;
+  ActionList.UpdateAction(Sender as TAction); // Ubuntu bug (check state not always updated)? (GNOME)
   SaveDataSettings;
 end;
 
@@ -425,6 +428,7 @@ begin
     ChartSeriesData.ColorEach := cePoint
   else
     ChartSeriesData.ColorEach := ceNone;
+  ActionList.UpdateAction(Sender as TAction); // Ubuntu bug (check state not always updated)? (GNOME)
 end;
 
 procedure TFormMain.ActionLogicalExtentExecute(Sender: TObject);
@@ -784,10 +788,13 @@ begin
   ClearFitAtPoints;
   //
   ChartSeriesData.ColorEach := ceNone;
+  ActionList.UpdateAction(ActionCycleByCycleColor); // Ubuntu bug (check state not always updated)? (GNOME)
   ChartSeriesData.Active := True;
+  ActionList.UpdateAction(ActionShowData); // Ubuntu bug (check state not always updated)? (GNOME)
   ChartSeriesModel.Active := True;
   ChartSeriesModelUpLimit.Active := ChartSeriesModel.Active;
   ChartSeriesModelDownLimit.Active := ChartSeriesModel.Active;
+  ActionList.UpdateAction(ActionShowModel); // Ubuntu bug (check state not always updated)? (GNOME)
   //
   SetAxisBoundaries(-1.0, 1.0, -1.0, 1.0);
   //
@@ -942,7 +949,9 @@ end;
 procedure TFormMain.LoadChartSettings(const Ini: TIniFile; const Section: string);
 begin
   Chart.AxisList[0].Inverted := Ini.ReadBool('SETTINGS', 'Yinverted', True);
+  ActionList.UpdateAction(ActionInvertedY); // Ubuntu bug (check state not always updated)? (GNOME)
   ChartSeriesData.ColorEach := ceNone;
+  ActionList.UpdateAction(ActionCycleByCycleColor); // Ubuntu bug (check state not always updated)? (GNOME)
   ChartSeriesData.Pointer.Brush.Color := TColor(Ini.ReadInteger('SETTINGS', 'DataColor', clPurple));
   //ChartSeriesData.Pointer.Pen.Color := ChartSeriesData.Pointer.Brush.Color;
   ChartSeriesModel.LinePen.Color := TColor(Ini.ReadInteger('SETTINGS', 'ModelColor', clLime));
@@ -963,6 +972,7 @@ begin
     FChartSubtitle := '';
     ChartSeriesData.Source := nil;
     ChartSeriesData.ColorEach := ceNone;
+    ActionList.UpdateAction(ActionCycleByCycleColor); // Ubuntu bug (check state not always updated)? (GNOME)
     ChartSeriesModelToNil;
     UpdateTitle;
     SourceExtent := LCSrcData.Extent;
@@ -1326,6 +1336,7 @@ begin
     ChartSeriesModel.Active := True;
     ChartSeriesModelUpLimit.Active := ChartSeriesModel.Active;
     ChartSeriesModelDownLimit.Active := ChartSeriesModel.Active;
+    ActionList.UpdateAction(ActionShowModel); // Ubuntu bug (check state not always updated)? (GNOME)
   end;
 end;
 
