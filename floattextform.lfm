@@ -10,7 +10,7 @@ object FormFloatText: TFormFloatText
   ClientWidth = 320
   FormStyle = fsStayOnTop
   OnClose = FormClose
-  LCLVersion = '3.2.0.0'
+  LCLVersion = '3.8.0.0'
   object Memo1: TMemo
     Left = 0
     Height = 200
@@ -53,6 +53,7 @@ object FormFloatText: TFormFloatText
       Height = 25
       Top = 8
       Width = 75
+      Anchors = [akTop, akRight]
       Caption = 'Clear'
       TabOrder = 0
       OnClick = ButtonClearClick
