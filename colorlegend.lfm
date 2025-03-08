@@ -1,0 +1,60 @@
+object FormColorLegend: TFormColorLegend
+  Left = 833
+  Height = 191
+  Top = 417
+  Width = 460
+  BorderIcons = []
+  BorderStyle = bsSizeToolWin
+  Caption = 'Legend'
+  ClientHeight = 191
+  ClientWidth = 460
+  FormStyle = fsStayOnTop
+  Position = poDefaultPosOnly
+  LCLVersion = '3.8.0.0'
+  object DrawGrid1: TDrawGrid
+    Left = 0
+    Height = 191
+    Top = 0
+    Width = 460
+    Align = alClient
+    ColCount = 6
+    ExtendedSelect = False
+    PopupMenu = PopupMenuGrid
+    RowCount = 8
+    TabOrder = 0
+    UseXORFeatures = True
+    OnDrawCell = DrawGrid1DrawCell
+  end
+  object PopupMenuGrid: TPopupMenu
+    Left = 128
+    Top = 40
+    object MenuItem1: TMenuItem
+      Action = ActionCopy
+    end
+    object MenuItemCopyWithTitles: TMenuItem
+      Action = ActionCopyWithTitles
+    end
+    object MenuItem2: TMenuItem
+      Action = ActionSelectAll
+    end
+  end
+  object ActionListGrid: TActionList
+    Left = 80
+    Top = 39
+    object ActionCopy: TAction
+      Caption = '&Copy'
+      OnExecute = ActionCopyExecute
+      ShortCut = 16451
+    end
+    object ActionCopyWithTitles: TAction
+      Caption = 'Copy With &Titles'
+      OnExecute = ActionCopyWithTitlesExecute
+      ShortCut = 24643
+    end
+    object ActionSelectAll: TAction
+      Caption = 'Select &All'
+      OnExecute = ActionSelectAllExecute
+      ShortCut = 16449
+    end
+  end
+end

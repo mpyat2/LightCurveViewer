@@ -242,6 +242,14 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="unitGetExtent"/>
       </Unit>
+      <Unit>
+        <Filename Value="colorlegend.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormColorLegend"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="colorLegend"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

@@ -119,6 +119,7 @@ object FormMain: TFormMain
     Top = 0
     Width = 1000
     Caption = 'ToolBar'
+    Images = ImageList
     ParentShowHint = False
     ShowHint = True
     TabOrder = 2

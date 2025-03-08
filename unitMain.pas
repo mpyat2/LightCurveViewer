@@ -160,6 +160,7 @@ type
     FFitAtPoints: TFitColumnArray;
     FModelData: TFitColumnArray;
     FModelFolded: TFitColumnArray;
+    FFoldedDataColorRegions: TFoldedRegions;
     procedure UpdateTitle;
     procedure ChartSeriesModelToNil;
     procedure ChartSeriesModelToModel;
@@ -180,6 +181,8 @@ type
     procedure PlotFolded;
     procedure PlotFoldedSimple;
     procedure PlotFoldedProc;
+    procedure ShowColorLegend;
+    procedure HideColorLegend;
     procedure CalculateModelPhasePlot;
     procedure CalcFoldedData(Period, Epoch: Double; out AX, AY: TDoubleArray; out Colors: TColorArray);
     procedure CalcAndPlotFoldedProc;
@@ -207,15 +210,15 @@ implementation
 uses
   lclintf, math, guiutils, unitPhaseDialog,
   unitFitParamDialog, unitDFTparamDialog, unitDFTdialog, unitTableDialog,
-  unitModelInfoDialog, floattextform, unitFormChartprops, unitGetExtent,
-  unitAbout, dftThread, dataio, sortutils, formatutils, miscutils, fitproc,
-  settings;
+  unitModelInfoDialog, colorLegend, floattextform, unitFormChartprops,
+  unitGetExtent, unitAbout, dftThread, dataio, sortutils, formatutils,
+  miscutils, fitproc, settings;
 
 { TFormMain }
 
 procedure TFormMain.FormCreate(Sender: TObject);
 begin
-  ToolBar.Images := ImageList;
+  FFoldedDataColorRegions := TFoldedRegions.Create;
   CloseFile;
   try
     LoadFormPosition(Self);
@@ -226,7 +229,7 @@ end;
 
 procedure TFormMain.FormDestroy(Sender: TObject);
 begin
-  //
+  FreeAndNil(FFoldedDataColorRegions);
 end;
 
 procedure TFormMain.FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -424,10 +427,14 @@ end;
 
 procedure TFormMain.ActionCycleByCycleColorExecute(Sender: TObject);
 begin
-  if ChartSeriesData.ColorEach = ceNone then
-    ChartSeriesData.ColorEach := cePoint
-  else
+  if ChartSeriesData.ColorEach = ceNone then begin
+    ChartSeriesData.ColorEach := cePoint;
+    ShowColorLegend;
+  end
+  else begin
     ChartSeriesData.ColorEach := ceNone;
+    HideColorLegend;
+  end;
   ActionList.UpdateAction(Sender as TAction); // Ubuntu bug (check state not always updated)? (GNOME)
 end;
 
@@ -778,6 +785,7 @@ begin
   ChartSeriesData.Source := nil;
   LCSrcData.Clear;
   LCSrcFoldedData.Clear;
+  FFoldedDataColorRegions.Clear;
   // Model (virtual sources)
   ChartSeriesModelToNil;
   ClearUDFSrcModel;
@@ -788,6 +796,7 @@ begin
   ClearFitAtPoints;
   //
   ChartSeriesData.ColorEach := ceNone;
+  HideColorLegend;
   ActionList.UpdateAction(ActionCycleByCycleColor); // Ubuntu bug (check state not always updated)? (GNOME)
   ChartSeriesData.Active := True;
   ActionList.UpdateAction(ActionShowData); // Ubuntu bug (check state not always updated)? (GNOME)
@@ -951,6 +960,7 @@ begin
   Chart.AxisList[0].Inverted := Ini.ReadBool('SETTINGS', 'Yinverted', True);
   ActionList.UpdateAction(ActionInvertedY); // Ubuntu bug (check state not always updated)? (GNOME)
   ChartSeriesData.ColorEach := ceNone;
+  HideColorLegend;
   ActionList.UpdateAction(ActionCycleByCycleColor); // Ubuntu bug (check state not always updated)? (GNOME)
   ChartSeriesData.Pointer.Brush.Color := TColor(Ini.ReadInteger('SETTINGS', 'DataColor', clPurple));
   //ChartSeriesData.Pointer.Pen.Color := ChartSeriesData.Pointer.Brush.Color;
@@ -972,6 +982,7 @@ begin
     FChartSubtitle := '';
     ChartSeriesData.Source := nil;
     ChartSeriesData.ColorEach := ceNone;
+    HideColorLegend;
     ActionList.UpdateAction(ActionCycleByCycleColor); // Ubuntu bug (check state not always updated)? (GNOME)
     ChartSeriesModelToNil;
     UpdateTitle;
@@ -1006,6 +1017,7 @@ procedure TFormMain.PlotFoldedProc;
 var
   SourceExtent: TDoubleRect;
 begin
+  HideColorLegend;
   StatusBar.Panels[0].Text := '';
   StatusBar.Panels[1].Text := '';
   FChartSubtitle := '';
@@ -1021,6 +1033,18 @@ begin
   StatusBar.Panels[1].Text := ' P= ' + FloatToStr(unitPhaseDialog.GetCurrentPeriod) + ^I' E= ' + FloatToStr(unitPhaseDialog.GetCurrentEpoch) + ' ';
   FChartSubtitle := 'Period ' + FloatToStr(unitPhaseDialog.GetCurrentPeriod) + ', Epoch ' + FloatToStr(unitPhaseDialog.GetCurrentEpoch) + ' ';
   UpdateTitle;
+  if ChartSeriesData.ColorEach = cePoint then
+    ShowColorLegend;
+end;
+
+procedure TFormMain.ShowColorLegend;
+begin
+  colorLegend.ShowColorLegend(FFoldedDataColorRegions);
+end;
+
+procedure TFormMain.HideColorLegend;
+begin
+  colorLegend.HideColorLegend;
 end;
 
 procedure TFormMain.CalculateModelPhasePlot;
@@ -1072,8 +1096,17 @@ var
   Phase: Double;
   L, N, I: Integer;
   Cycle, PrevCycle: Int64;
+  X1: Double;
 begin
   L := LCSrcData.Count;
+
+  SetLength(AX, L);
+  SetLength(AY, L);
+  SetLength(Colors, L);
+
+  if L < 1 then
+    Exit;
+
   SetLength(Xdata, L);
   SetLength(Ydata, L);
   for I := 0 to L - 1 do begin
@@ -1083,18 +1116,19 @@ begin
   end;
   SortDataPoints(Xdata, Ydata); // ensure the data is sorted
 
-  SetLength(AX, L);
-  SetLength(AY, L);
-  SetLength(Colors, L);
-
+  FFoldedDataColorRegions.Clear;
   N := 0;
   PrevCycle := 0;
+  X1 := Xdata[0];
   for I := 0 to L - 1 do begin
     Phase := CalculatePhase(Xdata[I], Period, Epoch);
     AX[I] := Phase;
     AY[I] := Ydata[I];
-    Cycle := CalculateCycle(Xdata[I], Period, Epoch);
+    // Cycle from Phase -0.5 to +0.5
+    Cycle := CalculateCycle(Xdata[I] + Period / 2, Period, Epoch);
     if (I > 0) and (Cycle <> PrevCycle) then begin
+      FFoldedDataColorRegions.AddRegion(X1, Xdata[I - 1], CycleByCycleColors[N], PrevCycle, Epoch + PrevCycle * Period, Period);
+      X1 := Xdata[I];
       Inc(N);
       if N > Length(CycleByCycleColors) - 1 then
         N := 0;
@@ -1102,6 +1136,7 @@ begin
     Colors[I] := CycleByCycleColors[N];
     PrevCycle := Cycle;
   end;
+  FFoldedDataColorRegions.AddRegion(X1, Xdata[L - 1], CycleByCycleColors[N], PrevCycle, Epoch + PrevCycle * Period, Period);
 end;
 
 procedure TFormMain.CalcAndPlotFoldedProc;
@@ -1120,6 +1155,7 @@ begin
     Period := unitPhaseDialog.GetCurrentPeriod;
     Epoch := unitPhaseDialog.GetCurrentEpoch;
     LCSrcFoldedData.Clear;
+    FFoldedDataColorRegions.Clear;
     // Model (virtual sources)
     ClearUDFSrcModelFolded;
     //

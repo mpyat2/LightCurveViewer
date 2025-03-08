@@ -9,7 +9,7 @@ object FormTable: TFormTable
   ClientWidth = 576
   OnCreate = FormCreate
   Position = poMainFormCenter
-  LCLVersion = '3.2.0.0'
+  LCLVersion = '3.8.0.0'
   object DrawGrid1: TDrawGrid
     Left = 0
     Height = 416
@@ -50,7 +50,7 @@ object FormTable: TFormTable
     Left = 112
     Top = 176
     object MenuItemCopy: TMenuItem
-      Action = ActionAll
+      Action = ActionCopy
     end
     object MenuItem1: TMenuItem
       Action = ActionSelectAll
@@ -59,9 +59,9 @@ object FormTable: TFormTable
   object ActionList1: TActionList
     Left = 216
     Top = 176
-    object ActionAll: TAction
+    object ActionCopy: TAction
       Caption = '&Copy'
-      OnExecute = ActionAllExecute
+      OnExecute = ActionCopyExecute
       ShortCut = 16451
     end
     object ActionSelectAll: TAction

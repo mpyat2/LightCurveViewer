@@ -28,7 +28,7 @@ function GetFieldValue(const Field: TEdit; Min, Max: Double; const FieldName: st
 
 function GetFieldValue(const Field: TEdit; Min, Max: Integer; const FieldName: string; out V: integer): Boolean;
 
-function GetGridSelectionAsText(Grid: TDrawGrid; GetGridCell: TGetGridCell): string;
+function GetGridSelectionAsText(Grid: TDrawGrid; GetGridCell: TGetGridCell; Titles: Boolean = False): string;
 
 procedure RearrangeButtons(ButtonOK, ButtonCancel: TButton);
 
@@ -108,7 +108,7 @@ begin
   Result := True;
 end;
 
-function GetGridSelectionAsText(Grid: TDrawGrid; GetGridCell: TGetGridCell): string;
+function GetGridSelectionAsText(Grid: TDrawGrid; GetGridCell: TGetGridCell; Titles: Boolean = False): string;
 var
   Selection: TRect;
   R, C: Integer;
@@ -116,14 +116,33 @@ var
 begin
   Result := '';
   Selection := Grid.Selection;
-  for R := Selection.Top to Selection.Bottom do begin
-    S2 := '';
+  if Titles then begin
+    for R := 0 to Grid.FixedRows - 1 do begin
+      S2 := '';
+      for C := 0 to Grid.FixedCols - 1 do
+        S2 := S2 + GetGridCell(Grid, C, R) + ^I;
+    end;
     for C := Selection.Left to Selection.Right do begin
       S2 := S2 + GetGridCell(Grid, C, R);
       if C < Selection.Right then
         S2 := S2 + ^I;
     end;
     Result := Result + S2 + ^M^J;
+  end;
+  for R := Selection.Top to Selection.Bottom do begin
+    S2 := '';
+    if Titles then begin
+      for C := 0 to Grid.FixedCols - 1 do
+        S2 := S2 + GetGridCell(Grid, C, R) + ^I;
+    end;
+    for C := Selection.Left to Selection.Right do begin
+      S2 := S2 + GetGridCell(Grid, C, R);
+      if C < Selection.Right then
+        S2 := S2 + ^I;
+    end;
+    Result := Result + S2;
+    if R < Selection.Bottom then
+      Result := Result + ^M^J;
   end;
 end;
 

@@ -16,7 +16,7 @@ type
 
   TFormTable = class(TForm)
     ActionSelectAll: TAction;
-    ActionAll: TAction;
+    ActionCopy: TAction;
     ActionList1: TActionList;
     Button1: TButton;
     DrawGrid1: TDrawGrid;
@@ -24,7 +24,7 @@ type
     MenuItemCopy: TMenuItem;
     Panel1: TPanel;
     PopupMenu1: TPopupMenu;
-    procedure ActionAllExecute(Sender: TObject);
+    procedure ActionCopyExecute(Sender: TObject);
     procedure ActionSelectAllExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
@@ -73,7 +73,7 @@ begin
   DrawGrid1.ColWidths[0] := 64;
 end;
 
-procedure TFormTable.ActionAllExecute(Sender: TObject);
+procedure TFormTable.ActionCopyExecute(Sender: TObject);
 var
   CurrentCursor: TCursor;
 begin
