@@ -43,7 +43,7 @@ function CalculateCycle(T, Period, Epoch: Double): Int64; inline;
 
 function CalculatePhase(T, Period, Epoch: Double): Double; inline;
 
-procedure PhasePlot(ApplyPhasePlotParamsProc: TApplyPhasePlotParams);
+procedure PhasePlot(ApplyPhasePlotParamsProc: TApplyPhasePlotParams; APeriod: Double = NaN);
 
 procedure SaveParameters(const Ini: TCustomIniFile; const Section: string);
 
@@ -101,7 +101,7 @@ begin
   Result := (T - Epoch - Period * Cycle) / Period;
 end;
 
-procedure PhasePlot(ApplyPhasePlotParamsProc: TApplyPhasePlotParams);
+procedure PhasePlot(ApplyPhasePlotParamsProc: TApplyPhasePlotParams; APeriod: Double = NaN);
 var
   F: TFormPhaseDialog;
 begin
@@ -109,7 +109,10 @@ begin
   try
     F.FApplyPhasePlotParams := ApplyPhasePlotParamsProc;
     F.SetEpoch(CurrentEpoch);
-    F.SetPeriod(CurrentPeriod);
+    if IsNan(APeriod) then
+      F.SetPeriod(CurrentPeriod)
+    else
+      F.SetPeriod(APeriod);
     F.ShowModal;
   finally
     FreeAndNil(F);

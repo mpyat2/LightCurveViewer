@@ -236,8 +236,9 @@ procedure TFormMain.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   try
     SaveFormPosition(Self);
+    HideColorLegend;
   except
-    // nothing;
+    on E: Exception do ShowMessage(E.Message);
   end;
 end;
 
@@ -850,19 +851,6 @@ begin
   FObjectName := TempObjectName;
   unitPhaseDialog.SetCurrentEpoch((MaxValue(X) + MinValue(X)) / 2.0);
 
-  //// Assume X is a Julian Day: use the color scheme
-  //N := 0;
-  //Xprev := NaN;
-  //for I := 0 to Length(X) - 1 do begin
-  //  if (I > 0) and (Int(X[I]) <> Int(Xprev)) then begin
-  //    Inc(N);
-  //    if N > Length(CycleByCycleColors) - 1 then
-  //      N := 0;
-  //  end;
-  //  LCSrcData.Add(X[I], Y[I], '', CycleByCycleColors[N]);
-  //  Xprev := X[I];
-  //end;
-
   for I := 0 to Length(X) - 1 do begin
     LCSrcData.Add(X[I], Y[I]);
   end;
@@ -903,6 +891,8 @@ procedure TFormMain.LoadDataSettings;
 var
   Ini: TMemIniFile;
 begin
+  if FFileName = '' then
+    Exit;
   try
     Ini := TMemIniFile.Create(FFileName + '.lcv.props');
     try
@@ -924,6 +914,8 @@ procedure TFormMain.SaveDataSettings;
 var
   Ini: TMemIniFile;
 begin
+  if FFileName = '' then
+    Exit;
   try
     Ini := TMemIniFile.Create(FFileName + '.lcv.props');
     try
@@ -1091,8 +1083,7 @@ end;
 
 procedure TFormMain.CalcFoldedData(Period, Epoch: Double; out AX, AY: TDoubleArray; out Colors: TColorArray);
 var
-  Xdata, Ydata: TDoubleArray;
-  Item: PChartDataItem;
+  Item, PrevItem: PChartDataItem;
   Phase: Double;
   L, N, I: Integer;
   Cycle, PrevCycle: Int64;
@@ -1107,36 +1098,33 @@ begin
   if L < 1 then
     Exit;
 
-  SetLength(Xdata, L);
-  SetLength(Ydata, L);
-  for I := 0 to L - 1 do begin
-    Item := LCSrcData.Item[I];
-    Xdata[I] := Item^.X;
-    Ydata[I] := Item^.Y;
-  end;
-  SortDataPoints(Xdata, Ydata); // ensure the data is sorted
-
   FFoldedDataColorRegions.Clear;
   N := 0;
   PrevCycle := 0;
-  X1 := Xdata[0];
+  X1 := LCSrcData.Item[0]^.X;
   for I := 0 to L - 1 do begin
-    Phase := CalculatePhase(Xdata[I], Period, Epoch);
+    Item := LCSrcData.Item[I];
+    Phase := CalculatePhase(Item^.X, Period, Epoch);
     AX[I] := Phase;
-    AY[I] := Ydata[I];
+    AY[I] := Item^.Y;
     // Cycle from Phase -0.5 to +0.5
-    Cycle := CalculateCycle(Xdata[I] + Period / 2, Period, Epoch);
-    if (I > 0) and (Cycle <> PrevCycle) then begin
-      FFoldedDataColorRegions.AddRegion(X1, Xdata[I - 1], CycleByCycleColors[N], PrevCycle, Epoch + PrevCycle * Period, Period);
-      X1 := Xdata[I];
-      Inc(N);
-      if N > Length(CycleByCycleColors) - 1 then
-        N := 0;
+    Cycle := CalculateCycle(Item^.X + Period / 2, Period, Epoch);
+    if I > 0 then begin
+      PrevItem := LCSrcData.Item[I - 1];
+      if (PrevItem^.X > Item^.X) then
+        CalcError('Internal error: data must be sorted');
+      if Cycle <> PrevCycle then begin
+        FFoldedDataColorRegions.AddRegion(X1, PrevItem^.X, CycleByCycleColors[N], PrevCycle, Epoch + PrevCycle * Period, Period);
+        X1 := Item^.X;
+        Inc(N);
+        if N > Length(CycleByCycleColors) - 1 then
+          N := 0;
+      end;
     end;
     Colors[I] := CycleByCycleColors[N];
     PrevCycle := Cycle;
   end;
-  FFoldedDataColorRegions.AddRegion(X1, Xdata[L - 1], CycleByCycleColors[N], PrevCycle, Epoch + PrevCycle * Period, Period);
+  FFoldedDataColorRegions.AddRegion(X1, LCSrcData.Item[L - 1]^.X, CycleByCycleColors[N], PrevCycle, Epoch + PrevCycle * Period, Period);
 end;
 
 procedure TFormMain.CalcAndPlotFoldedProc;
@@ -1164,7 +1152,7 @@ begin
       LCSrcFoldedData.Add(Xpoints[I], Ypoints[I], '', Colors[I]);
       LCSrcFoldedData.Add(Xpoints[I] - 1.0, Ypoints[I], '', Colors[I]);
     end;
-    //LCSrcFoldedData.Sort;
+    //
     CalculateModelPhasePlot;
     PlotFoldedProc;
   end;
@@ -1452,7 +1440,7 @@ begin
                            DCDFTparameters.TrigPolyDegree,
                            (Now - DCDFTparameters.StartTime) * 24 * 60 * 60,
                            ExtractFileName(FFileName)]);
-  PlotDFTresult(DialogCaption, DCDFTparameters.frequencies, DCDFTparameters.power);
+  PlotDFTresult(DialogCaption, DCDFTparameters.frequencies, DCDFTparameters.power, @CalcAndPlotFoldedProc);
 end;
 
 procedure TFormMain.DFTGlobalTerminate;

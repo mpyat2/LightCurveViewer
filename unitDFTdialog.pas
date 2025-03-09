@@ -8,8 +8,8 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-  ComCtrls, Grids, Menus, ActnList, StdCtrls, TAGraph, TACustomSource, TACustomSeries,
-  TASeries, TATools, Types, lcvtypes;
+  ComCtrls, Grids, Menus, ActnList, StdCtrls, TAGraph, TACustomSource,
+  TACustomSeries, TASeries, TATools, Types, lcvtypes, unitPhaseDialog;
 
 type
 
@@ -20,6 +20,7 @@ type
     ActionGridSelectAll: TAction;
     ActionGridCopy: TAction;
     ActionList: TActionList;
+    ButtonPhasePlot: TButton;
     ButtonClose: TButton;
     Chart1: TChart;
     Chart1LineSeries1: TLineSeries;
@@ -51,19 +52,20 @@ type
     procedure ActionGridSelectAllExecute(Sender: TObject);
     procedure ActionListUpdate(AAction: TBasicAction; var Handled: Boolean);
     procedure ButtonCloseClick(Sender: TObject);
+    procedure ButtonPhasePlotClick(Sender: TObject);
     procedure ChartToolset1DataPointClickTool1PointClick(ATool: TChartTool; APoint: TPoint);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
   private
+    FApplyPhasePlotParamsProc: TApplyPhasePlotParams;
     function GetGridCell(Grid: TDrawGrid; C, R: Integer): string;
     procedure GridDrawCell(Sender: TObject; aCol, aRow: Integer; aRect: TRect; aState: TGridDrawState);
   public
 
   end;
 
-procedure PlotDFTresult(const Caption: string; const frequencies, power: TDoubleArray);
-//procedure CloseDFTdialogs;
+procedure PlotDFTresult(const Caption: string; const frequencies, power: TDoubleArray; ApplyPhasePlotParamsProc: TApplyPhasePlotParams);
 
 implementation
 
@@ -72,24 +74,7 @@ implementation
 uses
   math, Clipbrd, Contnrs, guiutils;
 
-//var
-//  FormDFTDialogList: TObjectList = nil;
-
-//procedure CloseDFTdialogs;
-//var
-//  I: Integer;
-//begin
-//  if FormDFTDialogList <> nil then begin
-//    for I := FormDFTDialogList.Count - 1 downto 0 do begin
-//      if FormDFTDialogList[I] is TForm then begin
-//        (FormDFTDialogList[I] as TForm).Close;
-//        FormDFTDialogList.Delete(I);
-//      end;
-//    end;
-//  end;
-//end;
-
-procedure PlotDFTresult(const Caption: string; const frequencies, power: TDoubleArray);
+procedure PlotDFTresult(const Caption: string; const frequencies, power: TDoubleArray; ApplyPhasePlotParamsProc: TApplyPhasePlotParams);
 var
   F: TFormDFTDialog;
   I: Integer;
@@ -99,13 +84,14 @@ begin
     //FormDFTDialogList.Add(F);
     F.Caption := Caption;
     for I := 0 to Length(frequencies) - 1 do begin
-        if not IsNan(power[I]) then
-          F.Chart1LineSeries1.AddXY(frequencies[I], power[I]);
+      if not IsNan(power[I]) then
+        F.Chart1LineSeries1.AddXY(frequencies[I], power[I]);
     end;
     F.DrawGrid1.ColCount := 2 + F.DrawGrid1.FixedCols;
     F.DrawGrid1.RowCount := F.DrawGrid1.FixedRows + 1;
     if F.Chart1LineSeries1.Count > 0 then
       F.DrawGrid1.RowCount := F.Chart1LineSeries1.Count + F.DrawGrid1.FixedRows;
+    F.FApplyPhasePlotParamsProc := ApplyPhasePlotParamsProc;
   except
     F.Release;
   end;
@@ -165,36 +151,13 @@ begin
   Close;
 end;
 
-//procedure TFormDFTDialog.ChartToolset1DataPointClickTool1AfterMouseDown(
-//  ATool: TChartTool; APoint: TPoint);
-//var
-//  Item: PChartDataItem;
-//  PointClickTool: TDataPointClickTool;
-//  Series: TChartSeries;
-//  PointIndex: Integer;
-//begin
-  //PointClickTool := ATool as TDataPointClickTool;
-  //Series := PointClickTool.Series as TChartSeries;
-  //
-  //if Series = Chart1LineSeries2 then
-  //  Exit;
-  //
-  //EditFrequency.Text := '';
-  //EditPeriod.Text := '';
-  //EditPower.Text := '';
-  //Chart1LineSeries2.Clear;
-  //
-  //if Series = nil then
-  //  Exit;
-  //
-  //PointIndex := PointClickTool.PointIndex;
-  //Item := Series.ListSource.Item[PointIndex];
-  //EditFrequency.Text := FloatToStr(Item^.X);
-  //EditPower.Text := FloatToStr(Item^.Y);
-  //if (Item^.X <> 0) then
-  //  EditPeriod.Text := FloatToStr(1.0 / Item^.X);
-  //Chart1LineSeries2.AddXY(Item^.X, Item^.Y);
-//end;
+procedure TFormDFTDialog.ButtonPhasePlotClick(Sender: TObject);
+begin
+  if EditPeriod.Text <> '' then
+    PhasePlot(FApplyPhasePlotParamsProc, StrToFloat(EditPeriod.Text))
+  else
+    ShowMessage('No period specified');
+end;
 
 procedure TFormDFTDialog.ChartToolset1DataPointClickTool1PointClick(ATool: TChartTool; APoint: TPoint);
 var
@@ -211,6 +174,7 @@ begin
 
   EditFrequency.Text := '';
   EditPeriod.Text := '';
+  ButtonPhasePlot.Enabled := False;
   EditPower.Text := '';
   Chart1LineSeries2.Clear;
 
@@ -221,8 +185,10 @@ begin
   Item := Series.ListSource.Item[PointIndex];
   EditFrequency.Text := FloatToStr(Item^.X);
   EditPower.Text := FloatToStr(Item^.Y);
-  if (Item^.X <> 0) then
+  if (Item^.X <> 0) then begin
     EditPeriod.Text := FloatToStr(1.0 / Item^.X);
+    ButtonPhasePlot.Enabled := True;
+  end;
   Chart1LineSeries2.AddXY(Item^.X, Item^.Y);
 end;
 
@@ -267,19 +233,5 @@ begin
   CloseAction := caFree;
 end;
 
-//var
-//  I: Integer;
-//
-//initialization
-//  FormDFTDialogList := TObjectList.Create(False);
-//finalization
-//  if FormDFTDialogList <> nil then begin
-//    for I := FormDFTDialogList.Count - 1 downto 0 do begin
-//      if FormDFTDialogList[I] is TForm then begin
-//        (FormDFTDialogList[I] as TForm).Release;
-//      end;
-//    end;
-//    FreeAndNil(FormDFTDialogList);
-//  end;
 end.
 

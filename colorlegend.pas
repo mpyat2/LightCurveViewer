@@ -85,7 +85,7 @@ begin
     if (aRow > 0) and (aRow <= FRegions.Count) then begin
       GridCanvas.Brush.Color := FRegions.Get(aRow - 1).FColor;
       GridCanvas.Rectangle(aRect);
-      GridCanvas.Font.Color := clWhite;
+      GridCanvas.Font.Color := clWhite - GridCanvas.Brush.Color;
       GridCanvas.TextRect(aRect, aRect.Left + 2, aRect.Top + 2, GetGridCell(DrawGrid1, aCol, aRow));
     end;
   end
@@ -139,7 +139,7 @@ begin
   Result := '';
   if aRow = 0 then begin
     case aCol of
-      0: Result := 'Cycle φ [-0.5 .. 0.5]';
+      0: Result := 'Cycle φ ± 0.5';
       1: Result := 'Data X min';
       2: Result := 'Data X max';
       3: Result := 'φ = 0';
@@ -165,7 +165,7 @@ procedure TFormColorLegend.UpdateGrid;
 begin
   DrawGrid1.RowCount := FRegions.Count + 1;
   DrawGrid1.DefaultColWidth := 200;
-  DrawGrid1.ColWidths[0] := 120;
+  DrawGrid1.ColWidths[0] := 80;
 end;
 
 end.

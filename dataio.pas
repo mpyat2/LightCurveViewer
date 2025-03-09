@@ -28,6 +28,7 @@ const
 // The lines contaning less than 2 floating-point values in the first two
 // columns are ignored.
 // The columns are assumed to be separated by tabs or spaces.
+// The data is sorted by X
 procedure ReadData(const AFileName: string; out X: TDoubleArray; out Y: TDoubleArray; out ObjectName: string);
 var
   Lines, Line: TStrings;
@@ -73,7 +74,7 @@ begin
       end;
       SetLength(X, N);
       SetLength(Y, N);
-      // While it is not required now, sort the data
+      // Sort the data
       SortDataPoints(X, Y);
     finally
       FreeAndNil(Line);

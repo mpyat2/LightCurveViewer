@@ -19,13 +19,13 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="1177"/>
-        <CursorPos X="115" Y="1139"/>
+        <TopLine Value="882"/>
+        <CursorPos X="37" Y="890"/>
         <UsageCount Value="203"/>
         <Bookmarks Count="3">
-          <Item0 X="27" Y="802" ID="2"/>
+          <Item0 X="27" Y="803" ID="2"/>
           <Item1 X="16" Y="163"/>
-          <Item2 Y="1036" ID="1"/>
+          <Item2 Y="1107" ID="1"/>
         </Bookmarks>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -34,8 +34,8 @@
         <Filename Value="dataio.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="50"/>
-        <CursorPos X="21" Y="77"/>
+        <TopLine Value="4"/>
+        <CursorPos X="15" Y="31"/>
         <UsageCount Value="203"/>
       </Unit>
       <Unit>
@@ -44,11 +44,10 @@
         <ComponentName Value="FormPhaseDialog"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="1"/>
-        <TopLine Value="73"/>
-        <CursorPos X="3" Y="93"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="138"/>
+        <CursorPos Y="147"/>
         <UsageCount Value="202"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="unitDFTdialog.pas"/>
@@ -57,8 +56,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="92"/>
-        <CursorPos X="9" Y="104"/>
+        <TopLine Value="202"/>
+        <CursorPos Y="236"/>
         <UsageCount Value="200"/>
       </Unit>
       <Unit>
@@ -107,10 +106,11 @@
         <ComponentName Value="FormFitparams"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="173"/>
-        <CursorPos X="20" Y="183"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="42"/>
+        <CursorPos X="11" Y="61"/>
         <UsageCount Value="203"/>
+        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="unitTableDialog.pas"/>
@@ -118,12 +118,10 @@
         <ComponentName Value="FormTable"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="7"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="73"/>
         <CursorPos Y="99"/>
         <UsageCount Value="218"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="unitModelInfoDialog.pas"/>
@@ -152,23 +150,22 @@
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos Y="12"/>
-        <UsageCount Value="175"/>
+        <UsageCount Value="211"/>
       </Unit>
       <Unit>
         <Filename Value="lcvtypes.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="43"/>
         <CursorPos X="48" Y="61"/>
-        <UsageCount Value="175"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="211"/>
       </Unit>
       <Unit>
         <Filename Value="miscutils.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos Y="27"/>
-        <UsageCount Value="175"/>
+        <UsageCount Value="211"/>
       </Unit>
       <Unit>
         <Filename Value="formatutils.pas"/>
@@ -176,16 +173,15 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="18"/>
         <CursorPos X="27" Y="43"/>
-        <UsageCount Value="175"/>
+        <UsageCount Value="211"/>
       </Unit>
       <Unit>
         <Filename Value="guiutils.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="109"/>
         <CursorPos X="26" Y="145"/>
-        <UsageCount Value="175"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="211"/>
       </Unit>
       <Unit>
         <Filename Value="floattextform.pas"/>
@@ -196,7 +192,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="21"/>
         <CursorPos X="22" Y="42"/>
-        <UsageCount Value="147"/>
+        <UsageCount Value="189"/>
       </Unit>
       <Unit>
         <Filename Value="unitFormChartprops.pas"/>
@@ -207,15 +203,14 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="125"/>
         <CursorPos X="39" Y="154"/>
-        <UsageCount Value="142"/>
+        <UsageCount Value="184"/>
       </Unit>
       <Unit>
         <Filename Value="lcvconsts.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="3"/>
-        <CursorPos Y="20"/>
-        <UsageCount Value="90"/>
-        <Loaded Value="True"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="57" Y="19"/>
+        <UsageCount Value="132"/>
       </Unit>
       <Unit>
         <Filename Value="settings.pas"/>
@@ -223,7 +218,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="39"/>
         <CursorPos Y="55"/>
-        <UsageCount Value="89"/>
+        <UsageCount Value="131"/>
       </Unit>
       <Unit>
         <Filename Value="unitgetextent.pas"/>
@@ -235,7 +230,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="7"/>
         <CursorPos Y="52"/>
-        <UsageCount Value="88"/>
+        <UsageCount Value="130"/>
       </Unit>
       <Unit>
         <Filename Value="colorlegend.pas"/>
@@ -244,10 +239,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="colorLegend"/>
-        <EditorIndex Value="5"/>
-        <TopLine Value="138"/>
-        <CursorPos X="14" Y="160"/>
-        <UsageCount Value="76"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="65"/>
+        <CursorPos X="39" Y="88"/>
+        <UsageCount Value="118"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -257,36 +252,29 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="64"/>
         <CursorPos X="17" Y="82"/>
-        <UsageCount Value="9"/>
-      </Unit>
-      <Unit>
-        <Filename Value="C:\lazarus64\components\tachart\tachartlazaruspkg.pas"/>
-        <UnitName Value="TAChartLazarusPkg"/>
-        <EditorIndex Value="-1"/>
-        <UsageCount Value="4"/>
+        <UsageCount Value="5"/>
       </Unit>
       <Unit>
         <Filename Value="C:\lazarus64\lcl\include\customform.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="2267"/>
         <CursorPos Y="2285"/>
-        <UsageCount Value="5"/>
+        <UsageCount Value="1"/>
       </Unit>
       <Unit>
         <Filename Value="C:\lazarus64\lcl\graphics.pp"/>
         <UnitName Value="Graphics"/>
-        <EditorIndex Value="4"/>
-        <TopLine Value="269"/>
-        <CursorPos Y="296"/>
-        <UsageCount Value="13"/>
-        <Loaded Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="261"/>
+        <CursorPos X="10" Y="295"/>
+        <UsageCount Value="34"/>
       </Unit>
       <Unit>
         <Filename Value="C:\lazarus64\lcl\include\canvas.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="1211"/>
         <CursorPos X="3" Y="1220"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="3"/>
       </Unit>
       <Unit>
         <Filename Value="C:\lazarus64\lcl\forms.pp"/>
@@ -294,129 +282,157 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="30"/>
         <CursorPos X="15" Y="57"/>
-        <UsageCount Value="5"/>
+        <UsageCount Value="1"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus64\fpc\3.2.2\source\rtl\objpas\math.pp"/>
+        <UnitName Value="Math"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="2264"/>
+        <CursorPos Y="2269"/>
+        <UsageCount Value="30"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus64\lcl\include\control.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="2959"/>
+        <CursorPos Y="2978"/>
+        <UsageCount Value="30"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus64\lcl\include\buttoncontrol.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="4"/>
+        <CursorPos Y="22"/>
+        <UsageCount Value="30"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus64\lcl\include\buttons.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="152"/>
+        <CursorPos Y="170"/>
+        <UsageCount Value="30"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus64\components\tachart\tacustomsource.pas"/>
+        <UnitName Value="TACustomSource"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1823"/>
+        <CursorPos Y="1841"/>
+        <UsageCount Value="9"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus64\components\lazutils\graphtype.pp"/>
+        <UnitName Value="GraphType"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="24"/>
+        <CursorPos Y="42"/>
+        <UsageCount Value="10"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="29">
+    <JumpHistory HistoryIndex="24">
       <Position>
         <Filename Value="unitMain.pas"/>
-        <Caret Line="1137" TopLine="1109"/>
+        <Caret Line="93" Column="5" TopLine="89"/>
       </Position>
       <Position>
         <Filename Value="unitMain.pas"/>
-        <Caret Line="1123" TopLine="1109"/>
+        <Caret Line="174" Column="23" TopLine="146"/>
       </Position>
       <Position>
         <Filename Value="unitMain.pas"/>
-        <Caret Line="1124" TopLine="1109"/>
+        <Caret Line="834" Column="10" TopLine="823"/>
       </Position>
       <Position>
         <Filename Value="unitMain.pas"/>
-        <Caret Line="1125" TopLine="1109"/>
+        <Caret Line="855" Column="10" TopLine="839"/>
       </Position>
       <Position>
         <Filename Value="unitMain.pas"/>
-        <Caret Line="1126" TopLine="1109"/>
       </Position>
       <Position>
         <Filename Value="unitMain.pas"/>
-        <Caret Line="1128" TopLine="1109"/>
+        <Caret Line="1159" TopLine="1130"/>
       </Position>
       <Position>
         <Filename Value="unitMain.pas"/>
-        <Caret Line="1129" TopLine="1109"/>
       </Position>
       <Position>
         <Filename Value="unitMain.pas"/>
-        <Caret Line="1136" TopLine="1109"/>
+        <Caret Line="855" Column="10" TopLine="838"/>
       </Position>
       <Position>
         <Filename Value="unitMain.pas"/>
-        <Caret Line="1137" TopLine="1109"/>
       </Position>
       <Position>
         <Filename Value="unitMain.pas"/>
-        <Caret Line="1123" TopLine="1109"/>
+        <Caret Line="214" Column="52" TopLine="185"/>
       </Position>
       <Position>
         <Filename Value="unitMain.pas"/>
-        <Caret Line="1124" TopLine="1109"/>
+        <Caret Line="1073" Column="7" TopLine="1048"/>
       </Position>
       <Position>
         <Filename Value="unitMain.pas"/>
-        <Caret Line="1125" TopLine="1109"/>
+        <Caret Line="1112" Column="21" TopLine="1095"/>
       </Position>
       <Position>
         <Filename Value="unitMain.pas"/>
-        <Caret Line="1126" TopLine="1109"/>
+        <Caret Line="1117" Column="20" TopLine="1095"/>
       </Position>
       <Position>
         <Filename Value="unitMain.pas"/>
-        <Caret Line="1128" TopLine="1109"/>
+        <Caret Line="1112" Column="20" TopLine="1095"/>
       </Position>
       <Position>
         <Filename Value="unitMain.pas"/>
-        <Caret Line="1129" TopLine="1109"/>
+        <Caret Line="1110" Column="5" TopLine="1080"/>
       </Position>
       <Position>
         <Filename Value="unitMain.pas"/>
-        <Caret Line="1136" TopLine="1109"/>
+        <Caret Line="1112" Column="19" TopLine="1094"/>
       </Position>
       <Position>
         <Filename Value="unitMain.pas"/>
-        <Caret Line="1137" TopLine="1109"/>
       </Position>
       <Position>
         <Filename Value="unitMain.pas"/>
-        <Caret Line="1123" TopLine="1109"/>
+        <Caret Line="1488" TopLine="1459"/>
       </Position>
       <Position>
         <Filename Value="unitMain.pas"/>
-        <Caret Line="1124" TopLine="1109"/>
+        <Caret Line="1112" Column="53" TopLine="1095"/>
+      </Position>
+      <Position>
+        <Filename Value="colorlegend.pas"/>
+        <Caret Line="88" Column="42" TopLine="65"/>
       </Position>
       <Position>
         <Filename Value="unitMain.pas"/>
-        <Caret Line="1125" TopLine="1109"/>
+        <Caret Line="1127" Column="3" TopLine="1098"/>
       </Position>
       <Position>
         <Filename Value="unitMain.pas"/>
-        <Caret Line="1126" TopLine="1109"/>
       </Position>
       <Position>
         <Filename Value="unitMain.pas"/>
-        <Caret Line="1128" TopLine="1109"/>
+        <Caret Line="177" Column="31" TopLine="149"/>
       </Position>
       <Position>
         <Filename Value="unitMain.pas"/>
-        <Caret Line="1129" TopLine="1109"/>
+        <Caret Line="858" Column="19" TopLine="830"/>
       </Position>
       <Position>
         <Filename Value="unitMain.pas"/>
-        <Caret Line="1136" TopLine="1109"/>
+        <Caret Line="890" Column="37" TopLine="882"/>
       </Position>
       <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="1137" TopLine="1109"/>
+        <Filename Value="unitFitParamDialog.pas"/>
+        <Caret Line="61" Column="11" TopLine="42"/>
       </Position>
       <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="1123" TopLine="1109"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="1124" TopLine="1109"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="1125" TopLine="1109"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="1126" TopLine="1109"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="1128" TopLine="1109"/>
+        <Filename Value="unitFitParamDialog.pas"/>
+        <Caret Line="107" Column="3" TopLine="103"/>
       </Position>
     </JumpHistory>
     <RunParams>
