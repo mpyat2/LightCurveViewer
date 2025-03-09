@@ -165,7 +165,7 @@ procedure TFormColorLegend.UpdateGrid;
 begin
   DrawGrid1.RowCount := FRegions.Count + 1;
   DrawGrid1.DefaultColWidth := 200;
-  DrawGrid1.ColWidths[0] := 80;
+  DrawGrid1.ColWidths[0] := 100;
 end;
 
 end.

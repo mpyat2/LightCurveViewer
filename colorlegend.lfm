@@ -2,12 +2,12 @@ object FormColorLegend: TFormColorLegend
   Left = 833
   Height = 191
   Top = 417
-  Width = 460
+  Width = 500
   BorderIcons = []
   BorderStyle = bsSizeToolWin
   Caption = 'Legend'
   ClientHeight = 191
-  ClientWidth = 460
+  ClientWidth = 500
   FormStyle = fsStayOnTop
   Position = poDefaultPosOnly
   LCLVersion = '3.8.0.0'
@@ -15,7 +15,7 @@ object FormColorLegend: TFormColorLegend
     Left = 0
     Height = 191
     Top = 0
-    Width = 460
+    Width = 500
     Align = alClient
     ColCount = 6
     ExtendedSelect = False
