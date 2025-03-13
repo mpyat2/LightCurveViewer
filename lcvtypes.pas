@@ -12,8 +12,8 @@ uses
 type
   FitColumnType = (x, yFit, yErrors, yObserved);
 
-type
-  TColorArray = array of TColor;
+//type
+//  TColorArray = array of TColor;
 
 type
   TArbFloatArray = array of ArbFloat; // for compatibility with NumLib
@@ -42,9 +42,6 @@ type
   end;
 
 type
-
-  { TFoldedRegion }
-
   TFoldedRegion = class
     FX1, FX2: Double;
     FColor: TColor;

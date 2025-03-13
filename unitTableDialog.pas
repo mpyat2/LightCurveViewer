@@ -28,37 +28,45 @@ type
     procedure ActionSelectAllExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
-    FX: TDoubleArray;
-    FY: TDoubleArray;
-    FXname, FYname: string;
+    FTimes: TDoubleArray;
+    FMagnitudes: TDoubleArray;
+    FPeriod: Double;
+    FEpoch: Double;
     function GetGridCell(Grid: TDrawGrid; C, R: Integer): string;
     procedure GridDrawCell(Sender: TObject; aCol, aRow: Integer; aRect: TRect; aState: TGridDrawState);
   public
 
   end;
 
-procedure ShowTable(const X, Y: TDoubleArray; const Xname, Yname: string);
+procedure ShowObservations(const Times, Magnitudes: TDoubleArray; Period, Epoch: Double; Title: string);
 
 implementation
 
 {$R *.lfm}
 
 uses
-  Clipbrd, guiutils;
+  Clipbrd, math, miscutils, guiutils;
 
-procedure ShowTable(const X, Y: TDoubleArray; const Xname, Yname: string);
+procedure ShowObservations(const Times, Magnitudes: TDoubleArray; Period, Epoch: Double; Title: string);
 var
   F: TFormTable;
 begin
-  if Length(X) <> Length(Y) then
+  if Length(times) <> Length(magnitudes) then
     raise Exception.Create('X and Y arrays must be of equal length');
   F := TFormTable.Create(Application);
   try
-    F.FX := X;
-    F.FY := Y;
-    F.FXname := XName;
-    F.FYname := YName;
-    F.DrawGrid1.RowCount := F.DrawGrid1.FixedRows + Length(X);
+    F.Caption := Title;
+    F.FTimes := Times;
+    F.FMagnitudes := Magnitudes;
+    F.FPeriod := Period;
+    F.FEpoch := Epoch;
+    if (not IsNan(Period)) and (not IsNan(Epoch)) then
+      F.DrawGrid1.ColCount := 4
+    else
+      F.DrawGrid1.ColCount := 3;
+    F.DrawGrid1.FixedCols := 1;
+    F.DrawGrid1.RowCount := Length(Times) + 1;
+    F.DrawGrid1.FixedRows := 1;
     F.ShowModal;
   finally
     FreeAndNil(F);
@@ -102,24 +110,28 @@ var
   Idx: Integer;
 begin
   Result := '';
-  if R < DrawGrid1.FixedRows then begin
-    if C = DrawGrid1.FixedCols then
-      Result := FXname
-    else
-    if C = DrawGrid1.FixedCols + 1 then
-      Result := FYname;
+  if R < 1 then begin
+    case C of
+      1: Result := 'Time';
+      2: Result := 'Magnitude';
+      3: Result := 'Phase';
+    end;
   end
   else begin
-    Idx := R - DrawGrid1.FixedRows;
-    if (Idx >= 0) and (Idx < Length(FX)) then begin
-      if C = DrawGrid1.FixedCols then
-        Result := FloatToStr(FX[Idx])
-      else
-      if C = DrawGrid1.FixedCols + 1 then
-        Result := FloatToStr(FY[Idx])
-      else
-      if C = DrawGrid1.FixedCols - 1 then
-        Result := Format('%8d', [Idx + 1]);
+    Idx := R - 1;
+    if (Idx >= 0) and (Idx < Length(FTimes)) then begin
+      case C of
+        0: Result := Format('%8d', [Idx + 1]);
+        1: Result := FloatToStr(FTimes[Idx]);
+        2: Result := FloatToStr(FMagnitudes[Idx]);
+        3: try
+             Result := FloatToStr(CalculatePhase(FTimes[Idx], FPeriod, FEpoch));
+           except
+             on E: Exception do begin
+               Result := E.Message;
+             end;
+           end;
+      end;
     end;
   end;
 end;

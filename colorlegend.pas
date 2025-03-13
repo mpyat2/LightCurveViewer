@@ -35,7 +35,7 @@ type
     procedure UpdateGrid;
   end;
 
-procedure ShowColorLegend(Regions: TFoldedRegions);
+procedure ShowColorLegend(Regions: TFoldedRegions; const Title: string);
 
 procedure HideColorLegend;
 
@@ -49,7 +49,7 @@ uses
 var
   FormColorLegend: TFormColorLegend = nil;
 
-procedure ShowColorLegend(Regions: TFoldedRegions);
+procedure ShowColorLegend(Regions: TFoldedRegions; const Title: string);
 begin
   if FormColorLegend = nil then begin
     FormColorLegend := TFormColorLegend.Create(Application);
@@ -58,6 +58,7 @@ begin
     FormColorLegend.Left := Application.MainForm.Left + Application.MainForm.Width - FormColorLegend.Width;
   end;
   FormColorLegend.Hide;
+  FormColorLegend.Caption := Title;
   FormColorLegend.FRegions := Regions;
   FormColorLegend.UpdateGrid;
   FormColorLegend.Show;
@@ -65,8 +66,11 @@ end;
 
 procedure HideColorLegend;
 begin
-  if FormColorLegend <> nil then
+  if FormColorLegend <> nil then begin
     FormColorLegend.Hide;
+    FormColorLegend.Caption := '';
+    FormColorLegend.FRegions := nil;
+  end;
 end;
 
 { TFormColorLegend }
@@ -82,7 +86,7 @@ begin
       GridCanvas.TextRect(aRect, aRect.Left + 2, aRect.Top + 2, GetGridCell(DrawGrid1, aCol, aRow));
     end
     else
-    if (aRow > 0) and (aRow <= FRegions.Count) then begin
+    if (aRow > 0) and (FRegions <> nil) and (aRow <= FRegions.Count) then begin
       GridCanvas.Brush.Color := FRegions.Get(aRow - 1).FColor;
       GridCanvas.Rectangle(aRect);
       GridCanvas.Font.Color := clWhite - GridCanvas.Brush.Color;
@@ -148,7 +152,7 @@ begin
     end;
   end
   else
-  if (aRow > 0) and (aRow <= FRegions.Count) then begin
+  if (aRow > 0) and (FRegions <> nil) and (aRow <= FRegions.Count) then begin
     R := FRegions.Get(aRow - 1);
     case aCol of
       0: Result := 'Cycle ' + IntToStr(R.FCycleN);
@@ -163,7 +167,10 @@ end;
 
 procedure TFormColorLegend.UpdateGrid;
 begin
-  DrawGrid1.RowCount := FRegions.Count + 1;
+  if FRegions <> nil then
+    DrawGrid1.RowCount := FRegions.Count + 1
+  else
+    DrawGrid1.RowCount := 1;
   DrawGrid1.DefaultColWidth := 200;
   DrawGrid1.ColWidths[0] := 100;
 end;

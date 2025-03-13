@@ -39,10 +39,6 @@ type
     FParamOk: Boolean;
   end;
 
-function CalculateCycle(T, Period, Epoch: Double): Int64; inline;
-
-function CalculatePhase(T, Period, Epoch: Double): Double; inline;
-
 procedure PhasePlot(ApplyPhasePlotParamsProc: TApplyPhasePlotParams; APeriod: Double = NaN);
 
 procedure SaveParameters(const Ini: TCustomIniFile; const Section: string);
@@ -86,19 +82,6 @@ end;
 function GetCurrentPeriod: Double;
 begin
   Result := CurrentPeriod;
-end;
-
-function CalculateCycle(T, Period, Epoch: Double): Int64; inline;
-begin
-  Result := Floor64((T - Epoch) / Period);
-end;
-
-function CalculatePhase(T, Period, Epoch: Double): Double; inline;
-var
-  Cycle: Int64;
-begin
-  Cycle := CalculateCycle(T, Period, Epoch);
-  Result := (T - Epoch - Period * Cycle) / Period;
 end;
 
 procedure PhasePlot(ApplyPhasePlotParamsProc: TApplyPhasePlotParams; APeriod: Double = NaN);

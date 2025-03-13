@@ -2,11 +2,11 @@ object FormTable: TFormTable
   Left = 735
   Height = 464
   Top = 286
-  Width = 576
+  Width = 740
   BorderIcons = [biSystemMenu, biMaximize]
   Caption = 'Table'
   ClientHeight = 464
-  ClientWidth = 576
+  ClientWidth = 740
   OnCreate = FormCreate
   Position = poMainFormCenter
   LCLVersion = '3.8.0.0'
@@ -14,7 +14,7 @@ object FormTable: TFormTable
     Left = 0
     Height = 416
     Top = 0
-    Width = 576
+    Width = 740
     Align = alClient
     ColCount = 3
     DefaultColWidth = 200
@@ -28,13 +28,13 @@ object FormTable: TFormTable
     Left = 0
     Height = 48
     Top = 416
-    Width = 576
+    Width = 740
     Align = alBottom
     ClientHeight = 48
-    ClientWidth = 576
+    ClientWidth = 740
     TabOrder = 1
     object Button1: TButton
-      Left = 488
+      Left = 652
       Height = 25
       Top = 11
       Width = 75

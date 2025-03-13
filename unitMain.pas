@@ -174,6 +174,7 @@ type
     procedure OpenFile(const AFileName: string);
     procedure SaveFileAs(const AFileName: string; const X, Y: TDoubleArray);
     procedure SaveDataSettings;
+    procedure SaveDataSettingsAs(AFileName: string);
     procedure LoadDataSettings;
     procedure SaveChartSettings(const Ini: TIniFile; const Section: string);
     procedure LoadChartSettings(const Ini: TIniFile; const Section: string);
@@ -184,7 +185,7 @@ type
     procedure ShowColorLegend;
     procedure HideColorLegend;
     procedure CalculateModelPhasePlot;
-    procedure CalcFoldedData(Period, Epoch: Double; out AX, AY: TDoubleArray; out Colors: TColorArray);
+    procedure CalcFoldedData(Period, Epoch: Double);
     procedure CalcAndPlotFoldedProc;
     procedure SetAxisBoundaries(Xmin, Xmax, Ymin, Ymax: Double);
     procedure Periodogram;
@@ -479,6 +480,8 @@ end;
 procedure TFormMain.ActionObservationsExecute(Sender: TObject);
 var
   X1, Y1: TDoubleArray;
+  Period, Epoch: Double;
+  DialogTitle: string;
   Item: PChartDataItem;
   I: Integer;
 begin
@@ -490,7 +493,12 @@ begin
       X1[I] := Item^.X;
       Y1[I] := Item^.Y;
     end;
-    ShowTable(X1, Y1, 'X', 'Y');
+    Period := unitPhaseDialog.GetCurrentPeriod;
+    Epoch := unitPhaseDialog.GetCurrentEpoch;
+    DialogTitle := 'Observations';
+    if (not IsNan(Period)) and (not IsNan(Epoch)) then
+      DialogTitle := DialogTitle + ' [Period ' + FloatToStr(Period) + ', Epoch ' + FloatToStr(Epoch) + ']';
+    ShowObservations(X1, Y1, Period, Epoch, DialogTitle);
   end;
 end;
 
@@ -541,7 +549,7 @@ begin
   end
   else
   if AAction = ActionCycleByCycleColor then begin
-    (AAction as TAction).Enabled := (ChartSeriesData.Source = LCSrcFoldedData) and not FCalculationInProgress;
+    (AAction as TAction).Enabled := (LCSrcFoldedData.Count > 0) and not FCalculationInProgress;
     (AAction as TAction).Checked := ChartSeriesData.ColorEach <> ceNone;
   end
   else
@@ -872,13 +880,7 @@ begin
       if not SysUtils.DeleteFile(PropsFileName) then
         ShowMessage('Cannot delete ' + PropsFileName);
     end;
-    Ini := TMemIniFile.Create(PropsFileName);
-    try
-      SaveChartSettings(Ini, 'SETTINGS');
-      Ini.UpdateFile;
-    finally
-      FreeAndNil(Ini);
-    end;
+    SaveDataSettingsAs(AFileName);
   except
     on E: Exception do begin
       ShowMessage(E.Message);
@@ -911,13 +913,18 @@ begin
 end;
 
 procedure TFormMain.SaveDataSettings;
+begin
+  SaveDataSettingsAs(FFileName);
+end;
+
+procedure TFormMain.SaveDataSettingsAs(AFileName: string);
 var
   Ini: TMemIniFile;
 begin
-  if FFileName = '' then
+  if AFileName = '' then
     Exit;
   try
-    Ini := TMemIniFile.Create(FFileName + '.lcv.props');
+    Ini := TMemIniFile.Create(AFileName + '.lcv.props');
     try
       Ini.EraseSection('SETTINGS');
       unitFitParamDialog.SaveParameters(Ini, 'SETTINGS');
@@ -973,9 +980,9 @@ begin
     StatusBar.Panels[1].Text := '';
     FChartSubtitle := '';
     ChartSeriesData.Source := nil;
-    ChartSeriesData.ColorEach := ceNone;
-    HideColorLegend;
-    ActionList.UpdateAction(ActionCycleByCycleColor); // Ubuntu bug (check state not always updated)? (GNOME)
+    //ChartSeriesData.ColorEach := ceNone;
+    //HideColorLegend;
+    //ActionList.UpdateAction(ActionCycleByCycleColor); // Ubuntu bug (check state not always updated)? (GNOME)
     ChartSeriesModelToNil;
     UpdateTitle;
     SourceExtent := LCSrcData.Extent;
@@ -1030,8 +1037,13 @@ begin
 end;
 
 procedure TFormMain.ShowColorLegend;
+var
+  Period, Epoch: Double;
 begin
-  colorLegend.ShowColorLegend(FFoldedDataColorRegions);
+  Period := unitPhaseDialog.GetCurrentPeriod;
+  Epoch := unitPhaseDialog.GetCurrentEpoch;
+  colorLegend.ShowColorLegend(FFoldedDataColorRegions,
+    'Period ' + FloatToStr(unitPhaseDialog.GetCurrentPeriod) + ', Epoch ' + FloatToStr(unitPhaseDialog.GetCurrentEpoch));
 end;
 
 procedure TFormMain.HideColorLegend;
@@ -1081,7 +1093,7 @@ begin
   //
 end;
 
-procedure TFormMain.CalcFoldedData(Period, Epoch: Double; out AX, AY: TDoubleArray; out Colors: TColorArray);
+procedure TFormMain.CalcFoldedData(Period, Epoch: Double);
 var
   Item, PrevItem: PChartDataItem;
   Phase: Double;
@@ -1090,10 +1102,6 @@ var
   X1: Double;
 begin
   L := LCSrcData.Count;
-
-  SetLength(AX, L);
-  SetLength(AY, L);
-  SetLength(Colors, L);
 
   if L < 1 then
     Exit;
@@ -1105,8 +1113,6 @@ begin
   for I := 0 to L - 1 do begin
     Item := LCSrcData.Item[I];
     Phase := CalculatePhase(Item^.X, Period, Epoch);
-    AX[I] := Phase;
-    AY[I] := Item^.Y;
     // Cycle from Phase -0.5 to +0.5
     Cycle := CalculateCycle(Item^.X + Period / 2, Period, Epoch);
     if I > 0 then begin
@@ -1121,7 +1127,11 @@ begin
           N := 0;
       end;
     end;
-    Colors[I] := CycleByCycleColors[N];
+
+    LCSrcFoldedData.Add(Phase      , Item^.Y, '', CycleByCycleColors[N]);
+    LCSrcFoldedData.Add(Phase - 1.0, Item^.Y, '', CycleByCycleColors[N]);
+    Item^.Color := CycleByCycleColors[N]; // set the original data color
+
     PrevCycle := Cycle;
   end;
   FFoldedDataColorRegions.AddRegion(X1, LCSrcData.Item[L - 1]^.X, CycleByCycleColors[N], PrevCycle, Epoch + PrevCycle * Period, Period);
@@ -1129,8 +1139,6 @@ end;
 
 procedure TFormMain.CalcAndPlotFoldedProc;
 var
-  Xpoints, Ypoints: TDoubleArray;
-  Colors: TColorArray;
   Period, Epoch: Double;
   I: Integer;
 begin
@@ -1146,12 +1154,12 @@ begin
     FFoldedDataColorRegions.Clear;
     // Model (virtual sources)
     ClearUDFSrcModelFolded;
-    //
-    CalcFoldedData(Period, Epoch, Xpoints, Ypoints, Colors);
-    for I := 0 to Length(Xpoints) - 1 do begin
-      LCSrcFoldedData.Add(Xpoints[I], Ypoints[I], '', Colors[I]);
-      LCSrcFoldedData.Add(Xpoints[I] - 1.0, Ypoints[I], '', Colors[I]);
+    // Reset data colors
+    for I := 0 to LCSrcData.Count - 1 do begin
+      LCSrcData.Item[I]^.Color := clTAColor;
     end;
+    //
+    CalcFoldedData(Period, Epoch);
     //
     CalculateModelPhasePlot;
     PlotFoldedProc;

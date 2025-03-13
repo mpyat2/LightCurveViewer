@@ -17,6 +17,10 @@ function GetMedianInterval(const X: TDoubleArray): Double;
 
 function GetRecommendedFrequencyResolution(Xmin, Xmax: Double; TrigPolyDegree: Integer): Double;
 
+function CalculateCycle(T, Period, Epoch: Double): Int64; inline;
+
+function CalculatePhase(T, Period, Epoch: Double): Double; inline;
+
 implementation
 
 uses
@@ -101,6 +105,19 @@ begin
     Result := 0.05 / (Xmax - Xmin) / TrigPolyDegree
   else
     Result := NaN;
+end;
+
+function CalculateCycle(T, Period, Epoch: Double): Int64; inline;
+begin
+  Result := Floor64((T - Epoch) / Period);
+end;
+
+function CalculatePhase(T, Period, Epoch: Double): Double; inline;
+var
+  Cycle: Int64;
+begin
+  Cycle := CalculateCycle(T, Period, Epoch);
+  Result := (T - Epoch - Period * Cycle) / Period;
 end;
 
 end.
