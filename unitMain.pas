@@ -17,6 +17,7 @@ type
   { TFormMain }
 
   TFormMain = class(TForm)
+    ActionShowErrors: TAction;
     ActionCycleByCycleColor: TAction;
     ActionLogicalExtent: TAction;
     ActionUserManualLocal: TAction;
@@ -56,6 +57,7 @@ type
     LCSrcData: TListChartSource;
     MainMenu: TMainMenu;
     MenuFile: TMenuItem;
+    MenuItemShowErrors: TMenuItem;
     MenuItemPhasePlotNew: TMenuItem;
     MenuItemModelInfo: TMenuItem;
     MenuItemDayByDayColor: TMenuItem;
@@ -132,6 +134,7 @@ type
     procedure ActionSaveChartImageAsExecute(Sender: TObject);
     procedure ActionSaveVisibleExecute(Sender: TObject);
     procedure ActionShowDataExecute(Sender: TObject);
+    procedure ActionShowErrorsExecute(Sender: TObject);
     procedure ActionShowModelExecute(Sender: TObject);
     procedure ActionStopExecute(Sender: TObject);
     procedure ActionUserManualExecute(Sender: TObject);
@@ -407,6 +410,12 @@ begin
   ActionList.UpdateAction(Sender as TAction); // Ubuntu bug (check state not always updated)? (GNOME)
 end;
 
+procedure TFormMain.ActionShowErrorsExecute(Sender: TObject);
+begin
+  ChartSeriesData.YErrorBars.Visible := not ChartSeriesData.YErrorBars.Visible;
+  ActionList.UpdateAction(Sender as TAction); // Ubuntu bug (check state not always updated)? (GNOME)
+end;
+
 procedure TFormMain.ActionShowModelExecute(Sender: TObject);
 begin
   ChartSeriesModel.Active := not ChartSeriesModel.Active;
@@ -479,7 +488,7 @@ end;
 
 procedure TFormMain.ActionObservationsExecute(Sender: TObject);
 var
-  X1, Y1: TDoubleArray;
+  X1, Y1, Errors: TDoubleArray;
   Period, Epoch: Double;
   DialogTitle: string;
   Item: PChartDataItem;
@@ -488,17 +497,19 @@ begin
   if LCSrcData.Count > 0 then begin
     SetLength(X1, LCSrcData.Count);
     SetLength(Y1, LCSrcData.Count);
+    SetLength(Errors, LCSrcData.Count);
     for I := 0 to LCSrcData.Count - 1 do begin
       Item := LCSrcData.Item[I];
       X1[I] := Item^.X;
       Y1[I] := Item^.Y;
+      Errors[I] := Item^.YList[0];
     end;
     Period := unitPhaseDialog.GetCurrentPeriod;
     Epoch := unitPhaseDialog.GetCurrentEpoch;
     DialogTitle := 'Observations';
     if (not IsNan(Period)) and (not IsNan(Epoch)) then
       DialogTitle := DialogTitle + ' [Period ' + FloatToStr(Period) + ', Epoch ' + FloatToStr(Epoch) + ']';
-    ShowObservations(X1, Y1, Period, Epoch, DialogTitle);
+    ShowObservations(X1, Y1, Errors, Period, Epoch, DialogTitle);
   end;
 end;
 
@@ -604,6 +615,11 @@ begin
   if AAction = ActionShowData then begin
     (AAction as TAction).Enabled := (LCSrcData.Count > 0) and not FCalculationInProgress;
     (AAction as TAction).Checked := ChartSeriesData.Active;
+  end
+  else
+  if AAction = ActionShowErrors then begin
+    (AAction as TAction).Enabled := (LCSrcData.Count > 0) and not FCalculationInProgress;
+    (AAction as TAction).Checked := ChartSeriesData.YErrorBars.Visible;
   end
   else
   if AAction = ActionShowModel then begin
@@ -809,6 +825,8 @@ begin
   ActionList.UpdateAction(ActionCycleByCycleColor); // Ubuntu bug (check state not always updated)? (GNOME)
   ChartSeriesData.Active := True;
   ActionList.UpdateAction(ActionShowData); // Ubuntu bug (check state not always updated)? (GNOME)
+  ChartSeriesData.YErrorBars.Visible := True;
+  ActionList.UpdateAction(ActionShowErrors); // Ubuntu bug (check state not always updated)? (GNOME)
   ChartSeriesModel.Active := True;
   ChartSeriesModelUpLimit.Active := ChartSeriesModel.Active;
   ChartSeriesModelDownLimit.Active := ChartSeriesModel.Active;
@@ -831,15 +849,14 @@ end;
 
 procedure TFormMain.OpenFile(const AFileName: string);
 var
-  X, Y: TDoubleArray;
-  //Xprev: Double;
+  X, Y, Errors: TDoubleArray;
   TempObjectName: string;
-  I: Integer;
-  //N: Integer;
+  I, ItemIndex: Integer;
+  Item: PChartDataItem;
 begin
   CloseFile;
   try
-    ReadData(AFileName, X, Y, TempObjectName);
+    ReadData(AFileName, X, Y, Errors, TempObjectName);
   except
     on E: Exception do begin
       ShowMessage(E.Message);
@@ -860,7 +877,9 @@ begin
   unitPhaseDialog.SetCurrentEpoch((MaxValue(X) + MinValue(X)) / 2.0);
 
   for I := 0 to Length(X) - 1 do begin
-    LCSrcData.Add(X[I], Y[I]);
+    ItemIndex := LCSrcData.Add(X[I], Y[I]); // Currently, ItemIndex = I
+    Item := LCSrcData.Item[ItemIndex];
+    Item^.YList[0] := Errors[I];
   end;
 
   LoadDataSettings;
@@ -1097,7 +1116,7 @@ procedure TFormMain.CalcFoldedData(Period, Epoch: Double);
 var
   Item, PrevItem: PChartDataItem;
   Phase: Double;
-  L, N, I: Integer;
+  L, N, I, ItemIndex: Integer;
   Cycle, PrevCycle: Int64;
   X1: Double;
 begin
@@ -1128,9 +1147,11 @@ begin
       end;
     end;
 
-    LCSrcFoldedData.Add(Phase      , Item^.Y, '', CycleByCycleColors[N]);
-    LCSrcFoldedData.Add(Phase - 1.0, Item^.Y, '', CycleByCycleColors[N]);
-    Item^.Color := CycleByCycleColors[N]; // set the original data color
+    ItemIndex := LCSrcFoldedData.Add(Phase      , Item^.Y, '', CycleByCycleColors[N]);
+    LCSrcFoldedData.Item[ItemIndex]^.YList[0] := Item^.YList[0];
+    ItemIndex := LCSrcFoldedData.Add(Phase - 1.0, Item^.Y, '', CycleByCycleColors[N]);
+    LCSrcFoldedData.Item[ItemIndex]^.YList[0] := Item^.YList[0];
+    Item^.Color := CycleByCycleColors[N]; // set color to original data too!
 
     PrevCycle := Cycle;
   end;

@@ -30,6 +30,7 @@ type
   private
     FTimes: TDoubleArray;
     FMagnitudes: TDoubleArray;
+    FErrors: TDoubleArray;
     FPeriod: Double;
     FEpoch: Double;
     function GetGridCell(Grid: TDrawGrid; C, R: Integer): string;
@@ -38,7 +39,7 @@ type
 
   end;
 
-procedure ShowObservations(const Times, Magnitudes: TDoubleArray; Period, Epoch: Double; Title: string);
+procedure ShowObservations(const Times, Magnitudes, Errors: TDoubleArray; Period, Epoch: Double; Title: string);
 
 implementation
 
@@ -47,7 +48,7 @@ implementation
 uses
   Clipbrd, math, miscutils, guiutils;
 
-procedure ShowObservations(const Times, Magnitudes: TDoubleArray; Period, Epoch: Double; Title: string);
+procedure ShowObservations(const Times, Magnitudes, Errors: TDoubleArray; Period, Epoch: Double; Title: string);
 var
   F: TFormTable;
 begin
@@ -58,12 +59,13 @@ begin
     F.Caption := Title;
     F.FTimes := Times;
     F.FMagnitudes := Magnitudes;
+    F.FErrors := Errors;
     F.FPeriod := Period;
     F.FEpoch := Epoch;
     if (not IsNan(Period)) and (not IsNan(Epoch)) then
-      F.DrawGrid1.ColCount := 4
+      F.DrawGrid1.ColCount := 5
     else
-      F.DrawGrid1.ColCount := 3;
+      F.DrawGrid1.ColCount := 4;
     F.DrawGrid1.FixedCols := 1;
     F.DrawGrid1.RowCount := Length(Times) + 1;
     F.DrawGrid1.FixedRows := 1;
@@ -78,6 +80,7 @@ end;
 procedure TFormTable.FormCreate(Sender: TObject);
 begin
   DrawGrid1.OnDrawCell := @GridDrawCell;
+  DrawGrid1.DefaultColWidth := 128;
   DrawGrid1.ColWidths[0] := 64;
 end;
 
@@ -114,7 +117,8 @@ begin
     case C of
       1: Result := 'Time';
       2: Result := 'Magnitude';
-      3: Result := 'Phase';
+      3: Result := 'Error';
+      4: Result := 'Phase';
     end;
   end
   else begin
@@ -124,7 +128,8 @@ begin
         0: Result := Format('%8d', [Idx + 1]);
         1: Result := FloatToStr(FTimes[Idx]);
         2: Result := FloatToStr(FMagnitudes[Idx]);
-        3: try
+        3: Result := FloatToStr(FErrors[Idx]);
+        4: try
              Result := FloatToStr(CalculatePhase(FTimes[Idx], FPeriod, FEpoch));
            except
              on E: Exception do begin

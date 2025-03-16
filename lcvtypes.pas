@@ -32,7 +32,8 @@ type
   TXY = class
     X: Double;
     Y: Double;
-    constructor Create(AX, AY: Double);
+    E: Double;
+    constructor Create(AX, AY, AE: Double);
   end;
 
 type
@@ -76,11 +77,12 @@ end;
 
 { TXY }
 
-constructor TXY.Create(AX, AY: Double);
+constructor TXY.Create(AX, AY, AE: Double);
 begin
   inherited Create;
   X := AX;
   Y := AY;
+  E := AE;
 end;
 
 { TDouble }

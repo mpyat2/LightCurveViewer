@@ -9,31 +9,31 @@ interface
 uses
   Classes, SysUtils, lcvtypes;
 
-procedure ReadData(const AFileName: string; out X: TDoubleArray; out Y: TDoubleArray; out ObjectName: string);
+procedure ReadData(const AFileName: string; out X: TDoubleArray; out Y: TDoubleArray; out Errors: TDoubleArray; out ObjectName: string);
 
 procedure WriteData(const AFileName: string; const X: TDoubleArray; const Y: TDoubleArray);
 
 implementation
 
 uses
-  formatutils, sortutils;
+  math, formatutils, sortutils;
 
 const
   defNameDirective = '#NAME=';
 
 // Reads a text file assuming it contains columns of the floating-point values.
-// Only the first two columns are taken into account.
+// Only the first three columns are taken into account.
 // The empty lines and lines starting with '#' are ignored.
 // The lines containing ASCII 127 character are ignored.
 // The lines contaning less than 2 floating-point values in the first two
 // columns are ignored.
 // The columns are assumed to be separated by tabs or spaces.
 // The data is sorted by X
-procedure ReadData(const AFileName: string; out X: TDoubleArray; out Y: TDoubleArray; out ObjectName: string);
+procedure ReadData(const AFileName: string; out X: TDoubleArray; out Y: TDoubleArray; out Errors: TDoubleArray; out ObjectName: string);
 var
   Lines, Line: TStrings;
   S: string;
-  FX, FY: Double;
+  FX, FY, Error: Double;
   I, N: Integer;
 begin
   ObjectName := ChangeFileExt(ExtractFileName(AFileName), '');
@@ -46,6 +46,7 @@ begin
       Line.QuoteChar := '"';
       SetLength(X, Lines.Count);
       SetLength(Y, Lines.Count);
+      SetLength(Errors, Lines.Count);
       N := 0;
       for I := 0 to Lines.Count - 1 do begin
         S := Trim(Lines[I]);
@@ -68,14 +69,20 @@ begin
           if StringToFloatLocaleIndependent(Line[0], FX) and StringToFloatLocaleIndependent(Line[1], FY) then begin
             X[N] := FX;
             Y[N] := FY;
+            Errors[N] := 0;
             Inc(N);
           end;
+        end;
+        if Line.Count > 2 then begin
+          if StringToFloatLocaleIndependent(Line[2], Error) then
+            Errors[N - 1] := Error;
         end;
       end;
       SetLength(X, N);
       SetLength(Y, N);
+      SetLength(Errors, N);
       // Sort the data
-      SortDataPoints(X, Y);
+      SortDataPoints(X, Y, Errors);
     finally
       FreeAndNil(Line);
     end;

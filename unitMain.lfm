@@ -85,6 +85,7 @@ object FormMain: TFormMain
       Pointer.VertSize = 3
       Pointer.Visible = True
       ShowPoints = True
+      YErrorBars.Visible = True
     end
     object ChartSeriesModel: TLineSeries
       LinePen.Color = clLime
@@ -231,6 +232,9 @@ object FormMain: TFormMain
       end
       object MenuItemShowData: TMenuItem
         Action = ActionShowData
+      end
+      object MenuItemShowErrors: TMenuItem
+        Action = ActionShowErrors
       end
       object MenuItemShowModel: TMenuItem
         Action = ActionShowModel
@@ -425,6 +429,11 @@ object FormMain: TFormMain
       Caption = 'Cycle-by-Cycle Color'
       OnExecute = ActionCycleByCycleColorExecute
     end
+    object ActionShowErrors: TAction
+      Category = 'View'
+      Caption = 'Show Errors'
+      OnExecute = ActionShowErrorsExecute
+    end
   end
   object OpenDialog: TOpenDialog
     Title = ''
@@ -435,10 +444,18 @@ object FormMain: TFormMain
     Top = 296
   end
   object LCSrcData: TListChartSource
+    YCount = 2
+    YErrorBarData.Kind = ebkChartSource
+    YErrorBarData.IndexMinus = 1
+    YErrorBarData.IndexPlus = 1
     Left = 264
     Top = 128
   end
   object LCSrcFoldedData: TListChartSource
+    YCount = 2
+    YErrorBarData.Kind = ebkChartSource
+    YErrorBarData.IndexMinus = 1
+    YErrorBarData.IndexPlus = 1
     Left = 264
     Top = 184
   end

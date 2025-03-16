@@ -11,7 +11,7 @@ uses
 
 procedure SortModelPoints(var Fit: TFitColumnArray);
 
-procedure SortDataPoints(var X, Y: TDoubleArray);
+procedure SortDataPoints(var X, Y, E: TDoubleArray);
 
 procedure SortFloatArray(var X: TDoubleArray);
 
@@ -96,7 +96,7 @@ begin
   end;
 end;
 
-procedure SortDataPoints(var X, Y: TDoubleArray);
+procedure SortDataPoints(var X, Y, E: TDoubleArray);
 var
   List: TList;
   I: Integer;
@@ -105,12 +105,13 @@ begin
   List := TList.Create;
   try
     for I := 0 to Length(X) - 1 do begin
-      List.Add(TXY.Create(X[I], Y[I]));
+      List.Add(TXY.Create(X[I], Y[I], E[I]));
     end;
     List.Sort(@CompareXY);
     for I := 0 to Length(X) - 1 do begin
       X[I] := TXY(List[I]).X;
       Y[I] := TXY(List[I]).Y;
+      E[I] := TXY(List[I]).E;
     end;
   finally
     for I := List.Count - 1 downto 0 do begin
