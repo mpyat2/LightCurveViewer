@@ -2,10 +2,10 @@ object FormMain: TFormMain
   Left = 522
   Height = 600
   Top = 207
-  Width = 1000
+  Width = 800
   Caption = 'LCV'
   ClientHeight = 600
-  ClientWidth = 1000
+  ClientWidth = 800
   Menu = MainMenu
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
@@ -18,7 +18,7 @@ object FormMain: TFormMain
     Left = 0
     Height = 551
     Top = 26
-    Width = 1000
+    Width = 800
     AxisList = <    
       item
         Grid.Color = clSilver
@@ -40,8 +40,8 @@ object FormMain: TFormMain
       item
         Grid.Color = clSilver
         Intervals.Count = 10
-        Intervals.MaxLength = 400
-        Intervals.MinLength = 100
+        Intervals.MaxLength = 100
+        Intervals.MinLength = 50
         Intervals.NiceSteps = '0.01|0.1|1'
         Intervals.Options = [aipUseCount, aipUseMaxLength, aipUseMinLength, aipUseNiceSteps]
         Intervals.Tolerance = 10
@@ -51,6 +51,7 @@ object FormMain: TFormMain
         Marks.LabelFont.Pitch = fpVariable
         Marks.LabelFont.Quality = fqDraft
         Marks.LabelBrush.Style = bsClear
+        Marks.OverlapPolicy = opHideNeighbour
         Minors = <>
         Title.LabelFont.Height = -19
         Title.LabelFont.Name = 'Times New Roman'
@@ -101,7 +102,7 @@ object FormMain: TFormMain
     Left = 0
     Height = 23
     Top = 577
-    Width = 1000
+    Width = 800
     Panels = <    
       item
         Width = 400
@@ -118,7 +119,7 @@ object FormMain: TFormMain
     Left = 0
     Height = 26
     Top = 0
-    Width = 1000
+    Width = 800
     Caption = 'ToolBar'
     Images = ImageList
     ParentShowHint = False
@@ -182,7 +183,7 @@ object FormMain: TFormMain
     end
   end
   object PanelCalculatingMessage: TPanel
-    Left = 872
+    Left = 672
     Height = 24
     Top = 32
     Width = 122

@@ -653,21 +653,23 @@ begin
     Chart.Title.Text.Text := defCaption;
   end;
 
-  Chart.AxisList[0].Title.Caption := FChartYtitle;
-  Chart.AxisList[0].Title.Visible := FChartYtitle <> '';
+  if FChartYtitle <> '' then
+    Chart.AxisList[0].Title.Caption := FChartYtitle
+  else
+    Chart.AxisList[0].Title.Caption := ' ';
+  Chart.AxisList[0].Title.Visible := True; //FChartYtitle <> '';
 
+  if ChartSeriesData.Source = LCSrcFoldedData then begin
+    Chart.AxisList[1].Title.Caption := 'Phase';
+  end
+  else
   if FChartXtitle <> '' then begin
-    if ChartSeriesData.Source = LCSrcFoldedData then begin
-      Chart.AxisList[1].Title.Caption := 'Phase (' + FChartXtitle + ')';
-    end
-    else begin
-      Chart.AxisList[1].Title.Caption := FChartXtitle;
-    end;
+    Chart.AxisList[1].Title.Caption := FChartXtitle;
   end
   else begin
-    Chart.AxisList[1].Title.Caption := '';
+    Chart.AxisList[1].Title.Caption := ' ';
   end;
-  Chart.AxisList[1].Title.Visible := FChartXtitle <> '';
+  Chart.AxisList[1].Title.Visible := True; //FChartXtitle <> '';
 end;
 
 procedure TFormMain.UDFSrcModelGetChartDataItem(
@@ -825,7 +827,7 @@ begin
   ActionList.UpdateAction(ActionCycleByCycleColor); // Ubuntu bug (check state not always updated)? (GNOME)
   ChartSeriesData.Active := True;
   ActionList.UpdateAction(ActionShowData); // Ubuntu bug (check state not always updated)? (GNOME)
-  ChartSeriesData.YErrorBars.Visible := True;
+  ChartSeriesData.YErrorBars.Visible := False;
   ActionList.UpdateAction(ActionShowErrors); // Ubuntu bug (check state not always updated)? (GNOME)
   ChartSeriesModel.Active := True;
   ChartSeriesModelUpLimit.Active := ChartSeriesModel.Active;
