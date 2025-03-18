@@ -175,7 +175,7 @@ type
     procedure ClearModelFolded;
     procedure CloseFile;
     procedure OpenFile(const AFileName: string);
-    procedure SaveFileAs(const AFileName: string; const X, Y: TDoubleArray);
+    procedure SaveFileAs(const AFileName: string; const X, Y, Errors: TDoubleArray);
     procedure SaveDataSettings;
     procedure SaveDataSettingsAs(AFileName: string);
     procedure LoadDataSettings;
@@ -281,14 +281,15 @@ var
   Tool: TDatapointClickTool;
   Series: TLineSeries;
   S, S1: String;
-  X, Y: Double;
+  X, Y, Error: Double;
 begin
   Tool := ATool as TDatapointClickTool;
   if Tool.Series = ChartSeriesData then begin
     Series := Tool.Series as TLineSeries;
     X := Series.GetXValue(Tool.PointIndex);
     Y := Series.GetYValue(Tool.PointIndex);
-    S1 := Format('x = %g'#13#10'y = %g', [X, Y]);
+    Error := Series.GetYValues(Tool.PointIndex, 1);
+    S1 := Format('x = %g'#13#10'y = %g'#13#10'error = %g', [X, Y, Error]);
     S := Series.ListSource.Item[Tool.PointIndex]^.Text;
     if S = S1 then
       Series.ListSource.SetText(Tool.PointIndex, '')
@@ -302,21 +303,17 @@ var
   Tool: TDatapointClickTool;
   Series: TLineSeries;
   S1: String;
-  X, Y: Double;
+  X, Y, Error: Double;
 begin
   Tool := ATool as TDatapointClickTool;
   if Tool.Series = ChartSeriesData then begin
     Series := Tool.Series as TLineSeries;
     X := Series.GetXValue(Tool.PointIndex);
     Y := Series.GetYValue(Tool.PointIndex);
-    S1 := Format('x = %g'#13#10'y = %g', [X, Y]);
+    Error := Series.GetYValues(Tool.PointIndex, 1);
+    S1 := Format('x = %g'#13#10'y = %g'#13#10'error = %g', [X, Y, Error]);
     Series.ListSource.SetText(Tool.PointIndex, S1);
-    floattextform.AddText('x = '^I + FloatToStr(X) + ^I + 'y = '^I + FloatToStr(Y));
-    //S := Series.ListSource.Item[Tool.PointIndex]^.Text;
-    //if S = S1 then
-    //  Series.ListSource.SetText(Tool.PointIndex, '')
-    //else
-    //  Series.ListSource.SetText(Tool.PointIndex, S1);
+    floattextform.AddText('x = '^I + FloatToStr(X) + ^I'y = '^I + FloatToStr(Y) + ^I'error = '^I + FloatToStr(Error));
   end;
 end;
 
@@ -372,34 +369,44 @@ procedure TFormMain.ActionSaveVisibleExecute(Sender: TObject);
   end;
 
 var
-  X1, Y1: TDoubleArray;
-  ItemX, ItemY: Double;
+  X1, Y1, Errors: TDoubleArray;
+  ItemX, ItemY, Error: Double;
   Item: PChartDataItem;
   N, I: Integer;
+  ErrorExist: Boolean;
 begin
   if (LCSrcData.Count > 0) and (ChartSeriesData.Source = LCSrcData) then begin
     SetLength(X1, LCSrcData.Count);
     SetLength(Y1, LCSrcData.Count);
+    SetLength(Errors, LCSrcData.Count);
+    ErrorExist := False;
     N := 0;
     for I := 0 to LCSrcData.Count - 1 do begin
       Item := LCSrcData.Item[I];
       ItemX := Item^.X;
       ItemY := Item^.Y;
+      Error := Item^.YList[0];
       if ValInRange(ItemX, Chart.CurrentExtent.a.X, Chart.CurrentExtent.b.X) and
          ValInRange(ItemY, Chart.CurrentExtent.a.Y, Chart.CurrentExtent.b.Y) then
       begin
         X1[N] := ItemX;
         Y1[N] := ItemY;
+        Errors[N] := Error;
         Inc(N);
+        if Error <> 0.0 then ErrorExist := True;
       end;
     end;
     SetLength(X1, N);
     SetLength(Y1, N);
+    if ErrorExist then
+      SetLength(Errors, N)
+    else
+      Errors := nil;
     if SaveDialog.InitialDir = '' then
       SaveDialog.InitialDir := OpenDialog.InitialDir;
     SaveDialog.FileName := '';
     if SaveDialog.Execute then begin
-      SaveFileAs(SaveDialog.FileName, X1, Y1);
+      SaveFileAs(SaveDialog.FileName, X1, Y1, Errors);
     end;
   end;
 end;
@@ -889,14 +896,14 @@ begin
   PlotData;
 end;
 
-procedure TFormMain.SaveFileAs(const AFileName: string; const X, Y: TDoubleArray);
+procedure TFormMain.SaveFileAs(const AFileName: string; const X, Y, Errors: TDoubleArray);
 var
   PropsFileName: string;
   Ini: TIniFile;
 begin
   try
     PropsFileName := AFileName + '.lcv.props';
-    WriteData(AFileName, X, Y);
+    WriteData(AFileName, X, Y, Errors);
     if FileExists(PropsFileName) then begin
       if not SysUtils.DeleteFile(PropsFileName) then
         ShowMessage('Cannot delete ' + PropsFileName);

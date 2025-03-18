@@ -11,7 +11,7 @@ uses
 
 procedure ReadData(const AFileName: string; out X: TDoubleArray; out Y: TDoubleArray; out Errors: TDoubleArray; out ObjectName: string);
 
-procedure WriteData(const AFileName: string; const X: TDoubleArray; const Y: TDoubleArray);
+procedure WriteData(const AFileName: string; const X: TDoubleArray; const Y: TDoubleArray; const Errors: TDoubleArray);
 
 implementation
 
@@ -91,7 +91,7 @@ begin
   end;
 end;
 
-procedure WriteData(const AFileName: string; const X: TDoubleArray; const Y: TDoubleArray);
+procedure WriteData(const AFileName: string; const X: TDoubleArray; const Y: TDoubleArray; const Errors: TDoubleArray);
 var
   Lines: TStrings;
   S: string;
@@ -101,6 +101,8 @@ begin
   try
     for I := 0 to Length(X) - 1 do begin
       S := FloatToStrLocaleIndependent(X[I]) + ' ' + FloatToStrLocaleIndependent(Y[I]);
+      if Errors <> nil then
+        S := S + ' ' + FloatToStrLocaleIndependent(Errors[I]);
       Lines.Add(S);
     end;
     Lines.SaveToFile(AFileName);
