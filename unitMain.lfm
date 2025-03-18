@@ -74,16 +74,15 @@ object FormMain: TFormMain
     OnMouseLeave = ChartMouseLeave
     OnMouseMove = ChartMouseMove
     object ChartSeriesData: TLineSeries
-      LinePen.Color = clNone
       LineType = ltNone
       Marks.Format = '%2:s'
       Marks.LinkPen.Color = clBlack
       Marks.Style = smsLabel
       Pointer.Brush.Color = clPurple
-      Pointer.HorizSize = 3
-      Pointer.Pen.Color = clNone
+      Pointer.HorizSize = 2
+      Pointer.OverrideColor = [ocBrush, ocPen]
       Pointer.Style = psCircle
-      Pointer.VertSize = 3
+      Pointer.VertSize = 2
       Pointer.Visible = True
       ShowPoints = True
       YErrorBars.Visible = True

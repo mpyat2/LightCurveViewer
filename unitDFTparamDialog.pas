@@ -23,6 +23,8 @@ type
     EditFrequencyMin: TEdit;
     EditFrequencyMax: TEdit;
     EditFrequencyResolution: TEdit;
+    LabelP2: TLabel;
+    LabelP1: TLabel;
     LabelRecommendedResolution: TLabel;
     LabelTrendDegree: TLabel;
     LabelTrigPolyDegree: TLabel;
@@ -30,10 +32,11 @@ type
     LabelFrequencyMax: TLabel;
     LabelFrequencyResolution: TLabel;
     procedure ButtonOkClick(Sender: TObject);
+    procedure EditFrequencyMaxChange(Sender: TObject);
+    procedure EditFrequencyMinChange(Sender: TObject);
     procedure EditTrigPolyDegreeChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure UpdateRecommendedResolution;
   private
     FFrequencyMin: Double;
     FFrequencyMax: Double;
@@ -41,6 +44,8 @@ type
     FTrendDegree: Integer;
     FTrigPolyDegree: Integer;
     Xdata: TDoubleArray;
+    procedure UpdateRecommendedResolution;
+    procedure UpdateView;
   public
 
   end;
@@ -182,20 +187,66 @@ var
 begin
   if (Length(Xdata) > 0) and TryStrToInt(Trim(EditTrigPolyDegree.Text), TrigPolyDegree) and (TrigPolyDegree > 0) then begin
     Resolution := GetRecommendedFrequencyResolution(MinValue(Xdata), MaxValue(Xdata), TrigPolyDegree);
-    EditRecommendedResolution.Text := FloatToStr(Resolution);
+    EditRecommendedResolution.Text := FloatToStrF(Resolution, ffGeneral, 10, 0);
   end
   else
     EditRecommendedResolution.Text := '';
 end;
 
+procedure TFormDFTparams.UpdateView;
+  procedure UpdateP(E: TEdit; L: TLabel);
+  var
+    FPUExceptionMask: TFPUExceptionMask;
+    S: string;
+    V: Double;
+  begin
+    try
+      S := Trim(E.Text);
+      if S <> '' then begin
+        V := StrToFloat(S);
+        FPUExceptionMask := GetExceptionMask;
+        SetExceptionMask([exInvalidOp, exDenormalized, exZeroDivide, exOverflow, exUnderflow, exPrecision]);
+        try
+          V := 1.0 / V;
+        finally
+          SetExceptionMask(FPUExceptionMask);
+        end;
+        S := 'P = ' + FloatToStrF(V, ffGeneral, 7, 0);
+        if L.Canvas.TextWidth(S) <= L.Width then
+          L.Caption := S
+        else
+          L.Caption := '**********';
+      end
+      else
+        L.Caption := '';
+    except
+      L.Caption := '?';
+    end;
+  end;
+begin
+  UpdateP(EditFrequencyMin, LabelP1);
+  UpdateP(EditFrequencyMax, LabelP2);
+end;
+
 procedure TFormDFTparams.FormShow(Sender: TObject);
 begin
+  UpdateView;
   UpdateRecommendedResolution;
 end;
 
 procedure TFormDFTparams.EditTrigPolyDegreeChange(Sender: TObject);
 begin
   UpdateRecommendedResolution;
+end;
+
+procedure TFormDFTparams.EditFrequencyMinChange(Sender: TObject);
+begin
+  UpdateView;
+end;
+
+procedure TFormDFTparams.EditFrequencyMaxChange(Sender: TObject);
+begin
+  UpdateView;
 end;
 
 procedure TFormDFTparams.ButtonOkClick(Sender: TObject);
