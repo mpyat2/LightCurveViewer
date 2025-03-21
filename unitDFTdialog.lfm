@@ -11,6 +11,7 @@ object FormDFTDialog: TFormDFTDialog
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnShow = FormShow
   Position = poMainFormCenter
   LCLVersion = '3.8.0.0'
   object PageControl1: TPageControl
@@ -163,10 +164,36 @@ object FormDFTDialog: TFormDFTDialog
         DefaultColWidth = 200
         ExtendedSelect = False
         FixedCols = 0
-        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goSmoothScroll]
+        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect, goSmoothScroll]
         PopupMenu = PopupMenuGrid
+        RangeSelectMode = rsmMulti
         TabOrder = 0
         UseXORFeatures = True
+        OnDrawCell = GridDrawCell
+        OnSelectCell = DrawGrid1SelectCell
+      end
+    end
+    object TabSheetMaxima: TTabSheet
+      Caption = 'TabSheetMaxima'
+      ClientHeight = 400
+      ClientWidth = 705
+      object DrawGrid2: TDrawGrid
+        Left = 0
+        Height = 400
+        Top = 0
+        Width = 705
+        Align = alClient
+        ColCount = 2
+        DefaultColWidth = 200
+        ExtendedSelect = False
+        FixedCols = 0
+        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect, goSmoothScroll]
+        PopupMenu = PopupMenuGrid
+        RangeSelectMode = rsmMulti
+        TabOrder = 0
+        UseXORFeatures = True
+        OnDrawCell = GridDrawCell
+        OnSelectCell = DrawGrid2SelectCell
       end
     end
   end

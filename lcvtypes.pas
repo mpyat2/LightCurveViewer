@@ -18,6 +18,7 @@ type
 type
   TArbFloatArray = array of ArbFloat; // for compatibility with NumLib
   TDoubleArray = array of Double;
+  TIntegerArray = array of Integer;
   TInt5Array = array[0..4] of Integer;
   TDouble5Array = array[0..4] of Double;
   TFitColumnArray = array[FitColumnType] of TDoubleArray;
@@ -26,6 +27,14 @@ type
   TFitPoint = class
     X, Y, E, O: Double;
     constructor Create(AX, AY, AE, AO: Double);
+  end;
+
+type
+  TXYN = class
+    X: Double;
+    Y: Double;
+    N: Integer;
+    constructor Create(AX, AY: Double; AN: Integer);
   end;
 
 type
@@ -73,6 +82,16 @@ begin
   Y := AY;
   E := AE;
   O := AO;
+end;
+
+{ TXYN }
+
+constructor TXYN.Create(AX, AY: Double; AN: Integer);
+begin
+  inherited Create;
+  X := AX;
+  Y := AY;
+  N := AN;
 end;
 
 { TXY }
