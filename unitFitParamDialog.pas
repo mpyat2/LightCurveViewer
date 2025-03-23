@@ -60,7 +60,10 @@ procedure SaveParameters(const Ini: TCustomIniFile; const Section: string);
 
 procedure LoadParameters(const Ini: TCustomIniFile; const Section: string);
 
-function GetFitParams(out ATrendDegree: Integer; out ATrigPolyDegrees: TInt5Array; out AFrequencies: TDouble5Array): Boolean;
+function GetFitParams(var ATrendDegree: Integer;
+                      var ATrigPolyDegrees: TInt5Array;
+                      var AFrequencies: TDouble5Array;
+                      UseInitialValues: Boolean): Boolean;
 
 implementation
 
@@ -111,7 +114,10 @@ begin
     CurrentTrigPolyDegrees[I] := Ini.ReadInteger(Section, 'fit.trigpolydegree' + IntToStr(I + 1), 0);
 end;
 
-function GetFitParams(out ATrendDegree: Integer; out ATrigPolyDegrees: TInt5Array; out AFrequencies: TDouble5Array): Boolean;
+function GetFitParams(var ATrendDegree: Integer;
+                      var ATrigPolyDegrees: TInt5Array;
+                      var AFrequencies: TDouble5Array;
+                      UseInitialValues: Boolean): Boolean;
 var
   Edit: TEdit;
   F: TFormFitParams;
@@ -120,21 +126,37 @@ begin
   Result := False;
   F := TFormFitparams.Create(Application);
   try
-    F.EditTrendDegree.Text := IntToStr(CurrentTrendDegree);
+    if not UseInitialValues then
+      F.EditTrendDegree.Text := IntToStr(CurrentTrendDegree)
+    else
+      F.EditTrendDegree.Text := IntToStr(ATrendDegree);
+
     for I := 0 to Length(CurrentPeriods) - 1 do begin
       Edit := F.FindComponent('EditPeriod' + IntToStr(I+1)) as TEdit;
       Assert(Edit <> nil);
-      if not IsNan(CurrentPeriods[I]) then
-        Edit.Text := FloatToStr(CurrentPeriods[I])
-      else
-        Edit.Text := '';
+      if not UseInitialValues then begin
+        if not IsNan(CurrentPeriods[I]) then
+          Edit.Text := FloatToStr(CurrentPeriods[I])
+        else
+          Edit.Text := '';
+      end else begin
+        if not IsNan(AFrequencies[I]) and (AFrequencies[I] > 0) then
+          Edit.Text := FloatToStr(1.0 / AFrequencies[I])
+        else
+          Edit.Text := '';
+      end;
       Edit := F.FindComponent('EditTrigDeg' + IntToStr(I+1)) as TEdit;
       Assert(Edit <> nil);
-      Edit.Text := IntToStr(CurrentTrigPolyDegrees[I]);
+      if not UseInitialValues then
+        Edit.Text := IntToStr(CurrentTrigPolyDegrees[I])
+      else
+        Edit.Text := IntToStr(ATrigPolyDegrees[I]);
     end;
+
     F.ShowModal;
     if F.ModalResult <> mrOK then
       Exit;
+
     CurrentTrendDegree := F.FTrendDegree;
     CurrentPeriods := F.FPeriods;
     CurrentTrigPolyDegrees := F.FTrigPolyDegrees;

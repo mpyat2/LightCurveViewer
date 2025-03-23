@@ -20,6 +20,8 @@ type
     ActionGridSelectAll: TAction;
     ActionGridCopy: TAction;
     ActionList: TActionList;
+    ButtonModelFromTable: TButton;
+    ButtonModelFromMaxima: TButton;
     ButtonPhasePlot: TButton;
     ButtonClose: TButton;
     Chart1: TChart;
@@ -42,6 +44,8 @@ type
     MenuItem2: TMenuItem;
     MenuItemCopyChart: TMenuItem;
     PageControl1: TPageControl;
+    PanelTableControls: TPanel;
+    PanelMaximaControls: TPanel;
     PanelChartControls: TPanel;
     PanelButtons: TPanel;
     PopupMenuChart: TPopupMenu;
@@ -54,6 +58,7 @@ type
     procedure ActionGridSelectAllExecute(Sender: TObject);
     procedure ActionListUpdate(AAction: TBasicAction; var Handled: Boolean);
     procedure ButtonCloseClick(Sender: TObject);
+    procedure ButtonModel(Sender: TObject);
     procedure ButtonPhasePlotClick(Sender: TObject);
     procedure ChartToolset1DataPointClickTool1PointClick(ATool: TChartTool; APoint: TPoint);
     procedure DrawGrid1SelectCell(Sender: TObject; aCol, aRow: Integer; var CanSelect: Boolean);
@@ -66,10 +71,15 @@ type
   private
     FSelectCellEventActive: Boolean;
     FSelectedPointIndex: Integer;
+    FTrendDegreeForModel: Integer;
+    FTrigPolyDegreesForModel: TInt5Array;
     FApplyPhasePlotParamsProc: TApplyPhasePlotParams;
     FmaximaX: TDoubleArray;
     FmaximaY: TDoubleArray;
     FmaximaN: TIntegerArray;
+    function GetGrid1Frequency(R: Integer): Double;
+    function GetGrid2Frequency(R: Integer): Double;
+    function GetGridFrequency(Grid: TDrawGrid; R: Integer): Double;
     function GetGrid1Cell(C, R: Integer): string;
     function GetGrid2Cell(C, R: Integer): string;
     function GetGridCell(Grid: TDrawGrid; C, R: Integer): string;
@@ -92,7 +102,7 @@ uses
 //{$IF defined(Windows)}
 //  Windows,
 //{$ENDIF}
-  math, Clipbrd, Contnrs, sortutils, guiutils;
+  math, Clipbrd, Contnrs, sortutils, guiutils, unitFitParamDialog, unitMain;
 
 const
   UnsincSelectColor = clLtGray;
@@ -113,12 +123,12 @@ begin
     end;
     F.InitMaxima;
 
-    F.DrawGrid1.ColCount := 2 + F.DrawGrid1.FixedCols;
+    F.DrawGrid1.ColCount := 3 + F.DrawGrid1.FixedCols;
     F.DrawGrid1.RowCount := F.DrawGrid1.FixedRows + 1;
     if F.Chart1LineSeries1.Count > 0 then
       F.DrawGrid1.RowCount := F.Chart1LineSeries1.Count + F.DrawGrid1.FixedRows;
 
-    F.DrawGrid2.ColCount := 2 + F.DrawGrid2.FixedCols;
+    F.DrawGrid2.ColCount := 3 + F.DrawGrid2.FixedCols;
     F.DrawGrid2.RowCount := F.DrawGrid2.FixedRows + 1;
     if Length(F.FMaximaX) > 0 then
       F.DrawGrid2.RowCount := Length(F.FMaximaX) + F.DrawGrid2.FixedRows;
@@ -138,7 +148,12 @@ end;
 { TFormDFTDialog }
 
 procedure TFormDFTDialog.FormCreate(Sender: TObject);
+var
+  I: Integer;
 begin
+  FTrendDegreeForModel := 0;
+  for I := 0 to Length(FTrigPolyDegreesForModel) - 1 do
+    FTrigPolyDegreesForModel[I] := 1;
   FSelectCellEventActive := False;
 end;
 
@@ -214,6 +229,48 @@ end;
 procedure TFormDFTDialog.ButtonCloseClick(Sender: TObject);
 begin
   Close;
+end;
+
+procedure TFormDFTDialog.ButtonModel(Sender: TObject);
+var
+  Frequencies: TDouble5Array;
+  Grid: TDrawGrid;
+  R, N: Integer;
+begin
+  if Sender = ButtonModelFromTable then begin
+    Grid := DrawGrid1;
+  end
+  else
+  if Sender = ButtonModelFromMaxima then begin
+    Grid := DrawGrid2;
+  end
+  else
+    Exit;
+
+  for R := 0 to Length(Frequencies) - 1 do
+    Frequencies[R] := NaN;
+
+  N := 0;
+  for R := Grid.FixedRows to Grid.RowCount - 1 do begin
+    if Grid.IsCellSelected[Grid.FixedCols, R] then begin
+      if N > Length(Frequencies) - 1 then begin
+        ShowMessage('In the current implementation, no more than ' + IntToStr(Length(Frequencies)) + ' independent frequencies are allowed.' + ^M^J +
+                    'Please select fewer frequencies');
+        Exit;
+      end;
+      Frequencies[N] := GetGridFrequency(Grid, R);
+      Inc(N);
+    end;
+  end;
+
+  if FormMain.LCSrcDataCount > 0 then begin
+    if not GetFitParams(FTrendDegreeForModel, FTrigPolyDegreesForModel, Frequencies, True) then
+      Exit;
+    FormMain.SaveDataSettings;
+    FormMain.DoPolyFitProc(FTrendDegreeForModel, FTrigPolyDegreesForModel, Frequencies);
+  end else begin
+    ShowMessage('No data!');
+  end;
 end;
 
 procedure TFormDFTDialog.ButtonPhasePlotClick(Sender: TObject);
@@ -389,6 +446,36 @@ begin
   GridCanvas.TextRect(aRect, aRect.Left + 2, aRect.Top + 2, GetGridCell(Grid, aCol, aRow));
 end;
 
+function TFormDFTDialog.GetGrid1Frequency(R: Integer): Double;
+begin
+  Result := NaN;
+  if R < DrawGrid1.FixedRows + Chart1LineSeries1.Count then begin
+    if R >= DrawGrid1.FixedRows then begin
+      Result := Chart1LineSeries1.XValue[R - DrawGrid1.FixedRows];
+    end;
+  end;
+end;
+
+function TFormDFTDialog.GetGrid2Frequency(R: Integer): Double;
+begin
+  Result := NaN;
+  if R < DrawGrid2.FixedRows + Length(FmaximaX) then begin
+    if R >= DrawGrid2.FixedRows then begin
+      Result := FmaximaX[R - DrawGrid2.FixedRows];
+    end;
+  end;
+end;
+
+function TFormDFTDialog.GetGridFrequency(Grid: TDrawGrid; R: Integer): Double;
+begin
+  Result := NaN;
+  if Grid = DrawGrid1 then
+    Result := GetGrid1Frequency(R)
+  else
+  if Grid = DrawGrid2 then
+    Result := GetGrid2Frequency(R);
+end;
+
 function TFormDFTDialog.GetGrid1Cell(C, R: Integer): string;
 var
   V: Double;
@@ -402,6 +489,22 @@ begin
       if C = DrawGrid1.FixedCols + 1 then
         V := Chart1LineSeries1.YValue[R - DrawGrid1.FixedRows]
       else
+      if C = DrawGrid1.FixedCols + 2 then begin
+        V := Chart1LineSeries1.XValue[R - DrawGrid1.FixedRows];
+        if V <> 0 then begin
+          try
+            V := 1.0 / V
+          except
+            Result := '*ERROR*';
+            Exit;
+          end;
+        end
+        else begin
+          Result := '';
+          Exit;
+        end;
+      end
+      else
         Exit;
       Result := FloatToStr(V);
     end
@@ -411,6 +514,9 @@ begin
       else
       if C = DrawGrid1.FixedCols + 1 then
         Result := 'Power'
+      else
+      if C = DrawGrid1.FixedCols + 2 then
+        Result := 'Period'
       else
         Exit;
     end;
@@ -430,6 +536,22 @@ begin
       if C = DrawGrid2.FixedCols + 1 then
         V := FMaximaY[R - DrawGrid2.FixedRows]
       else
+      if C = DrawGrid1.FixedCols + 2 then begin
+        V := FmaximaX[R - DrawGrid2.FixedRows];
+        if V <> 0 then begin
+          try
+            V := 1.0 / V
+          except
+            Result := '*ERROR*';
+            Exit;
+          end;
+        end
+        else begin
+          Result := '';
+          Exit;
+        end;
+      end
+      else
         Exit;
       Result := FloatToStr(V);
     end
@@ -439,6 +561,9 @@ begin
       else
       if C = DrawGrid2.FixedCols + 1 then
         Result := 'Power'
+      else
+      if C = DrawGrid1.FixedCols + 2 then
+        Result := 'Period'
       else
         Exit;
     end;

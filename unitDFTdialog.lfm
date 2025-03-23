@@ -156,7 +156,7 @@ object FormDFTDialog: TFormDFTDialog
       ClientWidth = 705
       object DrawGrid1: TDrawGrid
         Left = 0
-        Height = 400
+        Height = 358
         Top = 0
         Width = 705
         Align = alClient
@@ -172,6 +172,25 @@ object FormDFTDialog: TFormDFTDialog
         OnDrawCell = GridDrawCell
         OnSelectCell = DrawGrid1SelectCell
       end
+      object PanelTableControls: TPanel
+        Left = 0
+        Height = 42
+        Top = 358
+        Width = 705
+        Align = alBottom
+        ClientHeight = 42
+        ClientWidth = 705
+        TabOrder = 1
+        object ButtonModelFromTable: TButton
+          Left = 620
+          Height = 25
+          Top = 8
+          Width = 75
+          Caption = 'Model'
+          TabOrder = 0
+          OnClick = ButtonModel
+        end
+      end
     end
     object TabSheetMaxima: TTabSheet
       Caption = 'TabSheetMaxima'
@@ -179,7 +198,7 @@ object FormDFTDialog: TFormDFTDialog
       ClientWidth = 705
       object DrawGrid2: TDrawGrid
         Left = 0
-        Height = 400
+        Height = 358
         Top = 0
         Width = 705
         Align = alClient
@@ -194,6 +213,25 @@ object FormDFTDialog: TFormDFTDialog
         UseXORFeatures = True
         OnDrawCell = GridDrawCell
         OnSelectCell = DrawGrid2SelectCell
+      end
+      object PanelMaximaControls: TPanel
+        Left = 0
+        Height = 42
+        Top = 358
+        Width = 705
+        Align = alBottom
+        ClientHeight = 42
+        ClientWidth = 705
+        TabOrder = 1
+        object ButtonModelFromMaxima: TButton
+          Left = 620
+          Height = 25
+          Top = 8
+          Width = 75
+          Caption = 'Model'
+          TabOrder = 0
+          OnClick = ButtonModel
+        end
       end
     end
   end

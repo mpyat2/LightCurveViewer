@@ -164,6 +164,7 @@ type
     FModelData: TFitColumnArray;
     FModelFolded: TFitColumnArray;
     FFoldedDataColorRegions: TFoldedRegions;
+    function GetLCSrcDataCount: Integer;
     procedure UpdateTitle;
     procedure ChartSeriesModelToNil;
     procedure ChartSeriesModelToModel;
@@ -176,7 +177,6 @@ type
     procedure CloseFile;
     procedure OpenFile(const AFileName: string);
     procedure SaveFileAs(const AFileName: string; const X, Y, Errors: TDoubleArray);
-    procedure SaveDataSettings;
     procedure SaveDataSettingsAs(AFileName: string);
     procedure LoadDataSettings;
     procedure SaveChartSettings(const Ini: TIniFile; const Section: string);
@@ -201,7 +201,9 @@ type
     procedure LongOpStart;
     procedure LongOpStop;
   public
-
+    property LCSrcDataCount: Integer read GetLCSrcDataCount;
+    procedure SaveDataSettings;
+    procedure DoPolyFitProc(TrendDegree: Integer; const TrigPolyDegrees: TInt5Array; const Frequencies: TDouble5Array);
   end;
 
 var
@@ -637,6 +639,11 @@ begin
   if AAction = ActionStop then begin
     (AAction as TAction).Enabled := FCalculationInProgress;
   end;
+end;
+
+function TFormMain.GetLCSrcDataCount: Integer;
+begin
+  Result := LCSrcData.Count;
 end;
 
 procedure TFormMain.UpdateTitle;
@@ -1234,6 +1241,20 @@ begin
 end;
 
 procedure TFormMain.DoPolyFit;
+var
+  TrendDegree: Integer;
+  TrigPolyDegrees: TInt5Array;
+  Frequencies: TDouble5Array;
+begin
+  if LCSrcData.Count > 0 then begin
+    if not GetFitParams(TrendDegree, TrigPolyDegrees, Frequencies, False) then
+      Exit;
+    SaveDataSettings;
+    DoPolyFitProc(TrendDegree, TrigPolyDegrees, Frequencies);
+  end;
+end;
+
+procedure TFormMain.DoPolyFitProc(TrendDegree: Integer; const TrigPolyDegrees: TInt5Array; const Frequencies: TDouble5Array);
 
   function FitStepFromFrequencies(Freq: TDouble5Array): Double;
   var
@@ -1253,9 +1274,6 @@ procedure TFormMain.DoPolyFit;
 var
   X: TDoubleArray;
   Y: TDoubleArray;
-  TrendDegree: Integer;
-  TrigPolyDegrees: TInt5Array;
-  Frequencies: TDouble5Array;
   NofParameters: Integer;
   n_points: Integer;
   OCsquared: Double;
@@ -1267,140 +1285,138 @@ var
   FPUExceptionMask: TFPUExceptionMask;
   Intf: IUnknown;
 begin
-  if LCSrcData.Count > 0 then begin
-    if not GetFitParams(TrendDegree, TrigPolyDegrees, Frequencies) then
-      Exit;
-    SaveDataSettings;
+  Intf := TWaitCursor.Create as IUnknown; // will be freed automatically
 
-    Intf := TWaitCursor.Create as IUnknown; // will be freed automatically
+  FFitFormula := '';
+  FFitInfo := '';
 
-    FFitFormula := '';
-    FFitInfo := '';
+  // Model uses virtual sources
+  ChartSeriesModelToNil;
+  //
+  ClearUDFSrcModel;
+  ClearUDFSrcModelFolded;
+  //
+  ClearModelData;
+  ClearModelFolded;
+  //
+  ClearFitAtPoints;
+  //
 
-    // Model uses virtual sources
-    ChartSeriesModelToNil;
-    //
-    ClearUDFSrcModel;
-    ClearUDFSrcModelFolded;
-    //
-    ClearModelData;
-    ClearModelFolded;
-    //
-    ClearFitAtPoints;
-    //
-
-    SetLength(X, LCSrcData.Count);
-    SetLength(Y, LCSrcData.Count);
-    for I := 0 to LCSrcData.Count - 1 do begin
-      Item := LCSrcData.Item[I];
-      X[I] := Item^.X;
-      Y[I] := Item^.Y;
-    end;
-
-    try
-      // Under Linux, all exceptions get masked (at least sometimes)
-      // For compatibility, we explicitly set the mask
-      FPUExceptionMask := GetExceptionMask;
-      SetExceptionMask([exDenormalized, exUnderflow, exPrecision]);
-      try
-        meanTime := Mean(X);
-        n_points := Length(X);
-        for I := 0 to n_points - 1 do begin
-          X[I] := X[I] - meanTime;
-        end;
-
-        fitXmin := MinValue(X);
-        fitXmax := MaxValue(X);
-        fitXstep := FitStepFromFrequencies(Frequencies);
-        if IsNan(fitXstep) then
-          fitXstep := (fitXmax - fitXmin) / (Length(X) * 3);
-        nfit := Ceil((fitXmax - fitXmin) / fitXstep);
-        nfit := Ceil(nfit / 10) * 10;
-        if nfit > 100000 then begin
-          nfit := 100000;
-          fitXstep := (fitXmax - fitXmin) / nfit;
-        end;
-        PolyFit(X, Y, TrendDegree, TrigPolyDegrees, Frequencies,
-                fitXmin, fitXmax, fitXstep,
-                FModelData[FitColumnType.x],
-                FModelData[FitColumnType.yFit],
-                FModelData[FitColumnType.yErrors],
-                FFitAtPoints[FitColumnType.yFit],
-                FFitAtPoints[FitColumnType.yErrors],
-                FFitFormula, FFitInfo);
-        for I := 0 to Length(FModelData[FitColumnType.x]) - 1 do begin
-          FModelData[FitColumnType.x][I] := FModelData[FitColumnType.x][I] + meanTime;
-        end;
-      finally
-        SetExceptionMask(FPUExceptionMask);
-      end;
-    except
-      on E: Exception do begin
-        ShowMessage('Error: '^M^J + '[' + E.ClassName + '] ' + E.Message);
-        Exit;
-      end;
-    end;
-    SetLength(FFitAtPoints[FitColumnType.x], n_points);
-    for I := 0 to n_points - 1 do begin
-      FFitAtPoints[FitColumnType.x][I] := X[I] + meanTime;
-    end;
-    SetLength(FFitAtPoints[FitColumnType.yObserved], n_points);
-    for I := 0 to n_points - 1 do begin
-      FFitAtPoints[FitColumnType.yObserved][I] := Y[I];
-    end;
-
-    NofParameters := 1 + TrendDegree;
-      for I := 0 to Length(TrigPolyDegrees) - 1 do
-        NofParameters := NofParameters + TrigPolyDegrees[I] * 2;
-
-    OCsquared := CalcResidualSquared(FFitAtPoints[FitColumnType.yObserved], FFitAtPoints[FitColumnType.yFit]);
-
-    FFitFormula := '# Python'^M^J^M^J +
-                   'import numpy as np'^M^J +
-                   'import math'^M^J +
-                   'import matplotlib.pyplot as plt'^M^J^M^J +
-                   'timeZeroPoint = ' + FloatToStrLocaleIndependent(meanTime) + ^M^J^M^J +
-                   'def f(t):' + ^M^J + ' return \' + ^M^J +
-                   FFitFormula + ^M^J^M^J +
-                   't_min = ' + FloatToStrLocaleIndependent(meanTime + fitXmin) + ^M^J +
-                   't_max = ' + FloatToStrLocaleIndependent(meanTime + fitXmin + nfit * fitXstep) + ^M^J +
-                   'n = ' + IntToStr(nfit + 1) + ^M^J +
-                   't = np.linspace(t_min, t_max, n)' + ^M^J +
-                   'v = np.array(list(map(f, t)))' + ^M^J +
-                   'plt.plot(t, v)' + ^M^J +
-                   'plt.show()' + ^M^J;
-
-    FFitInfo := FFitInfo + ^M^J + 'timeZeroPoint = ' + Trim(FloatToStrMod(meanTime)) + ^M^J^M^J;
-    FFitInfo := FFitInfo + 'Sum((O-C)^2) = ' + Trim(FloatToStrMod(OCsquared)) + ^M^J^M^J;
-    FFitInfo := FFitInfo + 'Number of data points = ' + IntToStr(n_points) + ^M^J;
-    FFitInfo := FFitInfo + 'Number of parameters = ' + IntToStr(NofParameters) + ^M^J;
-    FFitInfo := FFitInfo + 'sigma[x_c] = ' + Trim(FloatToStrMod(Power(OCsquared * Double(NofParameters) / Double(n_points) / Double(n_points - NofParameters), 0.5))) + ^M^J;
-
-
-    UDFSrcModel.PointsNumber := Length(FModelData[FitColumnType.x]);
-    UDFSrcModel.Reset;
-    UDFSrcModelUpLimit.PointsNumber := UDFSrcModel.PointsNumber;
-    UDFSrcModelUpLimit.Reset;
-    UDFSrcModelDownLimit.PointsNumber := UDFSrcModel.PointsNumber;
-    UDFSrcModelDownLimit.Reset;
-    if ChartSeriesData.Source = LCSrcData then begin
-      ChartSeriesModelToModel;
-    end
-    else
-    if ChartSeriesData.Source = LCSrcFoldedData then begin
-      CalculateModelPhasePlot;
-      ChartSeriesModelToModelFolded;
-    end
-    else begin
-      ChartSeriesModelToNil;
-    end;
-
-    ChartSeriesModel.Active := True;
-    ChartSeriesModelUpLimit.Active := ChartSeriesModel.Active;
-    ChartSeriesModelDownLimit.Active := ChartSeriesModel.Active;
-    ActionList.UpdateAction(ActionShowModel); // Ubuntu bug (check state not always updated)? (GNOME)
+  SetLength(X, LCSrcData.Count);
+  SetLength(Y, LCSrcData.Count);
+  for I := 0 to LCSrcData.Count - 1 do begin
+    Item := LCSrcData.Item[I];
+    X[I] := Item^.X;
+    Y[I] := Item^.Y;
   end;
-end;
+
+  try
+    // Under Linux, all exceptions get masked (at least sometimes)
+    // For compatibility, we explicitly set the mask
+    FPUExceptionMask := GetExceptionMask;
+    SetExceptionMask([exDenormalized, exUnderflow, exPrecision]);
+    try
+      meanTime := Mean(X);
+      n_points := Length(X);
+      for I := 0 to n_points - 1 do begin
+        X[I] := X[I] - meanTime;
+      end;
+
+      fitXmin := MinValue(X);
+      fitXmax := MaxValue(X);
+      fitXstep := FitStepFromFrequencies(Frequencies);
+      if IsNan(fitXstep) then
+        fitXstep := (fitXmax - fitXmin) / (Length(X) * 3);
+      nfit := Ceil((fitXmax - fitXmin) / fitXstep);
+      nfit := Ceil(nfit / 10) * 10;
+      if nfit > 100000 then begin
+        nfit := 100000;
+        fitXstep := (fitXmax - fitXmin) / nfit;
+      end;
+      PolyFit(X, Y, TrendDegree, TrigPolyDegrees, Frequencies,
+              fitXmin, fitXmax, fitXstep,
+              FModelData[FitColumnType.x],
+              FModelData[FitColumnType.yFit],
+              FModelData[FitColumnType.yErrors],
+              FFitAtPoints[FitColumnType.yFit],
+              FFitAtPoints[FitColumnType.yErrors],
+              FFitFormula, FFitInfo);
+      for I := 0 to Length(FModelData[FitColumnType.x]) - 1 do begin
+        FModelData[FitColumnType.x][I] := FModelData[FitColumnType.x][I] + meanTime;
+      end;
+    finally
+      SetExceptionMask(FPUExceptionMask);
+    end;
+  except
+    on E: Exception do begin
+      ShowMessage('Error: '^M^J + '[' + E.ClassName + '] ' + E.Message);
+      Exit;
+    end;
+  end;
+  SetLength(FFitAtPoints[FitColumnType.x], n_points);
+  for I := 0 to n_points - 1 do begin
+    FFitAtPoints[FitColumnType.x][I] := X[I] + meanTime;
+  end;
+  SetLength(FFitAtPoints[FitColumnType.yObserved], n_points);
+  for I := 0 to n_points - 1 do begin
+    FFitAtPoints[FitColumnType.yObserved][I] := Y[I];
+  end;
+
+  NofParameters := 1 + TrendDegree;
+    for I := 0 to Length(TrigPolyDegrees) - 1 do
+      NofParameters := NofParameters + TrigPolyDegrees[I] * 2;
+
+  OCsquared := CalcResidualSquared(FFitAtPoints[FitColumnType.yObserved], FFitAtPoints[FitColumnType.yFit]);
+
+  FFitFormula := '# Python'^M^J^M^J +
+                 'import numpy as np'^M^J +
+                 'import math'^M^J +
+                 'import matplotlib.pyplot as plt'^M^J^M^J +
+                 'def f(t):' + ^M^J +
+                 ' timeZeroPoint = ' + FloatToStrLocaleIndependent(meanTime) + ^M^J +
+                 ' return \' + ^M^J +
+                 FFitFormula + ^M^J^M^J +
+                 't_min = ' + FloatToStrLocaleIndependent(meanTime + fitXmin) + ^M^J +
+                 't_max = ' + FloatToStrLocaleIndependent(meanTime + fitXmin + nfit * fitXstep) + ^M^J +
+                 'n = ' + IntToStr(nfit + 1) + ^M^J +
+                 't = np.linspace(t_min, t_max, n)' + ^M^J +
+                 'v = np.array(list(map(f, t)))' + ^M^J^M^J +
+                 'fig, ax = plt.subplots()' + ^M^J;
+  if Chart.AxisList[0].Inverted then
+    FFitFormula := FFitFormula + 'ax.invert_yaxis()' + ^M^J;
+  FFitFormula := FFitFormula +
+                 'ax.plot(t, v)' + ^M^J^M^J +
+                 'plt.show()' + ^M^J;
+
+  FFitInfo := FFitInfo + ^M^J + 'timeZeroPoint = ' + Trim(FloatToStrMod(meanTime)) + ^M^J^M^J;
+  FFitInfo := FFitInfo + 'Sum((O-C)^2) = ' + Trim(FloatToStrMod(OCsquared)) + ^M^J^M^J;
+  FFitInfo := FFitInfo + 'Number of data points = ' + IntToStr(n_points) + ^M^J;
+  FFitInfo := FFitInfo + 'Number of parameters = ' + IntToStr(NofParameters) + ^M^J;
+  FFitInfo := FFitInfo + 'sigma[x_c] = ' + Trim(FloatToStrMod(Power(OCsquared * Double(NofParameters) / Double(n_points) / Double(n_points - NofParameters), 0.5))) + ^M^J;
+
+  UDFSrcModel.PointsNumber := Length(FModelData[FitColumnType.x]);
+  UDFSrcModel.Reset;
+  UDFSrcModelUpLimit.PointsNumber := UDFSrcModel.PointsNumber;
+  UDFSrcModelUpLimit.Reset;
+  UDFSrcModelDownLimit.PointsNumber := UDFSrcModel.PointsNumber;
+  UDFSrcModelDownLimit.Reset;
+  if ChartSeriesData.Source = LCSrcData then begin
+    ChartSeriesModelToModel;
+  end
+  else
+  if ChartSeriesData.Source = LCSrcFoldedData then begin
+    CalculateModelPhasePlot;
+    ChartSeriesModelToModelFolded;
+  end
+  else begin
+    ChartSeriesModelToNil;
+  end;
+
+  ChartSeriesModel.Active := True;
+  ChartSeriesModelUpLimit.Active := ChartSeriesModel.Active;
+  ChartSeriesModelDownLimit.Active := ChartSeriesModel.Active;
+  ActionList.UpdateAction(ActionShowModel); // Ubuntu bug (check state not always updated)? (GNOME)
+ end;
 
 procedure TFormMain.Periodogram;
 var
