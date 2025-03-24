@@ -17,6 +17,7 @@ type
   { TFormMain }
 
   TFormMain = class(TForm)
+    ActionDetrend: TAction;
     ActionShowErrors: TAction;
     ActionCycleByCycleColor: TAction;
     ActionLogicalExtent: TAction;
@@ -57,6 +58,7 @@ type
     LCSrcData: TListChartSource;
     MainMenu: TMainMenu;
     MenuFile: TMenuItem;
+    MenuItemDetrend: TMenuItem;
     MenuItemShowErrors: TMenuItem;
     MenuItemPhasePlotNew: TMenuItem;
     MenuItemModelInfo: TMenuItem;
@@ -89,6 +91,7 @@ type
     MenuView: TMenuItem;
     MenuItemExit: TMenuItem;
     OpenDialog: TOpenDialog;
+    Separator10: TMenuItem;
     Separator2: TMenuItem;
     Separator3: TMenuItem;
     Separator4: TMenuItem;
@@ -118,6 +121,7 @@ type
     procedure ActionChartPropertiesExecute(Sender: TObject);
     procedure ActionCopyChartImageExecute(Sender: TObject);
     procedure ActionCycleByCycleColorExecute(Sender: TObject);
+    procedure ActionDetrendExecute(Sender: TObject);
     procedure ActionListUpdate(AAction: TBasicAction; var Handled: Boolean);
     procedure ActionAboutExecute(Sender: TObject);
     procedure ActionInvertedYExecute(Sender: TObject);
@@ -176,6 +180,7 @@ type
     procedure ClearModelFolded;
     procedure CloseFile;
     procedure OpenFile(const AFileName: string);
+    procedure Detrend;
     procedure SaveFileAs(const AFileName: string; const X, Y, Errors: TDoubleArray);
     procedure SaveDataSettingsAs(AFileName: string);
     procedure LoadDataSettings;
@@ -495,6 +500,13 @@ begin
   end;
 end;
 
+procedure TFormMain.ActionDetrendExecute(Sender: TObject);
+begin
+  if Length(FFitAtPoints[FitColumnType.x]) > 0 then begin
+    Detrend;
+  end;
+end;
+
 procedure TFormMain.ActionObservationsExecute(Sender: TObject);
 var
   X1, Y1, Errors: TDoubleArray;
@@ -611,6 +623,10 @@ begin
   else
   if AAction = ActionModelInfo then begin
     (AAction as TAction).Enabled := (Length(FModelData[FitColumnType.x]) > 0) and not FCalculationInProgress;
+  end
+  else
+  if AAction = ActionDetrend then begin
+    (AAction as TAction).Enabled := (Length(FFitAtPoints[FitColumnType.x]) > 0) and not FCalculationInProgress;
   end
   else
   if AAction = ActionObservations then begin
@@ -870,7 +886,6 @@ var
   I, ItemIndex: Integer;
   Item: PChartDataItem;
 begin
-  CloseFile;
   try
     ReadData(AFileName, X, Y, Errors, TempObjectName);
   except
@@ -888,6 +903,8 @@ begin
     Exit;
   end;
 
+  CloseFile;
+
   FFileName := AFileName;
   FObjectName := TempObjectName;
   unitPhaseDialog.SetCurrentEpoch((MaxValue(X) + MinValue(X)) / 2.0);
@@ -899,6 +916,47 @@ begin
   end;
 
   LoadDataSettings;
+  UpdateTitle;
+  PlotData;
+end;
+
+procedure TFormMain.Detrend;
+var
+  X, Xprev: Double;
+  Xarray, Yarray: TDoubleArray;
+  I: Integer;
+begin
+  // Before closing the active file: store data to temporary arrays
+  SetLength(Xarray, Length(FFitAtPoints[FitColumnType.x]));
+  SetLength(Yarray, Length(FFitAtPoints[FitColumnType.x]));
+
+  Xprev := 0;
+  for I := 0 to Length(FFitAtPoints[FitColumnType.x]) - 1 do begin
+    X := FFitAtPoints[FitColumnType.x][I];
+
+    // Check -- just in case
+    if (I > 0) and (X < Xprev) then
+      CalcError('Internal error: model data must be sorted');
+
+    Xarray[I] := X;
+    Yarray[I] := FFitAtPoints[FitColumnType.yObserved][I] - FFitAtPoints[FitColumnType.yFit][I];
+
+    Xprev := X;
+  end;
+
+  // Like in OpenFile
+
+  CloseFile;
+
+  FFileName := '#Residuals';
+  FObjectName := 'Residuals';
+  unitPhaseDialog.SetCurrentEpoch((MaxValue(Xarray) + MinValue(Xarray)) / 2.0);
+
+  for I := 0 to Length(Xarray) - 1 do begin
+    LCSrcData.Add(Xarray[I], Yarray[I]);
+  end;
+
+  LoadDataSettings; // Initialization only!
   UpdateTitle;
   PlotData;
 end;
@@ -931,7 +989,10 @@ begin
   if FFileName = '' then
     Exit;
   try
-    Ini := TMemIniFile.Create(FFileName + '.lcv.props');
+    if (Copy(FFileName, 1, 1) <> '#') then
+      Ini := TMemIniFile.Create(FFileName + '.lcv.props')
+    else
+      Ini := TMemIniFile.Create('');
     try
       unitFitParamDialog.LoadParameters(Ini, 'SETTINGS');
       unitDFTparamDialog.LoadParameters(Ini, 'SETTINGS');
@@ -956,7 +1017,7 @@ procedure TFormMain.SaveDataSettingsAs(AFileName: string);
 var
   Ini: TMemIniFile;
 begin
-  if AFileName = '' then
+  if (AFileName = '') or (Copy(AFileName, 1, 1) = '#') then
     Exit;
   try
     Ini := TMemIniFile.Create(AFileName + '.lcv.props');

@@ -85,6 +85,7 @@ object FormMain: TFormMain
       Pointer.VertSize = 2
       Pointer.Visible = True
       ShowPoints = True
+      YErrorBars.Pen.Color = clGray
       YErrorBars.Visible = True
     end
     object ChartSeriesModel: TLineSeries
@@ -281,6 +282,12 @@ object FormMain: TFormMain
       object MenuItemModelInfo: TMenuItem
         Action = ActionModelInfo
       end
+      object Separator10: TMenuItem
+        Caption = '-'
+      end
+      object MenuItemDetrend: TMenuItem
+        Action = ActionDetrend
+      end
     end
     object MenuHelp: TMenuItem
       Caption = '&Help'
@@ -374,7 +381,7 @@ object FormMain: TFormMain
     end
     object ActionSaveVisible: TAction
       Category = 'File'
-      Caption = 'Save Visible Data As...'
+      Caption = 'Save a Copy of Visible Data As...'
       OnExecute = ActionSaveVisibleExecute
     end
     object ActionShowData: TAction
@@ -391,13 +398,6 @@ object FormMain: TFormMain
       Category = 'Chart'
       Caption = 'Copy to Clipboard'
       OnExecute = ActionCopyChartImageExecute
-    end
-    object ActionStop: TAction
-      Category = 'Tools'
-      Caption = '&Stop'
-      Enabled = False
-      ImageIndex = 4
-      OnExecute = ActionStopExecute
     end
     object ActionSaveChartImageAs: TAction
       Category = 'Chart'
@@ -416,7 +416,7 @@ object FormMain: TFormMain
     end
     object ActionUserManualLocal: TAction
       Category = 'Help'
-      Caption = 'User Manula (Local)...'
+      Caption = 'User Manual (Local)...'
       OnExecute = ActionUserManualLocalExecute
     end
     object ActionLogicalExtent: TAction
@@ -433,6 +433,18 @@ object FormMain: TFormMain
       Category = 'View'
       Caption = 'Show Errors'
       OnExecute = ActionShowErrorsExecute
+    end
+    object ActionDetrend: TAction
+      Category = 'Tools'
+      Caption = 'Detrend'
+      OnExecute = ActionDetrendExecute
+    end
+    object ActionStop: TAction
+      Category = 'Tools'
+      Caption = '&Stop'
+      Enabled = False
+      ImageIndex = 4
+      OnExecute = ActionStopExecute
     end
   end
   object OpenDialog: TOpenDialog
