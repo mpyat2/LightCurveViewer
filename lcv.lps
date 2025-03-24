@@ -3,7 +3,7 @@
   <ProjectSession>
     <PathDelim Value="\"/>
     <Version Value="12"/>
-    <BuildModes Active="MemoryLeakCheck"/>
+    <BuildModes Active="NoDebug"/>
     <Units>
       <Unit>
         <Filename Value="lcv.lpr"/>
@@ -18,9 +18,9 @@
         <ComponentName Value="FormMain"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="9"/>
-        <TopLine Value="1368"/>
-        <CursorPos X="22" Y="1389"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="991"/>
+        <CursorPos X="3" Y="994"/>
         <UsageCount Value="203"/>
         <Bookmarks Count="2">
           <Item0 Y="646"/>
@@ -56,9 +56,8 @@
         <ComponentName Value="FormDFTDialog"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <IsVisibleTab Value="True"/>
-        <TopLine Value="466"/>
-        <CursorPos X="18" Y="546"/>
+        <TopLine Value="241"/>
+        <CursorPos X="30" Y="269"/>
         <UsageCount Value="200"/>
         <Bookmarks Count="1">
           <Item0 Y="263" ID="2"/>
@@ -154,7 +153,7 @@
       <Unit>
         <Filename Value="sortutils.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="3"/>
         <TopLine Value="33"/>
         <CursorPos X="19" Y="52"/>
         <UsageCount Value="211"/>
@@ -163,7 +162,7 @@
       <Unit>
         <Filename Value="lcvtypes.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="11"/>
+        <EditorIndex Value="6"/>
         <TopLine Value="4"/>
         <CursorPos X="3" Y="22"/>
         <UsageCount Value="211"/>
@@ -188,7 +187,7 @@
       <Unit>
         <Filename Value="guiutils.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="12"/>
+        <EditorIndex Value="7"/>
         <TopLine Value="149"/>
         <CursorPos X="9" Y="168"/>
         <UsageCount Value="211"/>
@@ -211,10 +210,13 @@
         <ComponentName Value="FormChartProperties"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="-1"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="5"/>
         <TopLine Value="125"/>
-        <CursorPos X="39" Y="154"/>
+        <CursorPos X="3" Y="154"/>
         <UsageCount Value="232"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="lcvconsts.pas"/>
@@ -255,193 +257,8 @@
         <CursorPos X="3" Y="69"/>
         <UsageCount Value="238"/>
       </Unit>
-      <Unit>
-        <Filename Value="C:\lazarus64\components\tachart\tacustomseries.pas"/>
-        <UnitName Value="TACustomSeries"/>
-        <EditorIndex Value="8"/>
-        <TopLine Value="1090"/>
-        <CursorPos X="3" Y="1094"/>
-        <UsageCount Value="44"/>
-        <Loaded Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="C:\lazarus64\lcl\grids.pas"/>
-        <UnitName Value="Grids"/>
-        <EditorIndex Value="13"/>
-        <TopLine Value="7971"/>
-        <CursorPos Y="7989"/>
-        <UsageCount Value="44"/>
-        <Loaded Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="C:\lazarus64\components\tachart\taseries.pas"/>
-        <UnitName Value="TASeries"/>
-        <EditorIndex Value="10"/>
-        <UsageCount Value="44"/>
-        <Loaded Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="C:\lazarus64\components\tachart\tacustomsource.pas"/>
-        <UnitName Value="TACustomSource"/>
-        <EditorIndex Value="7"/>
-        <TopLine Value="262"/>
-        <CursorPos X="51" Y="278"/>
-        <UsageCount Value="44"/>
-        <Loaded Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="C:\lazarus64\lcl\graphics.pp"/>
-        <UnitName Value="Graphics"/>
-        <EditorIndex Value="6"/>
-        <TopLine Value="268"/>
-        <CursorPos X="11" Y="293"/>
-        <UsageCount Value="39"/>
-        <Loaded Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="C:\lazarus64\fpc\3.2.2\source\rtl\inc\typshrdh.inc"/>
-        <EditorIndex Value="5"/>
-        <TopLine Value="121"/>
-        <CursorPos X="14" Y="150"/>
-        <UsageCount Value="39"/>
-        <Loaded Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="C:\lazarus64\lcl\interfaces\win32\win32callback.inc"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="2021"/>
-        <CursorPos Y="2039"/>
-        <UsageCount Value="33"/>
-      </Unit>
-      <Unit>
-        <Filename Value="C:\lazarus64\lcl\interfaces\win32\win32pagecontrol.inc"/>
-        <EditorIndex Value="3"/>
-        <TopLine Value="324"/>
-        <CursorPos Y="341"/>
-        <UsageCount Value="37"/>
-        <Loaded Value="True"/>
-      </Unit>
     </Units>
-    <JumpHistory HistoryIndex="29">
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="240" Column="10" TopLine="235"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="231" TopLine="213"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="155" Column="36" TopLine="130"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="74" Column="25" TopLine="57"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="156" Column="29" TopLine="125"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="270" Column="38" TopLine="252"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="75" Column="29" TopLine="58"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="75" Column="29" TopLine="47"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="341" Column="12" TopLine="525"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="74" Column="25" TopLine="62"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="154" Column="23" TopLine="143"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="267" Column="45" TopLine="251"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="206" Column="17" TopLine="189"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="1385" Column="22" TopLine="1359"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="40" Column="19" TopLine="11"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="88" Column="19" TopLine="60"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="123" Column="27" TopLine="95"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="443" Column="29" TopLine="412"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="265" Column="29" TopLine="251"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="523" TopLine="488"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="123" Column="30" TopLine="106"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="492" Column="10" TopLine="485"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="493" TopLine="485"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="494" TopLine="485"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="495" TopLine="485"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="496" TopLine="485"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="495" TopLine="485"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="504" Column="9" TopLine="485"/>
-      </Position>
-    </JumpHistory>
+    <JumpHistory HistoryIndex="-1"/>
     <RunParams>
       <FormatVersion Value="2"/>
       <Modes ActiveMode=""/>
@@ -452,11 +269,4 @@
       </List>
     </HistoryLists>
   </ProjectSession>
-  <Debugging>
-    <Watches>
-      <Item>
-        <Expression Value="S2[0]"/>
-      </Item>
-    </Watches>
-  </Debugging>
 </CONFIG>
