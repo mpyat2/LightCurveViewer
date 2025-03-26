@@ -251,6 +251,14 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="colorLegend"/>
       </Unit>
+      <Unit>
+        <Filename Value="unitoptionsdialog.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormOptions"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="unitOptionsDialog"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

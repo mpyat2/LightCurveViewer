@@ -16,12 +16,14 @@ type
   TDFTThread = class(TThread)
   private
     FParams: TDCDFTparameters;
+    FNofThreads: Integer;
     FProgressCaptionProc: TProgressCaptionProc;
   protected
     procedure Execute; override;
   public
     property Params: TDCDFTparameters read FParams;
     constructor Create(AParams: TDCDFTparameters;
+                       NofThreads: Integer;
                        AOnTerminate: TNotifyEvent;
                        ProgressCaptionProc: TProgressCaptionProc);
   end;
@@ -30,6 +32,7 @@ type
 implementation
 
 constructor TDFTThread.Create(AParams: TDCDFTparameters;
+                              NofThreads: Integer;
                               AOnTerminate: TNotifyEvent;
                               ProgressCaptionProc: TProgressCaptionProc);
 begin
@@ -37,6 +40,7 @@ begin
   OnTerminate := AOnTerminate;
   FreeOnTerminate := True;
   FProgressCaptionProc := ProgressCaptionProc;
+  FNofThreads := NofThreads;
   FParams := AParams;
 end;
 
@@ -53,7 +57,7 @@ begin
       dcdft_proc(FParams.X, FParams.Y,
                  FParams.FrequencyMin, FParams.FrequencyMax, FParams.FrequencyResolution,
                  FParams.TrendDegree, FParams.TrigPolyDegree,
-                 0,
+                 FNofThreads,
                  FProgressCaptionProc,
                  FParams.frequencies, FParams.power);
     finally

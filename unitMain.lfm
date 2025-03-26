@@ -183,10 +183,10 @@ object FormMain: TFormMain
     end
   end
   object PanelCalculatingMessage: TPanel
-    Left = 672
+    Left = 616
     Height = 24
     Top = 32
-    Width = 122
+    Width = 178
     Anchors = [akTop, akRight]
     Caption = 'Calculating...'
     Color = clYellow
@@ -289,6 +289,12 @@ object FormMain: TFormMain
         Action = ActionDetrend
       end
     end
+    object MenuTools: TMenuItem
+      Caption = '&Tools'
+      object MenuItemOptions: TMenuItem
+        Action = ActionOptions
+      end
+    end
     object MenuHelp: TMenuItem
       Caption = '&Help'
       object MenuItemUserManual: TMenuItem
@@ -331,7 +337,7 @@ object FormMain: TFormMain
       OnExecute = ActionInvertedYExecute
     end
     object ActionPhasePlot: TAction
-      Category = 'Tools'
+      Category = 'Analyses'
       Caption = 'P&hase Plot...'
       Hint = 'Create New Phase Plot'
       ImageIndex = 3
@@ -352,19 +358,19 @@ object FormMain: TFormMain
       OnExecute = ActionRawDataExecute
     end
     object ActionPeriodogram: TAction
-      Category = 'Tools'
+      Category = 'Analyses'
       Caption = '&Periodogram...'
       ImageIndex = 5
       OnExecute = ActionPeriodogramExecute
     end
     object ActionPolyFit: TAction
-      Category = 'Tools'
+      Category = 'Analyses'
       Caption = 'Polynomial &Approximation...'
       ImageIndex = 6
       OnExecute = ActionPolyFitExecute
     end
     object ActionModelInfo: TAction
-      Category = 'Tools'
+      Category = 'Analyses'
       Caption = 'Approximation &Info...'
       Hint = 'Show Approximation Info'
       OnExecute = ActionModelInfoExecute
@@ -435,7 +441,7 @@ object FormMain: TFormMain
       OnExecute = ActionShowErrorsExecute
     end
     object ActionDetrend: TAction
-      Category = 'Tools'
+      Category = 'Analyses'
       Caption = 'Detrend'
       OnExecute = ActionDetrendExecute
     end
@@ -445,6 +451,11 @@ object FormMain: TFormMain
       Enabled = False
       ImageIndex = 4
       OnExecute = ActionStopExecute
+    end
+    object ActionOptions: TAction
+      Category = 'Tools'
+      Caption = 'Options...'
+      OnExecute = ActionOptionsExecute
     end
   end
   object OpenDialog: TOpenDialog

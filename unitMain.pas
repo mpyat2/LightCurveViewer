@@ -17,6 +17,7 @@ type
   { TFormMain }
 
   TFormMain = class(TForm)
+    ActionOptions: TAction;
     ActionDetrend: TAction;
     ActionShowErrors: TAction;
     ActionCycleByCycleColor: TAction;
@@ -58,6 +59,8 @@ type
     LCSrcData: TListChartSource;
     MainMenu: TMainMenu;
     MenuFile: TMenuItem;
+    MenuItemOptions: TMenuItem;
+    MenuTools: TMenuItem;
     MenuItemDetrend: TMenuItem;
     MenuItemShowErrors: TMenuItem;
     MenuItemPhasePlotNew: TMenuItem;
@@ -130,6 +133,7 @@ type
     procedure ActionObservationsExecute(Sender: TObject);
     procedure ActionOpenExecute(Sender: TObject);
     procedure ActionExitExecute(Sender: TObject);
+    procedure ActionOptionsExecute(Sender: TObject);
     procedure ActionPeriodogramExecute(Sender: TObject);
     procedure ActionPhasePlotExecute(Sender: TObject);
     procedure ActionPhasePlotSimpleExecute(Sender: TObject);
@@ -198,7 +202,7 @@ type
     procedure SetAxisBoundaries(Xmin, Xmax, Ymin, Ymax: Double);
     procedure Periodogram;
     procedure DoPolyFit;
-    procedure DoDCDFT(DCDFTparameters: TDCDFTparameters);
+    procedure DoDCDFT(DCDFTparameters: TDCDFTparameters; NofThreads: Integer);
     procedure ShowPeriodogram(DCDFTparameters: TDCDFTparameters);
     procedure DCDFTThreadOnTerminate(Sender: TObject);
     procedure DFTGlobalTerminate;
@@ -207,6 +211,7 @@ type
     procedure LongOpStop;
   public
     property LCSrcDataCount: Integer read GetLCSrcDataCount;
+    property CalculationInProgress: Boolean read FCalculationInProgress;
     procedure SaveDataSettings;
     procedure DoPolyFitProc(TrendDegree: Integer; const TrigPolyDegrees: TInt5Array; const Frequencies: TDouble5Array);
   end;
@@ -219,10 +224,10 @@ implementation
 {$R *.lfm}
 
 uses
-  lclintf, math, guiutils, unitPhaseDialog,
-  unitFitParamDialog, unitDFTparamDialog, unitDFTdialog, unitTableDialog,
-  unitModelInfoDialog, colorLegend, floattextform, unitFormChartprops,
-  unitGetExtent, unitAbout, dftThread, dataio, sortutils, formatutils,
+  lclintf, math, guiutils, unitPhaseDialog, unitFitParamDialog,
+  unitDFTparamDialog, unitDFTdialog, unitTableDialog, unitModelInfoDialog,
+  colorLegend, floattextform, unitFormChartprops, unitGetExtent,
+  unitOptionsDialog, unitAbout, dftThread, dataio, sortutils, formatutils,
   miscutils, fitproc, settings;
 
 { TFormMain }
@@ -233,6 +238,8 @@ begin
   CloseFile;
   try
     LoadFormPosition(Self);
+    Chart.AxisList[0].Grid.Visible := GetGlobalBoolParameter('ShowGrid', True);
+    Chart.AxisList[1].Grid.Visible := Chart.AxisList[0].Grid.Visible;
   except
     // nothing
   end;
@@ -262,6 +269,14 @@ procedure TFormMain.ActionExitExecute(Sender: TObject);
 begin
   CloseFile;
   Close;
+end;
+
+procedure TFormMain.ActionOptionsExecute(Sender: TObject);
+begin
+  if ProgramOptions then begin
+    Chart.AxisList[0].Grid.Visible := GetGlobalBoolParameter('ShowGrid', True);
+    Chart.AxisList[1].Grid.Visible := Chart.AxisList[0].Grid.Visible;
+  end;
 end;
 
 procedure TFormMain.ChartMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
@@ -568,6 +583,7 @@ procedure TFormMain.ActionListUpdate(AAction: TBasicAction; var Handled: Boolean
 begin
   if (AAction = ActionOpen) or
      (AAction = ActionExit) or
+     (AAction = ActionOptions) or
      (AAction = ActionAbout) or
      (AAction = ActionUserManual) or
      (AAction = ActionUserManualLocal)
@@ -1482,6 +1498,7 @@ begin
 procedure TFormMain.Periodogram;
 var
   DCDFTparameters: TDCDFTparameters;
+  NofThreads: Integer;
   Item: PChartDataItem;
   Interval, Freq: Double;
   I: Integer;
@@ -1520,11 +1537,13 @@ begin
       Exit;
     SaveDataSettings;
     //CloseDFTdialogs;
+    NofThreads := GetGlobalIntParameter('Threads', GetLogicalCpuCount);
+    PanelCalculatingMessage.Caption := 'Calculating (' + IntToStr(NofThreads) + ' threads)...';
     DCDFTparameters.Error := '';
     DCDFTparameters.StartTime := Now;
     LongOpStart;
     try
-      DoDCDFT(DCDFTparameters);
+      DoDCDFT(DCDFTparameters, NofThreads);
     except
       on E: Exception do begin
         ShowMessage(E.Message);
@@ -1593,11 +1612,11 @@ begin
   end;
 end;
 
-procedure TFormMain.DoDCDFT(DCDFTparameters: TDCDFTparameters);
+procedure TFormMain.DoDCDFT(DCDFTparameters: TDCDFTparameters; NofThreads: Integer);
 var
   DCDFTThread: TDFTThread;
 begin
-  DCDFTThread := TDFTThread.Create(DCDFTparameters, @DCDFTThreadOnTerminate, @ProgressCaptionProc);
+  DCDFTThread := TDFTThread.Create(DCDFTparameters, NofThreads, @DCDFTThreadOnTerminate, @ProgressCaptionProc);
   if Assigned(DCDFTThread.FatalException) then
     raise DCDFTThread.FatalException;
   DCDFTThread.Start;

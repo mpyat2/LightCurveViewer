@@ -188,7 +188,7 @@ object FormDFTDialog: TFormDFTDialog
           Width = 75
           Caption = 'Model'
           TabOrder = 0
-          OnClick = ButtonModel
+          OnClick = ButtonModelClick
         end
       end
     end
@@ -230,7 +230,7 @@ object FormDFTDialog: TFormDFTDialog
           Width = 75
           Caption = 'Model'
           TabOrder = 0
-          OnClick = ButtonModel
+          OnClick = ButtonModelClick
         end
       end
     end
@@ -299,6 +299,7 @@ object FormDFTDialog: TFormDFTDialog
     end
     object ChartToolset1DataPointClickTool1: TDataPointClickTool
       Shift = [ssLeft]
+      OnBeforeMouseUp = ChartToolset1DataPointClickTool1BeforeMouseUp
       OnPointClick = ChartToolset1DataPointClickTool1PointClick
     end
     object ChartToolset1ZoomMouseWheelTool1: TZoomMouseWheelTool

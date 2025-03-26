@@ -58,8 +58,9 @@ type
     procedure ActionGridSelectAllExecute(Sender: TObject);
     procedure ActionListUpdate(AAction: TBasicAction; var Handled: Boolean);
     procedure ButtonCloseClick(Sender: TObject);
-    procedure ButtonModel(Sender: TObject);
+    procedure ButtonModelClick(Sender: TObject);
     procedure ButtonPhasePlotClick(Sender: TObject);
+    procedure ChartToolset1DataPointClickTool1BeforeMouseUp(ATool: TChartTool; APoint: TPoint);
     procedure ChartToolset1DataPointClickTool1PointClick(ATool: TChartTool; APoint: TPoint);
     procedure DrawGrid1SelectCell(Sender: TObject; aCol, aRow: Integer; var CanSelect: Boolean);
     procedure DrawGrid2SelectCell(Sender: TObject; aCol, aRow: Integer; var CanSelect: Boolean);
@@ -102,7 +103,7 @@ uses
 //{$IF defined(Windows)}
 //  Windows,
 //{$ENDIF}
-  math, Clipbrd, Contnrs, sortutils, guiutils, unitFitParamDialog, unitMain;
+  math, Clipbrd, settings, sortutils, unitFitParamDialog, unitMain;
 
 const
   UnsincSelectColor = clLtGray;
@@ -151,10 +152,12 @@ procedure TFormDFTDialog.FormCreate(Sender: TObject);
 var
   I: Integer;
 begin
+  FSelectCellEventActive := False;
   FTrendDegreeForModel := 0;
   for I := 0 to Length(FTrigPolyDegreesForModel) - 1 do
     FTrigPolyDegreesForModel[I] := 1;
-  FSelectCellEventActive := False;
+  Chart1.AxisList[0].Grid.Visible := GetGlobalBoolParameter('ShowGrid', True);
+  Chart1.AxisList[1].Grid.Visible := Chart1.AxisList[0].Grid.Visible;
 end;
 
 procedure TFormDFTDialog.FormDestroy(Sender: TObject);
@@ -231,54 +234,65 @@ begin
   Close;
 end;
 
-procedure TFormDFTDialog.ButtonModel(Sender: TObject);
+procedure TFormDFTDialog.ButtonModelClick(Sender: TObject);
 var
   Frequencies: TDouble5Array;
   Grid: TDrawGrid;
   R, N: Integer;
 begin
-  if Sender = ButtonModelFromTable then begin
-    Grid := DrawGrid1;
-  end
-  else
-  if Sender = ButtonModelFromMaxima then begin
-    Grid := DrawGrid2;
-  end
-  else
-    Exit;
+  if not FormMain.CalculationInProgress and (FormMain.LCSrcDataCount > 0) then begin
+    if Sender = ButtonModelFromTable then begin
+      Grid := DrawGrid1;
+    end
+    else
+    if Sender = ButtonModelFromMaxima then begin
+      Grid := DrawGrid2;
+    end
+    else
+      Exit;
 
-  for R := 0 to Length(Frequencies) - 1 do
-    Frequencies[R] := NaN;
+    for R := 0 to Length(Frequencies) - 1 do
+      Frequencies[R] := NaN;
 
-  N := 0;
-  for R := Grid.FixedRows to Grid.RowCount - 1 do begin
-    if Grid.IsCellSelected[Grid.FixedCols, R] then begin
-      if N > Length(Frequencies) - 1 then begin
-        ShowMessage('In the current implementation, no more than ' + IntToStr(Length(Frequencies)) + ' independent frequencies are allowed.' + ^M^J +
-                    'Please select fewer frequencies');
-        Exit;
+    N := 0;
+    for R := Grid.FixedRows to Grid.RowCount - 1 do begin
+      if Grid.IsCellSelected[Grid.FixedCols, R] then begin
+        if N > Length(Frequencies) - 1 then begin
+          ShowMessage('In the current implementation, no more than ' + IntToStr(Length(Frequencies)) + ' independent frequencies are allowed.' + ^M^J +
+                      'Please select fewer frequencies');
+          Exit;
+        end;
+        Frequencies[N] := GetGridFrequency(Grid, R);
+        Inc(N);
       end;
-      Frequencies[N] := GetGridFrequency(Grid, R);
-      Inc(N);
     end;
-  end;
 
-  if FormMain.LCSrcDataCount > 0 then begin
     if not GetFitParams(FTrendDegreeForModel, FTrigPolyDegreesForModel, Frequencies, True) then
       Exit;
     FormMain.SaveDataSettings;
     FormMain.DoPolyFitProc(FTrendDegreeForModel, FTrigPolyDegreesForModel, Frequencies);
-  end else begin
-    ShowMessage('No data!');
-  end;
+  end
+  else
+    ShowMessage('Cannot do it now');
 end;
 
 procedure TFormDFTDialog.ButtonPhasePlotClick(Sender: TObject);
 begin
-  if EditPeriod.Text <> '' then
-    PhasePlot(FApplyPhasePlotParamsProc, StrToFloat(EditPeriod.Text))
+  if not FormMain.CalculationInProgress and (FormMain.LCSrcDataCount > 0) then begin
+    if EditPeriod.Text <> '' then
+      PhasePlot(FApplyPhasePlotParamsProc, StrToFloat(EditPeriod.Text))
+    else
+      ShowMessage('No period specified');
+  end
   else
-    ShowMessage('No period specified');
+    ShowMessage('Cannot do it now');
+end;
+
+procedure TFormDFTDialog.ChartToolset1DataPointClickTool1BeforeMouseUp(ATool: TChartTool; APoint: TPoint);
+begin
+  UnSelectChartPoint;
+  SelectGrid1Row(-1);
+  SelectGrid2Row(-1);
 end;
 
 procedure TFormDFTDialog.ChartToolset1DataPointClickTool1PointClick(ATool: TChartTool; APoint: TPoint);
