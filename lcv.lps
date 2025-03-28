@@ -19,12 +19,12 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="229"/>
-        <CursorPos Y="242"/>
+        <TopLine Value="365"/>
+        <CursorPos X="6" Y="389"/>
         <UsageCount Value="203"/>
         <Bookmarks Count="2">
           <Item0 X="14" Y="214" ID="2"/>
-          <Item1 X="15" Y="593"/>
+          <Item1 X="15" Y="606"/>
         </Bookmarks>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -43,7 +43,7 @@
         <ComponentName Value="FormPhaseDialog"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="8"/>
+        <EditorIndex Value="7"/>
         <TopLine Value="24"/>
         <CursorPos X="32" Y="42"/>
         <UsageCount Value="202"/>
@@ -259,104 +259,65 @@
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
-      <Unit>
-        <Filename Value="C:\lazarus64\components\tachart\tatools.pas"/>
-        <UnitName Value="TATools"/>
-        <EditorIndex Value="7"/>
-        <TopLine Value="1991"/>
-        <CursorPos X="14" Y="2012"/>
-        <UsageCount Value="10"/>
-        <Bookmarks Count="1">
-          <Item0 X="3" Y="2012" ID="1"/>
-        </Bookmarks>
-        <Loaded Value="True"/>
-      </Unit>
     </Units>
-    <JumpHistory HistoryIndex="21">
+    <JumpHistory HistoryIndex="14">
       <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="294" TopLine="284"/>
-      </Position>
-      <Position>
-        <Filename Value="C:\lazarus64\components\tachart\tatools.pas"/>
-        <Caret Line="2012" Column="8" TopLine="1997"/>
-      </Position>
-      <Position>
-        <Filename Value="C:\lazarus64\components\tachart\tatools.pas"/>
-      </Position>
-      <Position>
-        <Filename Value="C:\lazarus64\components\tachart\tatools.pas"/>
-        <Caret Line="123" Column="28" TopLine="95"/>
-      </Position>
-      <Position>
-        <Filename Value="C:\lazarus64\components\tachart\tatools.pas"/>
-      </Position>
-      <Position>
-        <Filename Value="C:\lazarus64\components\tachart\tatools.pas"/>
-        <Caret Line="123" Column="28" TopLine="95"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="302" TopLine="286"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="291" TopLine="286"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="301" TopLine="286"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="293" TopLine="286"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="298" TopLine="286"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="308" TopLine="286"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="298" TopLine="286"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="64" Column="80" TopLine="49"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="290" Column="70" TopLine="285"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="63" TopLine="35"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="289" TopLine="209"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="96" Column="19" TopLine="79"/>
+        <Filename Value="unitMain.pas"/>
+        <Caret Line="242" Column="37" TopLine="229"/>
       </Position>
       <Position>
         <Filename Value="unitMain.pas"/>
-        <Caret Line="214" Column="73" TopLine="197"/>
       </Position>
       <Position>
         <Filename Value="unitMain.pas"/>
-        <Caret Line="242" TopLine="229"/>
+        <Caret Line="186" Column="23" TopLine="158"/>
       </Position>
       <Position>
-        <Filename Value="settings.pas"/>
-        <Caret Line="12" Column="11"/>
+        <Filename Value="unitMain.pas"/>
+        <Caret Line="898" Column="29" TopLine="882"/>
+      </Position>
+      <Position>
+        <Filename Value="unitMain.pas"/>
+      </Position>
+      <Position>
+        <Filename Value="unitMain.pas"/>
+        <Caret Line="186" Column="23" TopLine="158"/>
+      </Position>
+      <Position>
+        <Filename Value="unitMain.pas"/>
+        <Caret Line="392" Column="43" TopLine="362"/>
+      </Position>
+      <Position>
+        <Filename Value="unitMain.pas"/>
+        <Caret Line="389" TopLine="362"/>
+      </Position>
+      <Position>
+        <Filename Value="unitMain.pas"/>
+        <Caret Line="390" TopLine="362"/>
+      </Position>
+      <Position>
+        <Filename Value="unitMain.pas"/>
+        <Caret Line="394" TopLine="365"/>
+      </Position>
+      <Position>
+        <Filename Value="unitMain.pas"/>
+        <Caret Line="389" TopLine="365"/>
+      </Position>
+      <Position>
+        <Filename Value="unitMain.pas"/>
+        <Caret Line="390" TopLine="365"/>
+      </Position>
+      <Position>
+        <Filename Value="unitMain.pas"/>
+        <Caret Line="391" TopLine="365"/>
+      </Position>
+      <Position>
+        <Filename Value="unitMain.pas"/>
+        <Caret Line="392" TopLine="365"/>
+      </Position>
+      <Position>
+        <Filename Value="unitMain.pas"/>
+        <Caret Line="394" TopLine="365"/>
       </Position>
     </JumpHistory>
     <RunParams>

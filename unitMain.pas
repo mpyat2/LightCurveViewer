@@ -375,9 +375,22 @@ begin
 end;
 
 procedure TFormMain.ActionOpenExecute(Sender: TObject);
+var
+  TempFileName: string;
 begin
-  OpenDialog.InitialDir := ExtractFileDir(FFileName);
-  OpenDialog.FileName := ExtractFileName(FFileName);
+  //if (FFileName <> '') and (Copy(FFileName, 1, 1) <> '#') then begin
+  //  OpenDialog.InitialDir := ExtractFileDir(FFileName);
+  //  OpenDialog.FileName := ExtractFileName(FFileName);
+  //end
+  //else begin
+  //  //OpenDialog.InitialDir := '';
+  //  //OpenDialog.FileName := '';
+  //end;
+  TempFileName := OpenDialog.FileName;
+  if TempFileName <> '' then begin
+    OpenDialog.InitialDir := ExtractFileDir(TempFileName);
+    OpenDialog.FileName := ExtractFileName(TempFileName);
+  end;
   if OpenDialog.Execute then begin
     OpenFile(OpenDialog.FileName);
   end;
