@@ -3,7 +3,7 @@
   <ProjectSession>
     <PathDelim Value="\"/>
     <Version Value="12"/>
-    <BuildModes Active="MemoryLeakCheck"/>
+    <BuildModes Active="NoDebug"/>
     <Units>
       <Unit>
         <Filename Value="lcv.lpr"/>
@@ -260,66 +260,7 @@
         <LoadedDesigner Value="True"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="14">
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="242" Column="37" TopLine="229"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="186" Column="23" TopLine="158"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="898" Column="29" TopLine="882"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="186" Column="23" TopLine="158"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="392" Column="43" TopLine="362"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="389" TopLine="362"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="390" TopLine="362"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="394" TopLine="365"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="389" TopLine="365"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="390" TopLine="365"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="391" TopLine="365"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="392" TopLine="365"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="394" TopLine="365"/>
-      </Position>
-    </JumpHistory>
+    <JumpHistory HistoryIndex="-1"/>
     <RunParams>
       <FormatVersion Value="2"/>
       <Modes ActiveMode=""/>
