@@ -1,0 +1,99 @@
+object FormOptions: TFormOptions
+  Left = 862
+  Height = 178
+  Top = 496
+  Width = 358
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsDialog
+  Caption = 'Options'
+  ClientHeight = 178
+  ClientWidth = 358
+  OnCreate = FormCreate
+  Position = poMainFormCenter
+  LCLVersion = '3.8.0.0'
+  object PanelMain: TPanel
+    Left = 0
+    Height = 133
+    Top = 0
+    Width = 358
+    Align = alClient
+    ClientHeight = 133
+    ClientWidth = 358
+    TabOrder = 0
+    object GroupBoxChart: TGroupBox
+      Left = 8
+      Height = 56
+      Top = 8
+      Width = 344
+      Caption = 'Chart'
+      ClientHeight = 36
+      ClientWidth = 340
+      TabOrder = 0
+      object CheckBoxShowGrid: TCheckBox
+        Left = 8
+        Height = 19
+        Top = 8
+        Width = 72
+        Caption = 'Show Grid'
+        TabOrder = 0
+      end
+    end
+    object GroupBoxGeneral: TGroupBox
+      Left = 8
+      Height = 64
+      Top = 64
+      Width = 344
+      Caption = 'General'
+      ClientHeight = 44
+      ClientWidth = 340
+      TabOrder = 1
+      object SpinEditNofProcessors: TSpinEdit
+        Left = 280
+        Height = 23
+        Top = 8
+        Width = 50
+        MaxValue = 32
+        MinValue = 1
+        TabOrder = 0
+        Value = 1
+      end
+      object LabelNofThreads: TLabel
+        Left = 8
+        Height = 15
+        Top = 11
+        Width = 220
+        Caption = 'Number of threads (%d = recommended)'
+      end
+    end
+  end
+  object PanelBottom: TPanel
+    Left = 0
+    Height = 45
+    Top = 133
+    Width = 358
+    Align = alBottom
+    ClientHeight = 45
+    ClientWidth = 358
+    TabOrder = 1
+    object ButtonOK: TButton
+      Left = 176
+      Height = 25
+      Top = 8
+      Width = 75
+      Caption = 'OK'
+      Default = True
+      TabOrder = 0
+      OnClick = ButtonOKClick
+    end
+    object ButtonCancel: TButton
+      Left = 264
+      Height = 25
+      Top = 8
+      Width = 75
+      Cancel = True
+      Caption = 'Cancel'
+      ModalResult = 2
+      TabOrder = 1
+    end
+  end
+end
