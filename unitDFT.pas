@@ -285,7 +285,11 @@ var
   a: TArbFloatArray;
   magArbFloatArray: TArbFloatArray;
   fit: TArbFloatArray;
+  fit0: Double;
 begin
+  if TrendDegree < 0 then
+    CalcError('CalcSigmaSquaredO: TrendDegree cannot be < 0');
+
   // Trend
   ndata := Length(mag);
   SetLength(times, ndata);
@@ -307,7 +311,17 @@ begin
   for I := 0 to ndata - 1 do begin
     magArbFloatArray[I] := mag[I]; // for compatibility with NumLib
   end;
-  PolyFit(a, magArbFloatArray, TrendDegree, 0, fit);
+
+  if TrendDegree = 0 then begin
+    // Special case: PolyFit may generate error. Also, no need of using the complicated procedure
+    fit0 := Math.Mean(magArbFloatArray);
+    for I := 0 to ndata - 1 do begin
+      fit[I] := fit0;
+    end;
+  end
+  else begin
+    PolyFit(a, magArbFloatArray, TrendDegree, 0, fit);
+  end;
 
   for I := 0 to ndata - 1 do begin
     temp_mags[I] := magArbFloatArray[I] - fit[I];
