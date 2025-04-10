@@ -466,7 +466,15 @@ begin
   for I := 0 to ndata - 1 do
     YarrayArbFloat[I] := Yarray[I];
 
-  PolyFitSolution(a, YarrayArbFloat, NofParameters, solution_vector);
+  if NofParameters = 1 then begin
+    // The special 'degenerated' case: a constant.
+    // We use Mean to avoid a possible error in PolyFitSolution (also there is no need to use a complicated procedure)
+    SetLength(solution_vector, NofParameters);
+    solution_vector[0] := Math.Mean(YarrayArbFloat);
+  end
+  else begin
+    PolyFitSolution(a, YarrayArbFloat, NofParameters, solution_vector);
+  end;
 
   CalcCoefficientErrors(a, YarrayArbFloat, solution_vector, ndata, NofParameters, SigmaSq, XTXI, solution_vector_errors);
 

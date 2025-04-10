@@ -193,7 +193,7 @@ object FormDFTDialog: TFormDFTDialog
       end
     end
     object TabSheetMaxima: TTabSheet
-      Caption = 'TabSheetMaxima'
+      Caption = 'Maxima'
       ClientHeight = 400
       ClientWidth = 705
       object DrawGrid2: TDrawGrid
@@ -228,6 +228,7 @@ object FormDFTDialog: TFormDFTDialog
           Height = 25
           Top = 8
           Width = 75
+          Anchors = [akTop, akRight]
           Caption = 'Model'
           TabOrder = 0
           OnClick = ButtonModelClick
