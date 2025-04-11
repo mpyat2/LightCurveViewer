@@ -18,7 +18,7 @@
         <ComponentName Value="FormMain"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="1414"/>
         <CursorPos X="12" Y="1426"/>
         <UsageCount Value="203"/>
@@ -26,7 +26,6 @@
           <Item0 X="14" Y="214" ID="2"/>
           <Item1 X="15" Y="606"/>
         </Bookmarks>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="dataio.pas"/>
@@ -54,10 +53,12 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="2"/>
-        <TopLine Value="129"/>
-        <CursorPos X="70" Y="159"/>
+        <TopLine Value="561"/>
+        <CursorPos X="38" Y="589"/>
         <UsageCount Value="200"/>
+        <Bookmarks Count="1">
+          <Item0 Y="449" ID="1"/>
+        </Bookmarks>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -75,11 +76,10 @@
       <Unit>
         <Filename Value="unitDFT.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="298"/>
         <CursorPos X="22" Y="317"/>
         <UsageCount Value="218"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="dftThread.pas"/>
@@ -92,10 +92,10 @@
       <Unit>
         <Filename Value="fitproc.pas"/>
         <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="455"/>
         <CursorPos X="36" Y="473"/>
         <UsageCount Value="200"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="lcv.inc"/>
@@ -161,11 +161,10 @@
       <Unit>
         <Filename Value="miscutils.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="15"/>
         <CursorPos Y="38"/>
         <UsageCount Value="211"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="formatutils.pas"/>
@@ -252,7 +251,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="41"/>
         <CursorPos X="87" Y="64"/>
-        <UsageCount Value="28"/>
+        <UsageCount Value="31"/>
       </Unit>
       <Unit>
         <Filename Value="C:\lazarus64\fpc\3.2.2\source\rtl\objpas\math.pp"/>
@@ -270,124 +269,144 @@
         <CursorPos Y="1201"/>
         <UsageCount Value="10"/>
       </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus64\components\tachart\tacustomseries.pas"/>
+        <UnitName Value="TACustomSeries"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="130"/>
+        <CursorPos X="14" Y="149"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus64\lcl\grids.pas"/>
+        <UnitName Value="Grids"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="8113"/>
+        <CursorPos Y="8130"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit>
     </Units>
     <JumpHistory HistoryIndex="29">
       <Position>
-        <Filename Value="fitproc.pas"/>
-        <Caret Line="85" TopLine="68"/>
+        <Filename Value="unitDFTdialog.pas"/>
+        <Caret Line="372" TopLine="352"/>
       </Position>
       <Position>
-        <Filename Value="fitproc.pas"/>
-        <Caret Line="469" Column="51" TopLine="429"/>
+        <Filename Value="unitDFTdialog.pas"/>
+        <Caret Line="373" TopLine="352"/>
       </Position>
       <Position>
-        <Filename Value="fitproc.pas"/>
-        <Caret Line="471" Column="60" TopLine="447"/>
+        <Filename Value="unitDFTdialog.pas"/>
+        <Caret Line="374" TopLine="358"/>
       </Position>
       <Position>
-        <Filename Value="fitproc.pas"/>
-        <Caret Line="64" Column="11" TopLine="46"/>
+        <Filename Value="unitDFTdialog.pas"/>
+        <Caret Line="375" TopLine="358"/>
       </Position>
       <Position>
-        <Filename Value="unitDFT.pas"/>
-        <Caret Line="317" TopLine="300"/>
+        <Filename Value="unitDFTdialog.pas"/>
+        <Caret Line="376" TopLine="358"/>
       </Position>
       <Position>
-        <Filename Value="unitDFT.pas"/>
+        <Filename Value="unitDFTdialog.pas"/>
+        <Caret Line="377" TopLine="358"/>
       </Position>
       <Position>
-        <Filename Value="fitproc.pas"/>
+        <Filename Value="unitDFTdialog.pas"/>
+        <Caret Line="375" TopLine="358"/>
       </Position>
       <Position>
-        <Filename Value="fitproc.pas"/>
-        <Caret Line="469" TopLine="447"/>
+        <Filename Value="unitDFTdialog.pas"/>
+        <Caret Line="386" TopLine="358"/>
       </Position>
       <Position>
-        <Filename Value="unitDFT.pas"/>
-        <Caret Line="317" TopLine="289"/>
+        <Filename Value="unitDFTdialog.pas"/>
+        <Caret Line="387" TopLine="358"/>
       </Position>
       <Position>
-        <Filename Value="fitproc.pas"/>
-        <Caret Line="469" TopLine="444"/>
+        <Filename Value="unitDFTdialog.pas"/>
+        <Caret Line="370" TopLine="358"/>
       </Position>
       <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="1426" Column="12" TopLine="1414"/>
+        <Filename Value="unitDFTdialog.pas"/>
+        <Caret Line="388" TopLine="359"/>
       </Position>
       <Position>
-        <Filename Value="fitproc.pas"/>
-        <Caret Line="475" Column="3" TopLine="450"/>
+        <Filename Value="unitDFTdialog.pas"/>
+        <Caret Line="333" TopLine="315"/>
       </Position>
       <Position>
-        <Filename Value="fitproc.pas"/>
-        <Caret Line="469" TopLine="451"/>
+        <Filename Value="unitDFTdialog.pas"/>
+        <Caret Line="336" TopLine="315"/>
       </Position>
       <Position>
-        <Filename Value="fitproc.pas"/>
-        <Caret Line="473" TopLine="455"/>
+        <Filename Value="C:\lazarus64\lcl\grids.pas"/>
+        <Caret Line="11202" TopLine="11184"/>
       </Position>
       <Position>
-        <Filename Value="fitproc.pas"/>
-        <Caret Line="472" TopLine="455"/>
+        <Filename Value="unitDFTdialog.pas"/>
+        <Caret Line="336" TopLine="315"/>
       </Position>
       <Position>
-        <Filename Value="fitproc.pas"/>
-        <Caret Line="473" TopLine="455"/>
+        <Filename Value="unitDFTdialog.pas"/>
+        <Caret Line="175" TopLine="156"/>
       </Position>
       <Position>
-        <Filename Value="fitproc.pas"/>
-        <Caret Line="476" Column="39" TopLine="455"/>
+        <Filename Value="unitDFTdialog.pas"/>
       </Position>
       <Position>
-        <Filename Value="fitproc.pas"/>
-        <Caret Line="479" Column="19" TopLine="455"/>
+        <Filename Value="unitDFTdialog.pas"/>
+        <Caret Line="36" Column="18" TopLine="7"/>
       </Position>
       <Position>
-        <Filename Value="fitproc.pas"/>
-        <Caret Line="481" Column="14" TopLine="455"/>
+        <Filename Value="unitDFTdialog.pas"/>
+        <Caret Line="77" Column="31" TopLine="49"/>
       </Position>
       <Position>
-        <Filename Value="fitproc.pas"/>
-        <Caret Line="479" Column="12" TopLine="455"/>
+        <Filename Value="unitDFTdialog.pas"/>
+        <Caret Line="78" Column="31" TopLine="50"/>
       </Position>
       <Position>
-        <Filename Value="fitproc.pas"/>
-        <Caret Line="483" Column="109" TopLine="455"/>
+        <Filename Value="unitDFTdialog.pas"/>
+        <Caret Line="79" Column="30" TopLine="51"/>
       </Position>
       <Position>
-        <Filename Value="fitproc.pas"/>
-        <Caret Line="476" TopLine="455"/>
+        <Filename Value="unitDFTdialog.pas"/>
+        <Caret Line="261" Column="43" TopLine="232"/>
       </Position>
       <Position>
-        <Filename Value="fitproc.pas"/>
-        <Caret Line="479" TopLine="455"/>
+        <Filename Value="unitDFTdialog.pas"/>
+        <Caret Line="360" Column="16" TopLine="331"/>
       </Position>
       <Position>
-        <Filename Value="fitproc.pas"/>
-        <Caret Line="481" TopLine="455"/>
+        <Filename Value="unitDFTdialog.pas"/>
+        <Caret Line="372" Column="16" TopLine="343"/>
       </Position>
       <Position>
-        <Filename Value="fitproc.pas"/>
-        <Caret Line="476" Column="7" TopLine="455"/>
+        <Filename Value="unitDFTdialog.pas"/>
+        <Caret Line="478" Column="42" TopLine="449"/>
       </Position>
       <Position>
-        <Filename Value="fitproc.pas"/>
-        <Caret Line="469" TopLine="455"/>
+        <Filename Value="unitDFTdialog.pas"/>
+        <Caret Line="488" Column="42" TopLine="459"/>
       </Position>
       <Position>
-        <Filename Value="fitproc.pas"/>
-        <Caret Line="472" TopLine="455"/>
+        <Filename Value="unitDFTdialog.pas"/>
+        <Caret Line="498" Column="41" TopLine="469"/>
       </Position>
       <Position>
-        <Filename Value="fitproc.pas"/>
-        <Caret Line="473" TopLine="455"/>
+        <Filename Value="unitDFTdialog.pas"/>
+        <Caret Line="502" Column="32" TopLine="473"/>
       </Position>
       <Position>
-        <Filename Value="unitDFT.pas"/>
-        <Caret Line="317" TopLine="289"/>
+        <Filename Value="unitDFTdialog.pas"/>
+        <Caret Line="505" Column="32" TopLine="476"/>
       </Position>
       <Position>
-        <Filename Value="unitDFT.pas"/>
+        <Filename Value="unitDFTdialog.pas"/>
+        <Caret Line="542" Column="29" TopLine="529"/>
       </Position>
     </JumpHistory>
     <RunParams>
