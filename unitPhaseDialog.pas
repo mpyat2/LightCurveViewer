@@ -136,19 +136,11 @@ begin
   ModalResult := mrNone;
   FParamOk := False;
   LPeriod := GetPeriod;
-  if IsNaN(LPeriod) then begin
-    ShowMessage('Invalid Period');
-    EditPeriod.SetFocus;
-    EditPeriod.SelectAll;
+  if IsNaN(LPeriod) then
     Exit;
-  end;
   LEpoch := GetEpoch;
-  if IsNaN(LEpoch) then begin
-    ShowMessage('Invalid Epoch');
-    EditEpoch.SetFocus;
-    EditEpoch.SelectAll;
+  if IsNaN(LEpoch) then
     Exit;
-  end;
   CurrentPeriod := LPeriod;
   CurrentEpoch := LEpoch;
   FApplyPhasePlotParams;
@@ -166,9 +158,10 @@ var
   S: string;
   V: Double;
 begin
-  S := Trim(EditEpoch.Text);
-  if not TryStrToFloat(S, V) then V := NaN;
-  Result := V;
+  if GetFieldValue(EditEpoch, NaN, NaN, LabelEpoch.Caption, V) then
+    Result := V
+  else
+    Result := NaN;
 end;
 
 function TFormPhaseDialog.GetPeriod: Double;
@@ -176,9 +169,10 @@ var
   S: string;
   V: Double;
 begin
-  S := Trim(EditPeriod.Text);
-  if not TryStrToFloat(S, V) or (V <= 0) then V := NaN;
-  Result := V;
+  if GetFieldValue(EditPeriod, 1e-8, NaN, LabelPeriod.Caption, V) then
+    Result := V
+  else
+    Result := NaN;
 end;
 
 procedure TFormPhaseDialog.SetEpoch(AValue: Double);

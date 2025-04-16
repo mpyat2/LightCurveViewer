@@ -259,6 +259,10 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="unitOptionsDialog"/>
       </Unit>
+      <Unit>
+        <Filename Value="edithelper.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

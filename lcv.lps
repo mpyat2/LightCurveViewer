@@ -3,7 +3,7 @@
   <ProjectSession>
     <PathDelim Value="\"/>
     <Version Value="12"/>
-    <BuildModes Active="NoDebug"/>
+    <BuildModes Active="MemoryLeakCheck"/>
     <Units>
       <Unit>
         <Filename Value="lcv.lpr"/>
@@ -19,8 +19,6 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="1414"/>
-        <CursorPos X="12" Y="1426"/>
         <UsageCount Value="203"/>
         <Bookmarks Count="2">
           <Item0 X="14" Y="214" ID="2"/>
@@ -31,8 +29,8 @@
         <Filename Value="dataio.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="78"/>
-        <CursorPos X="16" Y="105"/>
+        <TopLine Value="34"/>
+        <CursorPos X="3" Y="19"/>
         <UsageCount Value="203"/>
       </Unit>
       <Unit>
@@ -41,10 +39,12 @@
         <ComponentName Value="FormPhaseDialog"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="24"/>
-        <CursorPos X="32" Y="42"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="146"/>
+        <CursorPos X="7" Y="172"/>
         <UsageCount Value="202"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="unitDFTdialog.pas"/>
@@ -52,15 +52,13 @@
         <ComponentName Value="FormDFTDialog"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="561"/>
         <CursorPos X="38" Y="589"/>
         <UsageCount Value="200"/>
         <Bookmarks Count="1">
           <Item0 Y="449" ID="1"/>
         </Bookmarks>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="unitDFTparamDialog.pas"/>
@@ -68,10 +66,12 @@
         <ComponentName Value="FormDFTparams"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="61"/>
-        <CursorPos X="29" Y="78"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="240"/>
+        <CursorPos X="17" Y="265"/>
         <UsageCount Value="200"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="unitDFT.pas"/>
@@ -85,8 +85,8 @@
         <Filename Value="dftThread.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="20"/>
-        <CursorPos Y="34"/>
+        <TopLine Value="41"/>
+        <CursorPos Y="75"/>
         <UsageCount Value="200"/>
       </Unit>
       <Unit>
@@ -109,10 +109,12 @@
         <ComponentName Value="FormFitparams"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="152"/>
-        <CursorPos X="19" Y="181"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="186"/>
+        <CursorPos X="18" Y="180"/>
         <UsageCount Value="203"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="unitTableDialog.pas"/>
@@ -177,10 +179,15 @@
       <Unit>
         <Filename Value="guiutils.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="149"/>
-        <CursorPos X="27" Y="164"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="41"/>
+        <CursorPos Y="60"/>
         <UsageCount Value="211"/>
+        <Bookmarks Count="1">
+          <Item0 X="3" Y="62" ID="1"/>
+        </Bookmarks>
+        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="floattextform.pas"/>
@@ -224,10 +231,12 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="unitGetExtent"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="7"/>
-        <CursorPos Y="52"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="55"/>
+        <CursorPos X="54" Y="90"/>
         <UsageCount Value="201"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="colorlegend.pas"/>
@@ -251,10 +260,154 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="41"/>
         <CursorPos X="87" Y="64"/>
-        <UsageCount Value="31"/>
+        <UsageCount Value="47"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus64\fpc\3.2.2\source\rtl\objpas\classes\classesh.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="645"/>
+        <CursorPos X="15" Y="664"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus64\fpc\3.2.2\source\rtl\objpas\classes\stringl.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="579"/>
+        <CursorPos X="3" Y="584"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus64\fpc\3.2.2\source\rtl\objpas\sysutils\syshelph.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="3" Y="5"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="edithelper.pas"/>
+        <IsPartOfProject Value="True"/>
+        <TopLine Value="45"/>
+        <CursorPos X="9" Y="62"/>
+        <UsageCount Value="29"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus64\lcl\stdctrls.pp"/>
+        <UnitName Value="StdCtrls"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="8"/>
+        <CursorPos X="8" Y="39"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus64\fpc\3.2.2\source\packages\fcl-base\src\fpexprpars.pp"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="3942"/>
+        <CursorPos Y="3953"/>
+        <UsageCount Value="10"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="-1"/>
+    <JumpHistory HistoryIndex="24">
+      <Position>
+        <Filename Value="edithelper.pas"/>
+        <Caret Line="30" TopLine="8"/>
+      </Position>
+      <Position>
+        <Filename Value="edithelper.pas"/>
+        <Caret Line="31" TopLine="8"/>
+      </Position>
+      <Position>
+        <Filename Value="edithelper.pas"/>
+        <Caret Line="34" TopLine="8"/>
+      </Position>
+      <Position>
+        <Filename Value="edithelper.pas"/>
+        <Caret Line="35" TopLine="8"/>
+      </Position>
+      <Position>
+        <Filename Value="edithelper.pas"/>
+        <Caret Line="29" TopLine="8"/>
+      </Position>
+      <Position>
+        <Filename Value="edithelper.pas"/>
+        <Caret Line="26" TopLine="8"/>
+      </Position>
+      <Position>
+        <Filename Value="edithelper.pas"/>
+        <Caret Line="33" Column="33" TopLine="8"/>
+      </Position>
+      <Position>
+        <Filename Value="edithelper.pas"/>
+        <Caret Line="23" Column="3" TopLine="8"/>
+      </Position>
+      <Position>
+        <Filename Value="edithelper.pas"/>
+        <Caret Line="34" Column="28" TopLine="8"/>
+      </Position>
+      <Position>
+        <Filename Value="edithelper.pas"/>
+        <Caret Line="30" Column="25" TopLine="3"/>
+      </Position>
+      <Position>
+        <Filename Value="edithelper.pas"/>
+        <Caret Line="30" TopLine="3"/>
+      </Position>
+      <Position>
+        <Filename Value="edithelper.pas"/>
+        <Caret Line="29" TopLine="3"/>
+      </Position>
+      <Position>
+        <Filename Value="edithelper.pas"/>
+        <Caret Line="27" TopLine="3"/>
+      </Position>
+      <Position>
+        <Filename Value="edithelper.pas"/>
+        <Caret Line="24" TopLine="3"/>
+      </Position>
+      <Position>
+        <Filename Value="edithelper.pas"/>
+        <Caret Line="30" TopLine="3"/>
+      </Position>
+      <Position>
+        <Filename Value="guiutils.pas"/>
+        <Caret Line="41" Column="8" TopLine="38"/>
+      </Position>
+      <Position>
+        <Filename Value="edithelper.pas"/>
+        <Caret Line="40" Column="7" TopLine="3"/>
+      </Position>
+      <Position>
+        <Filename Value="guiutils.pas"/>
+        <Caret Line="27" Column="20" TopLine="16"/>
+      </Position>
+      <Position>
+        <Filename Value="guiutils.pas"/>
+        <Caret Line="61" Column="3" TopLine="57"/>
+      </Position>
+      <Position>
+        <Filename Value="edithelper.pas"/>
+        <Caret Line="18"/>
+      </Position>
+      <Position>
+        <Filename Value="edithelper.pas"/>
+        <Caret Line="60" Column="13" TopLine="47"/>
+      </Position>
+      <Position>
+        <Filename Value="edithelper.pas"/>
+        <Caret Line="18" Column="22" TopLine="8"/>
+      </Position>
+      <Position>
+        <Filename Value="unitDFTparamDialog.pas"/>
+        <Caret Line="84" Column="20" TopLine="55"/>
+      </Position>
+      <Position>
+        <Filename Value="unitgetextent.pas"/>
+        <Caret Line="90" Column="20" TopLine="67"/>
+      </Position>
+      <Position>
+        <Filename Value="unitPhaseDialog.pas"/>
+        <Caret Line="172" Column="7" TopLine="146"/>
+      </Position>
+    </JumpHistory>
     <RunParams>
       <FormatVersion Value="2"/>
       <Modes ActiveMode=""/>
@@ -265,4 +418,15 @@
       </List>
     </HistoryLists>
   </ProjectSession>
+  <Debugging>
+    <BreakPoints>
+      <Item>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="guiutils.pas"/>
+        <Line Value="85"/>
+      </Item>
+    </BreakPoints>
+  </Debugging>
 </CONFIG>

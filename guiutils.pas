@@ -37,7 +37,7 @@ procedure RearrangeButtons(ButtonOK, ButtonCancel, ButtonApply: TButton);
 implementation
 
 uses
-  math;
+  math, edithelper;
 
 { TWaitCursor }
 
@@ -55,12 +55,10 @@ begin
 end;
 
 function GetFieldValue(const Field: TEdit; Min, Max: Double; const FieldName: string; out V: Double): Boolean;
-var
-  S: string;
 begin
   Result := False;
-  S := Trim(Field.Text);
-  if not TryStrToFloat(S, V) then begin
+  V := Field.Evaluate;
+  if IsNan(V) then begin
     Field.SetFocus;
     Field.SelectAll;
     ShowMessage(FieldName + ': Invalid value');
@@ -82,12 +80,9 @@ begin
 end;
 
 function GetFieldValue(const Field: TEdit; Min, Max: Integer; const FieldName: string; out V: integer): Boolean;
-var
-  S: string;
 begin
   Result := False;
-  S := Trim(Field.Text);
-  if not TryStrToInt(S, V) then begin
+  if not Field.EvaluateInt(V) then begin
     Field.SetFocus;
     Field.SelectAll;
     ShowMessage(FieldName + ': Invalid value');

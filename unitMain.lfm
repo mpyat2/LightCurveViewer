@@ -461,7 +461,7 @@ object FormMain: TFormMain
   object OpenDialog: TOpenDialog
     Title = ''
     DefaultExt = '.txt'
-    Filter = 'Text files (*.txt,*.tsv,*.dat)|*.txt;*.tsv;*.dat|All files (*.*)|*.*'
+    Filter = 'Text files (*.txt,*.tsv,*.dat)|*.txt;*.tsv;*.dat|Comma-separated files (*.csv)|*.csv|All files (*.*)|*.*'
     Options = [ofPathMustExist, ofFileMustExist, ofEnableSizing, ofViewDetail]
     Left = 79
     Top = 296
