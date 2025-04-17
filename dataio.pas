@@ -11,7 +11,7 @@ uses
 
 procedure ReadData(const AFileName: string; out X: TDoubleArray; out Y: TDoubleArray; out Errors: TDoubleArray; out ObjectName: string);
 
-procedure WriteData(const AFileName: string; const X: TDoubleArray; const Y: TDoubleArray; const Errors: TDoubleArray; Delim: char = #09);
+procedure WriteData(const AFileName: string; const X: TDoubleArray; const Y: TDoubleArray; const Errors: TDoubleArray);
 
 implementation
 
@@ -21,6 +21,8 @@ uses
 const
   defNameDirective = '#NAME=';
 
+const
+  defExplicitDelimiters = [^I, ',', ';'];
 
 procedure SplitSpecial(const S: string; out Fields: TStringArray; MaxFields: Integer);
 
@@ -74,14 +76,14 @@ begin
       end
     end
     else begin
-      if S[P] in [' ', ^I, ','] then begin
+      if S[P] in ([' '] + defExplicitDelimiters) then begin
         AddField(Field);
         if (MaxFields > 0) and (Length(Fields) > MaxFields) then
           Exit;
         Field := '';
         while (P <= Len) and (S[P] = ' ') do
           Inc(P);
-        if (P <= Len) and (S[P] in [^I, ',']) then
+        if (P <= Len) and (S[P] in defExplicitDelimiters) then
           Inc(P);
         while (P <= Len) and (S[P] = ' ') do
           Inc(P);
@@ -104,7 +106,7 @@ end;
 // The empty lines and lines starting with '#' are ignored.
 // The lines contaning less than 2 floating-point values in the first two
 // columns are ignored.
-// The columns are assumed to be separated by tabs, commas, or spaces.
+// The columns are assumed to be separated by tabs, commas, semicolons, or spaces.
 // The data is sorted by X
 procedure ReadData(const AFileName: string; out X: TDoubleArray; out Y: TDoubleArray; out Errors: TDoubleArray; out ObjectName: string);
 var
@@ -158,12 +160,22 @@ begin
   end;
 end;
 
-procedure WriteData(const AFileName: string; const X: TDoubleArray; const Y: TDoubleArray; const Errors: TDoubleArray; Delim: char = #09);
+procedure WriteData(const AFileName: string; const X: TDoubleArray; const Y: TDoubleArray; const Errors: TDoubleArray);
 var
+  Delim: Char;
+  FileExt: string;
   Lines: TStrings;
   S: string;
   I: Integer;
 begin
+  FileExt := ExtractFileExt(AFileName);
+  if SameText(FileExt, '.CSV') then
+    Delim := ','
+  else
+  if SameText(FileExt, '.TSV') then
+    Delim := ^I
+  else
+    Delim := ' ';
   Lines := TStringList.Create;
   try
     for I := 0 to Length(X) - 1 do begin
