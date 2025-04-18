@@ -462,7 +462,6 @@ object FormMain: TFormMain
     Title = ''
     DefaultExt = '.txt'
     Filter = 'Text files (*.txt;*.tsv;*.dat;*.csv)|*.txt;*.tsv;*.dat;*.csv|All files (*.*)|*.*'
-    InitialDir = 'C:\Users\mpyat\OneDrive\Documents\'
     Options = [ofPathMustExist, ofFileMustExist, ofEnableSizing, ofViewDetail]
     Left = 79
     Top = 296
