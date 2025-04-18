@@ -461,7 +461,6 @@ object FormMain: TFormMain
   object OpenDialog: TOpenDialog
     Title = ''
     DefaultExt = '.txt'
-    FileName = 'C:\Users\mpyat\OneDrive\Documents\0X_DFT-TEST-DATA.csv'
     Filter = 'Text files (*.txt;*.tsv;*.dat;*.csv)|*.txt;*.tsv;*.dat;*.csv|All files (*.*)|*.*'
     InitialDir = 'C:\Users\mpyat\OneDrive\Documents\'
     Options = [ofPathMustExist, ofFileMustExist, ofEnableSizing, ofViewDetail]

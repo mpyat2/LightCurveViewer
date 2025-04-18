@@ -205,7 +205,7 @@ begin
       Assert(Edit <> nil);
       Lab := FindComponent('LabelTrigDeg' + IntToStr(I+1)) as TLabel;
       Assert(Lab <> nil);
-      if not GetFieldValue(Edit, 0, 25, Lab.Caption, TrigPolyDegrees[I]) then
+      if not GetFieldValue(Edit, 0, 50, Lab.Caption, TrigPolyDegrees[I]) then
         Exit;
     end
     else begin
