@@ -475,6 +475,7 @@ object FormMain: TFormMain
     Top = 128
   end
   object LCSrcFoldedData: TListChartSource
+    XCount = 2
     YCount = 2
     YErrorBarData.Kind = ebkChartSource
     YErrorBarData.IndexMinus = 1

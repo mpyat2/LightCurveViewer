@@ -325,7 +325,7 @@ var
   Tool: TDatapointClickTool;
   Series: TLineSeries;
   S1: String;
-  X, Y, Error: Double;
+  X, X0, Y, Error: Double;
 begin
   Tool := ATool as TDatapointClickTool;
   if Tool.Series = ChartSeriesData then begin
@@ -339,7 +339,8 @@ begin
     end
     else
     if Series.Source = LCSrcFoldedData then begin
-      S1 := Format('Phase = %g'#13#10'y = %g'#13#10'error = %g', [X, Y, Error]);
+      X0 := Series.GetXValues(Tool.PointIndex, 1);
+      S1 := Format('Phase = %g'#13#10'x = %g'#13#10'y = %g'#13#10'error = %g', [X, X0, Y, Error]);
     end;
     Series.ListSource.SetText(Tool.PointIndex, S1);
     if Series.Source = LCSrcData then begin
@@ -347,7 +348,8 @@ begin
     end
     else
     if Series.Source = LCSrcFoldedData then begin
-      S1 := Format('Phase = '^I'%g'^I'y = '^I'%g'^I'error = '^I'%g', [X, Y, Error]);
+      X0 := Series.GetXValues(Tool.PointIndex, 1);
+      S1 := Format('Phase = '^I'%g'^I'x = '^I'%g'^I'y = '^I'%g'^I'error = '^I'%g', [X, X0, Y, Error]);
     end;
     floattextform.AddText(S1);
   end;
@@ -1269,8 +1271,10 @@ begin
 
     ItemIndex := LCSrcFoldedData.Add(Phase      , Item^.Y, '', CycleByCycleColors[N]);
     LCSrcFoldedData.Item[ItemIndex]^.YList[0] := Item^.YList[0];
+    LCSrcFoldedData.Item[ItemIndex]^.XList[0] := Item^.X; // original value
     ItemIndex := LCSrcFoldedData.Add(Phase - 1.0, Item^.Y, '', CycleByCycleColors[N]);
     LCSrcFoldedData.Item[ItemIndex]^.YList[0] := Item^.YList[0];
+    LCSrcFoldedData.Item[ItemIndex]^.XList[0] := Item^.X; // original value
     Item^.Color := CycleByCycleColors[N]; // set color to original data too!
 
     PrevCycle := Cycle;
