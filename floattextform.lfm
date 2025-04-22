@@ -2,12 +2,12 @@ object FormFloatText: TFormFloatText
   Left = 780
   Height = 201
   Top = 380
-  Width = 616
+  Width = 776
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSizeToolWin
   Caption = 'Points'
   ClientHeight = 201
-  ClientWidth = 616
+  ClientWidth = 776
   FormStyle = fsStayOnTop
   OnClose = FormClose
   LCLVersion = '3.8.0.0'
@@ -15,7 +15,7 @@ object FormFloatText: TFormFloatText
     Left = 0
     Height = 161
     Top = 0
-    Width = 616
+    Width = 776
     Align = alClient
     Font.Name = 'Courier New'
     Font.Pitch = fpFixed
@@ -31,13 +31,13 @@ object FormFloatText: TFormFloatText
     Left = 0
     Height = 40
     Top = 161
-    Width = 616
+    Width = 776
     Align = alBottom
     ClientHeight = 40
-    ClientWidth = 616
+    ClientWidth = 776
     TabOrder = 1
     object ButtonClose: TButton
-      Left = 536
+      Left = 696
       Height = 25
       Top = 8
       Width = 75
@@ -49,7 +49,7 @@ object FormFloatText: TFormFloatText
       OnClick = ButtonCloseClick
     end
     object ButtonClear: TButton
-      Left = 448
+      Left = 608
       Height = 25
       Top = 8
       Width = 75

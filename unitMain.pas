@@ -333,9 +333,23 @@ begin
     X := Series.GetXValue(Tool.PointIndex);
     Y := Series.GetYValue(Tool.PointIndex);
     Error := Series.GetYValues(Tool.PointIndex, 1);
-    S1 := Format('x = %g'#13#10'y = %g'#13#10'error = %g', [X, Y, Error]);
+    S1 := 'Unknown series';
+    if Series.Source = LCSrcData then begin
+      S1 := Format('x = %g'#13#10'y = %g'#13#10'error = %g', [X, Y, Error]);
+    end
+    else
+    if Series.Source = LCSrcFoldedData then begin
+      S1 := Format('Phase = %g'#13#10'y = %g'#13#10'error = %g', [X, Y, Error]);
+    end;
     Series.ListSource.SetText(Tool.PointIndex, S1);
-    floattextform.AddText('x = '^I + FloatToStr(X) + ^I'y = '^I + FloatToStr(Y) + ^I'error = '^I + FloatToStr(Error));
+    if Series.Source = LCSrcData then begin
+      S1 := Format('n = '^I'%d'^I'x = '^I'%g'^I'y = '^I'%g'^I'error = '^I'%g', [Tool.PointIndex + 1, X, Y, Error]);
+    end
+    else
+    if Series.Source = LCSrcFoldedData then begin
+      S1 := Format('Phase = '^I'%g'^I'y = '^I'%g'^I'error = '^I'%g', [X, Y, Error]);
+    end;
+    floattextform.AddText(S1);
   end;
 end;
 

@@ -75,7 +75,7 @@ implementation
 {$R *.lfm}
 
 uses
-  math, miscutils, guiutils;
+  math, miscutils, edithelper, guiutils;
 
 var
   CurrentFrequencyMin: Double = NaN;
@@ -200,10 +200,12 @@ procedure TFormDFTparams.UpdateView;
     S: string;
     V: Double;
   begin
-    try
-      S := Trim(E.Text);
-      if S <> '' then begin
-        V := StrToFloat(S);
+    S := Trim(E.Text);
+    if S <> '' then begin
+      try
+        V := E.Evaluate;
+        if IsNan(V) then
+          raise Exception.Create('Error');
         FPUExceptionMask := GetExceptionMask;
         SetExceptionMask([exInvalidOp, exDenormalized, exZeroDivide, exOverflow, exUnderflow, exPrecision]);
         try
@@ -216,11 +218,12 @@ procedure TFormDFTparams.UpdateView;
           L.Caption := S
         else
           L.Caption := '**********';
-      end
-      else
-        L.Caption := '';
-    except
-      L.Caption := '?';
+      except
+        L.Caption := '?';
+      end;
+    end
+    else begin
+      L.Caption := '';
     end;
   end;
 begin

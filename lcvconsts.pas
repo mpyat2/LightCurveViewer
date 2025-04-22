@@ -15,8 +15,8 @@ const
 
 const
   CycleByCycleColors: array of TColor = (
-    clRed,    clLime,  clYellow, clBlue, clFuchsia, clAqua,
-    clMaroon, clGreen, clOlive,  clNavy, clTeal, clBlack);
+    clRed,    clLime,  $00C8FF, clBlue, clFuchsia, clAqua,
+    clMaroon, clGreen, clOlive, clNavy, clTeal,    clBlack);
 
 implementation
 
