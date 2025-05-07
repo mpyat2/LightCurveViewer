@@ -31,7 +31,7 @@ implementation
 {$R *.lfm}
 
 uses
-  fileinfo;
+  LCLVersion, fileinfo, typ;
 
 procedure About;
 var
@@ -66,8 +66,9 @@ procedure TFormAbout.FormCreate(Sender: TObject);
 begin
   LabelVersion.Caption := '  ' + GetVersionString(ParamStr(0)) +
                           ' | FPC ' + {$I %FPCVERSION%} + ' ' + {$I %FPCTARGETOS%} +
-                          ' | LCL ' + Self.LCLVersion +
-                          ' | ' + {$I %DATE%} + ' ' + {$I %TIME%};
+                          ' | LCL ' + LCLVersion +
+                          ' | ' + {$I %DATE%} + ' ' + {$I %TIME%} +
+                          ' | NumLib Float Size = ' + IntToStr(sizeof(typ.ArbFloat));
   Memo1.Text :=
   ^M^J +
   'Light Curve Viewer by Maksym Yu. Pyatnytskyy'^M^J^M^J +

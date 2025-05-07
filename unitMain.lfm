@@ -7,12 +7,12 @@ object FormMain: TFormMain
   ClientHeight = 600
   ClientWidth = 800
   Menu = MainMenu
+  Position = poDefaultPosOnly
+  LCLVersion = '4.0.0.4'
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  Position = poDefaultPosOnly
-  LCLVersion = '3.8.0.0'
   object Chart: TChart
     Cursor = crCross
     Left = 0
@@ -132,7 +132,7 @@ object FormMain: TFormMain
     end
     object ToolButtonDiv1: TToolButton
       Left = 24
-      Height = 22
+      Height = 5
       Top = 2
       Caption = 'ToolButtonDiv1'
       Style = tbsDivider
@@ -149,7 +149,7 @@ object FormMain: TFormMain
     end
     object ToolButtonDiv2: TToolButton
       Left = 75
-      Height = 22
+      Height = 5
       Top = 2
       Caption = 'ToolButtonDiv2'
       Style = tbsDivider
@@ -171,7 +171,7 @@ object FormMain: TFormMain
     end
     object ToolButtonDiv3: TToolButton
       Left = 149
-      Height = 22
+      Height = 5
       Top = 2
       Caption = 'ToolButtonDiv3'
       Style = tbsDivider
@@ -327,8 +327,8 @@ object FormMain: TFormMain
       Caption = '&Open...'
       Hint = 'Open Data File'
       ImageIndex = 0
-      OnExecute = ActionOpenExecute
       ShortCut = 16463
+      OnExecute = ActionOpenExecute
     end
     object ActionInvertedY: TAction
       Category = 'View'

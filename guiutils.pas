@@ -116,13 +116,13 @@ begin
       S2 := '';
       for C := 0 to Grid.FixedCols - 1 do
         S2 := S2 + GetGridCell(Grid, C, R) + ^I;
+      for C := Selection.Left to Selection.Right do begin
+        S2 := S2 + GetGridCell(Grid, C, R);
+        if C < Selection.Right then
+          S2 := S2 + ^I;
+      end;
+      Result := Result + S2 + ^M^J;
     end;
-    for C := Selection.Left to Selection.Right do begin
-      S2 := S2 + GetGridCell(Grid, C, R);
-      if C < Selection.Right then
-        S2 := S2 + ^I;
-    end;
-    Result := Result + S2 + ^M^J;
   end;
   for R := Selection.Top to Selection.Bottom do begin
     S2 := '';

@@ -633,7 +633,6 @@ end;
 
 procedure TFormDFTDialog.InitMaxima;
 var
-  Item: PChartDataItem;
   Y, Yprev, Ynext: Double;
   I, N: Integer;
 begin

@@ -8,7 +8,7 @@ interface
 
 uses
   Classes, SysUtils, IniFiles, Forms, Controls, Graphics, Dialogs, Menus,
-  ActnList, ComCtrls, ExtDlgs, StdCtrls, ExtCtrls, TAGraph, TASources, TASeries,
+  ActnList, ComCtrls, ExtDlgs, ExtCtrls, TAGraph, TASources, TASeries,
   TACustomSource, TATools, TAChartUtils, TACustomSeries, Types, lcvconsts,
   lcvtypes, unitDFT;
 
@@ -1009,7 +1009,6 @@ end;
 procedure TFormMain.SaveFileAs(const AFileName: string; const X, Y, Errors: TDoubleArray);
 var
   PropsFileName: string;
-  Ini: TIniFile;
 begin
   try
     PropsFileName := AFileName + '.lcv.props';
@@ -1165,9 +1164,7 @@ begin
   StatusBar.Panels[1].Text := '';
   FChartSubtitle := '';
   UpdateTitle;
-  if InPhasePlotMode then begin
-    LogicalExtent := Chart.LogicalExtent;
-  end;
+  LogicalExtent := Chart.LogicalExtent;
   ChartSeriesData.Source := nil;
   ChartSeriesModelToNil;
   if not InPhasePlotMode then begin
@@ -1189,11 +1186,7 @@ begin
 end;
 
 procedure TFormMain.ShowColorLegend;
-var
-  Period, Epoch: Double;
 begin
-  Period := unitPhaseDialog.GetCurrentPeriod;
-  Epoch := unitPhaseDialog.GetCurrentEpoch;
   colorLegend.ShowColorLegend(FFoldedDataColorRegions,
     'Period ' + FloatToStr(unitPhaseDialog.GetCurrentPeriod) + ', Epoch ' + FloatToStr(unitPhaseDialog.GetCurrentEpoch));
 end;
