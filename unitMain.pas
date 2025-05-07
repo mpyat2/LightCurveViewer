@@ -1155,20 +1155,31 @@ end;
 
 procedure TFormMain.PlotFoldedProc;
 var
+  LogicalExtent: TDoubleRect;
   SourceExtent: TDoubleRect;
+  InPhasePlotMode: Boolean;
 begin
+  InPhasePlotMode := ChartSeriesData.Source = LCSrcFoldedData;
   HideColorLegend;
   StatusBar.Panels[0].Text := '';
   StatusBar.Panels[1].Text := '';
   FChartSubtitle := '';
   UpdateTitle;
+  if InPhasePlotMode then begin
+    LogicalExtent := Chart.LogicalExtent;
+  end;
   ChartSeriesData.Source := nil;
   ChartSeriesModelToNil;
-  SourceExtent := LCSrcFoldedData.Extent;
-  SetAxisBoundaries(-1.0, 1.0, SourceExtent.coords[2], SourceExtent.coords[4]);
+  if not InPhasePlotMode then begin
+    SourceExtent := LCSrcFoldedData.Extent;
+    SetAxisBoundaries(-1.0, 1.0, SourceExtent.coords[2], SourceExtent.coords[4]);
+  end;
   ChartSeriesData.Source := LCSrcFoldedData;
   if UDFSrcModelFolded.Count > 0 then begin
     ChartSeriesModelToModelFolded;
+  end;
+  if InPhasePlotMode then begin
+    Chart.LogicalExtent := LogicalExtent;
   end;
   StatusBar.Panels[1].Text := ' P= ' + FloatToStr(unitPhaseDialog.GetCurrentPeriod) + ^I' E= ' + FloatToStr(unitPhaseDialog.GetCurrentEpoch) + ' ';
   FChartSubtitle := 'Period ' + FloatToStr(unitPhaseDialog.GetCurrentPeriod) + ', Epoch ' + FloatToStr(unitPhaseDialog.GetCurrentEpoch) + ' ';

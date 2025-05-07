@@ -20,13 +20,13 @@
         <ResourceBaseClass Value="Form"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="7"/>
-        <TopLine Value="327"/>
-        <CursorPos X="51" Y="351"/>
+        <TopLine Value="1150"/>
+        <CursorPos X="7" Y="1177"/>
         <UsageCount Value="203"/>
         <Bookmarks Count="3">
           <Item0 X="14" Y="214" ID="2"/>
           <Item1 X="15" Y="622"/>
-          <Item2 Y="1272" ID="1"/>
+          <Item2 X="22" Y="1169" ID="1"/>
         </Bookmarks>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -194,7 +194,7 @@
         <ComponentName Value="FormFloatText"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="8"/>
+        <EditorIndex Value="9"/>
         <TopLine Value="21"/>
         <CursorPos X="18" Y="39"/>
         <UsageCount Value="237"/>
@@ -233,8 +233,8 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="unitGetExtent"/>
         <EditorIndex Value="5"/>
-        <TopLine Value="55"/>
-        <CursorPos X="54" Y="90"/>
+        <TopLine Value="18"/>
+        <CursorPos X="12" Y="37"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -261,13 +261,13 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="41"/>
         <CursorPos X="87" Y="64"/>
-        <UsageCount Value="50"/>
+        <UsageCount Value="51"/>
       </Unit>
       <Unit>
         <Filename Value="edithelper.pas"/>
         <IsPartOfProject Value="True"/>
         <CursorPos X="14" Y="17"/>
-        <UsageCount Value="32"/>
+        <UsageCount Value="33"/>
         <Loaded Value="True"/>
       </Unit>
     </Units>
