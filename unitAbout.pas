@@ -56,7 +56,7 @@ begin
   finally
     FreeAndNil(FileVerInfo);
   end;
-  Result := ExtractFileName(ModuleName) + ' Version ' + Result;
+  Result := ExtractFileName(ModuleName) + ' ' + Result;
 end;
 
 { TFormAbout }
