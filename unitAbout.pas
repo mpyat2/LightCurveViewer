@@ -48,7 +48,6 @@ end;
 function GetVersionString(const ModuleName: String): String;
 var
   FileVerInfo: TFileVersionInfo;
-  I: Integer;
 begin
   FileVerInfo := TFileVersionInfo.Create(nil);
   try
