@@ -18,8 +18,9 @@
         <ComponentName Value="FormMain"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="1537"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="1538"/>
         <CursorPos X="72" Y="1553"/>
         <UsageCount Value="203"/>
         <Bookmarks Count="3">
@@ -27,6 +28,8 @@
           <Item1 X="15" Y="622"/>
           <Item2 X="20" Y="1167" ID="1"/>
         </Bookmarks>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="dataio.pas"/>
@@ -133,7 +136,6 @@
         <ComponentName Value="FormAbout"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <IsVisibleTab Value="True"/>
         <TopLine Value="46"/>
         <CursorPos X="45" Y="59"/>
         <UsageCount Value="200"/>

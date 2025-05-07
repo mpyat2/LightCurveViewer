@@ -8,7 +8,6 @@ object FormMain: TFormMain
   ClientWidth = 800
   Menu = MainMenu
   Position = poDefaultPosOnly
-  LCLVersion = '4.0.0.4'
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
@@ -73,6 +72,15 @@ object FormMain: TFormMain
     OnMouseEnter = ChartMouseEnter
     OnMouseLeave = ChartMouseLeave
     OnMouseMove = ChartMouseMove
+    object ChartSeriesModel: TLineSeries
+      LinePen.Color = clLime
+    end
+    object ChartSeriesModelUpLimit: TLineSeries
+      LinePen.Color = clRed
+    end
+    object ChartSeriesModelDownLimit: TLineSeries
+      LinePen.Color = clRed
+    end
     object ChartSeriesData: TLineSeries
       LineType = ltNone
       Marks.Format = '%2:s'
@@ -87,15 +95,6 @@ object FormMain: TFormMain
       ShowPoints = True
       YErrorBars.Pen.Color = clGray
       YErrorBars.Visible = True
-    end
-    object ChartSeriesModel: TLineSeries
-      LinePen.Color = clLime
-    end
-    object ChartSeriesModelUpLimit: TLineSeries
-      LinePen.Color = clRed
-    end
-    object ChartSeriesModelDownLimit: TLineSeries
-      LinePen.Color = clRed
     end
   end
   object StatusBar: TStatusBar
@@ -132,7 +131,7 @@ object FormMain: TFormMain
     end
     object ToolButtonDiv1: TToolButton
       Left = 24
-      Height = 5
+      Height = 22
       Top = 2
       Caption = 'ToolButtonDiv1'
       Style = tbsDivider
@@ -149,7 +148,7 @@ object FormMain: TFormMain
     end
     object ToolButtonDiv2: TToolButton
       Left = 75
-      Height = 5
+      Height = 22
       Top = 2
       Caption = 'ToolButtonDiv2'
       Style = tbsDivider
@@ -171,7 +170,7 @@ object FormMain: TFormMain
     end
     object ToolButtonDiv3: TToolButton
       Left = 149
-      Height = 5
+      Height = 22
       Top = 2
       Caption = 'ToolButtonDiv3'
       Style = tbsDivider
