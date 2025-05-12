@@ -142,12 +142,12 @@ begin
           X[N] := FX;
           Y[N] := FY;
           Errors[N] := 0;
+          if Length(Fields) > 2 then begin
+            if StringToFloatLocaleIndependent(Fields[2], Error) then
+              Errors[N] := Error;
+          end;
           Inc(N);
         end;
-      end;
-      if Length(Fields) > 2 then begin
-        if StringToFloatLocaleIndependent(Fields[2], Error) then
-          Errors[N - 1] := Error;
       end;
     end;
     SetLength(X, N);

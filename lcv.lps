@@ -3,7 +3,7 @@
   <ProjectSession>
     <PathDelim Value="\"/>
     <Version Value="12"/>
-    <BuildModes Active="NoDebug"/>
+    <BuildModes Active="MemoryLeakCheck"/>
     <Units>
       <Unit>
         <Filename Value="lcv.lpr"/>
@@ -18,9 +18,8 @@
         <ComponentName Value="FormMain"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="1538"/>
+        <TopLine Value="1539"/>
         <CursorPos X="72" Y="1553"/>
         <UsageCount Value="203"/>
         <Bookmarks Count="3">
@@ -34,10 +33,12 @@
       <Unit>
         <Filename Value="dataio.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="148"/>
-        <CursorPos Y="171"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="126"/>
+        <CursorPos X="11" Y="149"/>
         <UsageCount Value="203"/>
+        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="unitPhaseDialog.pas"/>
@@ -259,44 +260,71 @@
         <CursorPos X="14" Y="17"/>
         <UsageCount Value="34"/>
       </Unit>
-      <Unit>
-        <Filename Value="C:\lazarus64\lcl\lclversion.pas"/>
-        <UnitName Value="LCLVersion"/>
-        <EditorIndex Value="-1"/>
-        <UsageCount Value="10"/>
-      </Unit>
-      <Unit>
-        <Filename Value="C:\lazarus64\lcl\forms.pp"/>
-        <UnitName Value="Forms"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="888"/>
-        <CursorPos X="14" Y="904"/>
-        <UsageCount Value="10"/>
-      </Unit>
-      <Unit>
-        <Filename Value="C:\lazarus64\fpc\3.2.2\source\packages\numlib\src\typ.pas"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="44"/>
-        <CursorPos X="6" Y="64"/>
-        <UsageCount Value="10"/>
-      </Unit>
-      <Unit>
-        <Filename Value="C:\lazarus64\fpc\3.2.2\source\rtl\objpas\math.pp"/>
-        <UnitName Value="Math"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="316"/>
-        <CursorPos X="10" Y="336"/>
-        <UsageCount Value="10"/>
-      </Unit>
     </Units>
-    <JumpHistory HistoryIndex="1">
+    <JumpHistory HistoryIndex="15">
       <Position>
-        <Filename Value="unitAbout.pas"/>
-        <Caret Line="71" Column="45" TopLine="44"/>
+        <Filename Value="unitMain.pas"/>
+        <Caret Line="1553" Column="72" TopLine="1539"/>
       </Position>
       <Position>
-        <Filename Value="unitAbout.pas"/>
-        <Caret Line="51" TopLine="46"/>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="119" TopLine="111"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="120" TopLine="111"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="121" TopLine="111"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="122" TopLine="111"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="123" TopLine="111"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="124" TopLine="111"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="125" TopLine="111"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="126" TopLine="111"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="127" TopLine="111"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="128" TopLine="118"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="129" TopLine="118"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="131" TopLine="118"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="139" Column="25" TopLine="118"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="141" TopLine="118"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="145" Column="11" TopLine="120"/>
       </Position>
     </JumpHistory>
     <RunParams>
@@ -309,15 +337,4 @@
       </List>
     </HistoryLists>
   </ProjectSession>
-  <Debugging>
-    <BreakPoints>
-      <Item>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="guiutils.pas"/>
-        <Line Value="112"/>
-      </Item>
-    </BreakPoints>
-  </Debugging>
 </CONFIG>
