@@ -182,8 +182,9 @@ def get_lc(search_result, n, to_mag):
     if to_mag:
         obs = -2.5 * np.log10(obs)
         if tess_magnitude != UNKNOWN_MAG:
-            median_mag = np.median(obs)
-            #print(median_mag)
+            # Use nanmedian here.
+            # There are cases when the flux = nan even when quality = 0.
+            median_mag = np.nanmedian(obs)
             obs = obs - median_mag + tess_magnitude
     return time, obs, tess_magnitude
 
