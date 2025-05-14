@@ -275,7 +275,7 @@ def main():
                     s = "Magnitudes"
                 else:
                     s = "Fluxes"
-                print("Brightness in ", s)
+                print("Brightness in", s)
         else:    
             printHeader("Selected star: ", "No star selected")
         print()
