@@ -26,7 +26,7 @@ class bcolors:
 
 starName = None
 search_result = None
-current_n = None
+current_nn = None
 current_time = None
 current_obs = None
 current_to_mag = None
@@ -34,6 +34,15 @@ current_lc_info = None
 
 UNKNOWN_MAG = -99
 DEFAULT_MAG = 0
+
+def printError(msg):
+    print(bcolors.FAIL + msg + bcolors.ENDC)
+    
+def printHeader(msg, starInfo):
+    print(bcolors.HEADER + msg  + bcolors.ENDC + bcolors.REVERSE + starInfo + bcolors.ENDC)    
+    
+def printMenu(msg):
+    print(bcolors.OKCYAN + msg + bcolors.ENDC)    
 
 def getStarName():
     global starName
@@ -43,24 +52,33 @@ def getStarName():
         global search_result
         global current_time
         global current_obs
-        global current_n
+        global current_nn
         global current_to_mag
         search_result = None
         current_time = None
         current_obs = None
-        current_n = None
+        current_nn = None
         current_to_mag = None
         plt.close('all')
         try:
             get_available_data_list(starName)
             if search_result is None or len(search_result) < 1:
+                search_result = None
+                starName = None
                 printError("No data found for the star. Press ENTER to continue:")
                 input("")
         except Exception as e:
             search_result = None
+            starName = None
             printError(f"Error: {e}. Press ENTER to continue:")
             input("")
             return
+
+def normStrR(s, n):
+  return s.rjust(n, " ")
+
+def normStrL(s, n):
+  return s.ljust(n, " ")
 
 def printSearchResult():
     global search_result
@@ -68,15 +86,51 @@ def printSearchResult():
         printError("No data found for the star. Press ENTER to continue:")
         input("")
         return
-    print(bcolors.OKGREEN)
-    print(search_result)
+    #print(search_result)
+    print()
+    print(bcolors.OKGREEN + bcolors.REVERSE + bcolors.UNDERLINE + normStrR("#", 4) + bcolors.ENDC + bcolors.OKGREEN + bcolors.UNDERLINE,
+          normStrL("mission", 16),
+          normStrR("year", 4),
+          normStrL("author", 12),
+          normStrR("exptime", 10),
+          normStrR("target_name", 12),
+          normStrR("distance", 12))
+    for i in range(len(search_result)):
+        print(bcolors.REVERSE + bcolors.UNDERLINE + normStrR(str(i), 4) + bcolors.ENDC + bcolors.OKGREEN,
+              normStrL(search_result.mission[i], 16),
+              normStrR(str(search_result.year[i]), 4),
+              normStrL(search_result.author[i], 12),
+              normStrR(str(search_result.exptime[i]), 10),
+              normStrR(search_result.target_name[i], 12),
+              normStrR(str(search_result.distance[i]), 12)
+        )
     print(bcolors.ENDC)
+
+# returns a sorted set of unique integers
+def enterListOfNumbers(prompt, minN, maxN):
+    ns = input(prompt).strip()
+    if ns == "":
+        return None
+    ns = ns.split()
+    try:
+        nn = list(map(int, ns))
+    except ValueError as e:
+        printError(f"Error: {e}. Press ENTER to continue:")
+        input("")
+        return None
+    nn = sorted(set(nn))
+    for n in nn:
+        if n < minN or n > maxN:
+            printError(f"Error: numbers must be between {minN} and {maxN}. Press ENTER to continue:")
+            input("")
+            return None
+    return nn
 
 def downloadLC(to_mag):
     global search_result
     global current_time
     global current_obs
-    global current_n
+    global current_nn
     global current_to_mag
     global current_lc_info
     if search_result is None or len(search_result) < 1:
@@ -84,35 +138,35 @@ def downloadLC(to_mag):
         input("")
         return
     try:
-        n = int(input("Enter an LC number (-1 to cancel): ").strip())
-        if n == -1:
-            return
-        if n < 0 or n >= len(search_result):
-            printError("Invalid LC number. Press ENTER to continue:")
-            input("")
+        nn = enterListOfNumbers("Enter LC numbers: ", 0, len(search_result) - 1)
+        if nn is None or len(nn) < 1:
             return
         current_time = None
         current_obs = None
-        current_n = None
+        current_nn = None
         current_to_mag = None
         current_lc_info = None
         plt.close('all')
-        print("Loading light curve...")
-        tess_mag = UNKNOWN_MAG
+        print("Loading light curve(s)...")
+        tess_mags = [UNKNOWN_MAG]
         try:
-            current_time, current_obs, tess_mag = get_lc(search_result, n, to_mag)
+            current_time, current_obs, tess_mags = get_lc(search_result, nn, to_mag)
         except Exception as e:
             current_time = None
             current_obs = None
-            current_n = None
+            current_nn = None
             current_to_mag = None
             current_lc_info = None
             printError(f"Error: {e}. Press ENTER to continue:")
             input("")
             return
-        current_n = n
+        current_nn = nn
         current_to_mag = to_mag
-        current_lc_info = "TESS Magnitude = " + str(tess_mag)
+        tess_mags_unique = set(tess_mags)
+        if len(tess_mags_unique) == 1:
+            current_lc_info = "TESS magnitude: " + str(list(tess_mags_unique)[0])
+        else:
+            current_lc_info = "WARNING! The selected light curves have different TESSMAG values:\n" + str(tess_mags)
     except ValueError:
         printError("Invalid input! Must be a non-negative integer or -1. Press ENTER to continue:")
         input("")
@@ -127,7 +181,7 @@ def saveLC():
     global starName
     global current_time
     global current_obs
-    global current_n
+    global current_nn
     global current_to_mag
     global current_lc_info
     fname = input("Enter a file name, or type '?' to open the chooser: ").strip()
@@ -172,36 +226,35 @@ def get_available_data_list(id):
     global search_result
     search_result = lk.search_lightcurve(id, mission="TESS")
     
-def get_lc(search_result, n, to_mag):
-    lc = search_result[n].download()
-    btjd_ref = lc.meta.get("BJDREFI", 0) + lc.meta.get("BJDREFF", 0)        
-    lc = lc[lc.quality == 0]
-    time = lc.time.value + btjd_ref
-    obs = lc.flux.value
-    tess_magnitude = lc.meta.get("TESSMAG", UNKNOWN_MAG)
-    if to_mag:
-        obs = -2.5 * np.log10(obs)
-        if tess_magnitude != UNKNOWN_MAG:
-            # Use nanmedian here.
-            # There are cases when the flux = nan even when quality = 0.
-            median_mag = np.nanmedian(obs)
-            obs = obs - median_mag + tess_magnitude
-    return time, obs, tess_magnitude
-
-def printError(msg):
-    print(bcolors.FAIL + msg + bcolors.ENDC)
-    
-def printHeader(msg, starInfo):
-    print(bcolors.HEADER + msg  + bcolors.ENDC + bcolors.REVERSE + starInfo + bcolors.ENDC)    
-    
-def printMenu(msg):
-    print(bcolors.OKCYAN + msg + bcolors.ENDC)    
+def get_lc(search_result, nn, to_mag):
+    tess_mags = []
+    time = np.array([], dtype=np.float64)
+    obs = np.array([], dtype=np.float64)
+    for n in nn:
+        lc = search_result[n].download()
+        btjd_ref = lc.meta.get("BJDREFI", 0) + lc.meta.get("BJDREFF", 0)        
+        lc = lc[lc.quality == 0]
+        t = lc.time.value + btjd_ref
+        o = lc.flux.value
+        median_flux = np.nanmedian(o)
+        tess_mag = lc.meta.get("TESSMAG", UNKNOWN_MAG)
+        if to_mag:
+            o = -2.5 * np.log10(o)
+            if tess_mag != UNKNOWN_MAG:
+                # Use nanmedian here.
+                # There are cases when the flux = nan even when quality = 0.
+                median_mag = -2.5 * np.log10(median_flux)
+                o = o - median_mag + tess_mag
+        tess_mags.append(tess_mag)
+        time = np.append(time, t)
+        obs = np.append(obs, o)
+    return time, obs, tess_mags
 
 def main():
     global starName
     global current_time
     global current_obs
-    global current_n
+    global current_nn
     global current_to_mag
     global current_lc_info
 
@@ -211,27 +264,27 @@ def main():
         print()
         print("=" * 79)
         if not (starName is None or starName == ""):
-            s = starName
-            if not (current_n is None):
-                s += "; LC #" + str(current_n)
-                if current_to_mag is None:
-                    s += "; <unknown state>"
-                elif current_to_mag:
-                    s += "; Magnitudes"
-                else:
-                    s += "; Fluxes"
+            printHeader("Selected star: ", starName)
+            if not (current_nn is None):
+                print("LCs:", str(current_nn))
                 if not current_lc_info is None:
-                    s += "; " + current_lc_info
+                    print(current_lc_info)
+                if current_to_mag is None:
+                    s = "<unknown>"
+                elif current_to_mag:
+                    s = "Magnitudes"
+                else:
+                    s = "Fluxes"
+                print("Brightness in ", s)
         else:    
-            s = "No star selected"
-        printHeader("Selected star: ", s)
+            printHeader("Selected star: ", "No star selected")
         print()
         printMenu("1. Specify a star")
         if not (search_result is None):
             printMenu("2. Print a table of available LCs")
-            printMenu("3. Select and download a light curve: fluxes")
-            printMenu("4. Select and download a light curve: magnitudes")
-            if not (current_n is None):
+            printMenu("3. Select and download light curve(s): fluxes")
+            printMenu("4. Select and download light curve(s): magnitudes")
+            if not (current_nn is None):
                 printMenu("5. Save the selected light curve")
                 printMenu("6. Plot the selected light curve")
         printMenu("0. Exit")
@@ -258,7 +311,8 @@ def main():
 if __name__ == "__main__":
     try:
         main()
+    except Exception as e:
+        printError(f"Fatal Error: {e}.")
     finally:
-        #print("Cleaning up before exit...")
+        print("End")
         sys.exit()
- 
