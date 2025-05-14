@@ -137,40 +137,35 @@ def downloadLC(to_mag):
         printError("No data found for the star. Press ENTER to continue:")
         input("")
         return
+    nn = enterListOfNumbers("Enter LC numbers: ", 0, len(search_result) - 1)
+    if nn is None or len(nn) < 1:
+        return
+    current_time = None
+    current_obs = None
+    current_nn = None
+    current_to_mag = None
+    current_lc_info = None
+    plt.close('all')
+    print("Loading light curve(s)...")
+    tess_mags = [UNKNOWN_MAG]
     try:
-        nn = enterListOfNumbers("Enter LC numbers: ", 0, len(search_result) - 1)
-        if nn is None or len(nn) < 1:
-            return
+        current_time, current_obs, tess_mags = get_lc(search_result, nn, to_mag)
+    except Exception as e:
         current_time = None
         current_obs = None
         current_nn = None
         current_to_mag = None
         current_lc_info = None
-        plt.close('all')
-        print("Loading light curve(s)...")
-        tess_mags = [UNKNOWN_MAG]
-        try:
-            current_time, current_obs, tess_mags = get_lc(search_result, nn, to_mag)
-        except Exception as e:
-            current_time = None
-            current_obs = None
-            current_nn = None
-            current_to_mag = None
-            current_lc_info = None
-            printError(f"Error: {e}. Press ENTER to continue:")
-            input("")
-            return
-        current_nn = nn
-        current_to_mag = to_mag
-        tess_mags_unique = set(tess_mags)
-        if len(tess_mags_unique) == 1:
-            current_lc_info = "TESS magnitude: " + str(list(tess_mags_unique)[0])
-        else:
-            current_lc_info = "WARNING! The selected light curves have different TESSMAG values:\n" + str(tess_mags)
-    except ValueError:
-        printError("Invalid input! Must be a non-negative integer or -1. Press ENTER to continue:")
+        printError(f"Error: {e}. Press ENTER to continue:")
         input("")
         return
+    current_nn = nn
+    current_to_mag = to_mag
+    tess_mags_unique = set(tess_mags)
+    if len(tess_mags_unique) == 1:
+        current_lc_info = "TESS magnitude: " + str(list(tess_mags_unique)[0])
+    else:
+        current_lc_info = "WARNING! The selected light curves have different TESSMAG values:\n" + str(tess_mags)
 
 def chooseFileToSaveAs():
     root = tk.Tk()
