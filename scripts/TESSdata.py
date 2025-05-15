@@ -7,10 +7,11 @@ Created on Tue May 13 16:23:58 2025
 
 import lightkurve as lk
 import numpy as np
-import sys
 import matplotlib.pyplot as plt
 import tkinter as tk
 from tkinter import filedialog
+import sys
+import os
 
 class bcolors:
     HEADER = '\033[95m'
@@ -37,12 +38,24 @@ DEFAULT_MAG = 0
 
 def printError(msg):
     print(bcolors.FAIL + msg + bcolors.ENDC)
-    
+
 def printHeader(msg, starInfo):
-    print(bcolors.HEADER + msg  + bcolors.ENDC + bcolors.REVERSE + starInfo + bcolors.ENDC)    
-    
+    print(bcolors.HEADER + msg  + bcolors.ENDC + bcolors.REVERSE + starInfo + bcolors.ENDC)
+
 def printMenu(msg):
-    print(bcolors.OKCYAN + msg + bcolors.ENDC)    
+    print(bcolors.OKCYAN + msg + bcolors.ENDC)
+
+def runCommand():
+    cmd = input("Enter a command: ").strip()
+    if cmd == "":
+        return
+    os.system(cmd)
+
+def chDir():
+    dir_name = input("Enter a directory name: ").strip()
+    if dir_name == "":
+        return
+    os.chdir(dir_name)
 
 def getStarName():
     global starName
@@ -82,7 +95,9 @@ def normStrL(s, n):
 
 def printSearchResult():
     global search_result
-    if search_result is None or len(search_result) < 1:
+    if search_result is None:
+        return
+    if len(search_result) < 1:
         printError("No data found for the star. Press ENTER to continue:")
         input("")
         return
@@ -133,7 +148,9 @@ def downloadLC(to_mag):
     global current_nn
     global current_to_mag
     global current_lc_info
-    if search_result is None or len(search_result) < 1:
+    if search_result is None:
+        return
+    if len(search_result) < 1:
         printError("No data found for the star. Press ENTER to continue:")
         input("")
         return
@@ -179,6 +196,8 @@ def saveLC():
     global current_nn
     global current_to_mag
     global current_lc_info
+    if current_nn is None:
+        return
     fname = input("Enter a file name, or type '?' to open the chooser: ").strip()
     if fname == "":
         return
@@ -201,6 +220,8 @@ def saveLC():
         return
     
 def plotLC():
+    if current_nn is None:
+        return
     fig = plt.figure(0)
     fig.clear()
     global starName
@@ -258,8 +279,11 @@ def main():
     while True:
         print()
         print("=" * 79)
+        print("Currend Dir  :", os.getcwd())
+        print("=" * 79)
+        print()
         if not (starName is None or starName == ""):
-            printHeader("Selected star: ", starName)
+            printHeader("Selected Star:", starName)
             if not (current_nn is None):
                 print("LCs:", str(current_nn))
                 if not current_lc_info is None:
@@ -274,20 +298,28 @@ def main():
         else:    
             printHeader("Selected star: ", "No star selected")
         print()
-        printMenu("1. Specify a star")
+        printMenu("1  Specify a star")
         if not (search_result is None):
-            printMenu("2. Print a table of available LCs")
-            printMenu("3. Select and download light curve(s): fluxes")
-            printMenu("4. Select and download light curve(s): magnitudes")
+            printMenu("2  Print a table of available LCs")
+            printMenu("3  Select and download light curve(s): fluxes")
+            printMenu("4  Select and download light curve(s): magnitudes")
             if not (current_nn is None):
-                printMenu("5. Save the selected light curve")
-                printMenu("6. Plot the selected light curve")
-        printMenu("0. Exit")
-        c = input("> ").strip()
+                printMenu("5  Save the selected light curve")
+                printMenu("6  Plot the selected light curve")
+        printMenu("0  Exit")
+        printMenu("c  Change directory")
+        printMenu("r  Run external command")
+        c = input("> ").strip().upper()
         match c:
             case "?":
                 print()
                 print("TESS Light Curve Downloader")
+            case "R":
+                runCommand()
+            case "C":
+                chDir()
+            case "Q":
+                return
             case "0":
                 return
             case "1":
@@ -307,7 +339,8 @@ if __name__ == "__main__":
     try:
         main()
     except Exception as e:
-        printError(f"Fatal Error: {e}.")
+        printError(f"Fatal Error: {e}. Press ENTER to continue:")
+        input("")
     finally:
         print("End")
         sys.exit()
