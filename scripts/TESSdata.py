@@ -49,13 +49,23 @@ def runCommand():
     cmd = input("Enter a command: ").strip()
     if cmd == "":
         return
-    os.system(cmd)
+    try:
+        os.system(cmd)
+    except Exception as e:
+        printError(f"Error: {e}. Press ENTER to continue:")
+        input("")
+        return
 
 def chDir():
     dir_name = input("Enter a directory name: ").strip()
     if dir_name == "":
         return
-    os.chdir(dir_name)
+    try:
+        os.chdir(dir_name)
+    except Exception as e:
+        printError(f"Error: {e}. Press ENTER to continue:")
+        input("")
+        return
 
 def getStarName():
     global starName
