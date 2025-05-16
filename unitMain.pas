@@ -293,8 +293,13 @@ begin
   try
     if (ChartSeriesData.Source <> nil) and (ChartSeriesData.Source.Count > 0) then begin
       P := Chart.ScreenToClient(Mouse.CursorPos);
-      Pg := Chart.ImageToGraph(P);
-      StatusBar.Panels[0].Text := Format(' %g'^I' %g ', [Pg.X, Pg.Y]);
+      // To suppress a Chart exception when a file is loaded from commend-line.
+      if Chart.ScalingValid then begin
+        Pg := Chart.ImageToGraph(P);
+        StatusBar.Panels[0].Text := Format(' %g'^I' %g ', [Pg.X, Pg.Y]);
+      end
+      else
+        StatusBar.Panels[0].Text := '';
     end
     else
       StatusBar.Panels[0].Text := '';

@@ -185,6 +185,7 @@ var
   a: TArbFloatArray;
   magArbFloatArray: TArbFloatArray;
   fit: TArbFloatArray;
+  fit_calculated: Boolean;
 begin
   if Length(Ft) <> Length(FMag) then
     CalcError('X and Y arrays myst be of equal length');
@@ -230,9 +231,9 @@ begin
       Exit;
     end;
 
+    Fpartial_frequencies[I] := nu;
+    fit_calculated := False;
     if nu > 0.0 then begin
-      Fpartial_frequencies[I] := nu;
-
       // Trigonometric polinomial
       for II := 0 to ndata - 1 do begin
         angle := 2 * Pi * nu * times[II];
@@ -245,34 +246,33 @@ begin
 
       try
         PolyFit(a, magArbFloatArray, FTrendDegree, FTrigPolyDegree, fit);
+        fit_calculated := True;
       except
         on ex: SleglsException do begin
           case ex.Term of
             2: begin
-                 Fpartial_power[I] := NaN;
-                 Continue;
+                 // ignore this exception
                end;
             else
               raise;
           end;
         end;
       end;
-
+    end;
+    if fit_calculated then begin
       for II := 0 to ndata - 1 do begin
         temp_mags[II] := magArbFloatArray[II] - fit[II];
       end;
-
       Fpartial_power[I] := PopnVariance(temp_mags); // \sigma^2_{O-C}
-
-      if (I + 1) mod GlobalCounterIncrement = 0 then begin
-        N := IncrementGlobalCounter(GlobalCounterIncrement);
-        Nrest := Nrest - GlobalCounterIncrement;
-        FInfoMessage := IntToStr(N) + ' / ' + IntToStr(FTotalNfreq);
-        Synchronize(@InfoMessageProc);
-      end;
     end
-    else begin
+    else
       Fpartial_power[I] := NaN;
+
+    if (I + 1) mod GlobalCounterIncrement = 0 then begin
+      N := IncrementGlobalCounter(GlobalCounterIncrement);
+      Nrest := Nrest - GlobalCounterIncrement;
+      FInfoMessage := IntToStr(N) + ' / ' + IntToStr(FTotalNfreq);
+      Synchronize(@InfoMessageProc);
     end;
     nu := nu + Ffreq_step;
   end;

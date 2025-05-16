@@ -222,7 +222,6 @@ object FormDFTDialog: TFormDFTDialog
       Top = 0
       Width = 75
       Anchors = [akTop, akRight]
-      Cancel = True
       Caption = 'Close'
       TabOrder = 1
       OnClick = ButtonCloseClick
