@@ -9,6 +9,20 @@ interface
 uses
   Classes, SysUtils, lcvtypes;
 
+type
+
+  { SleglsException }
+
+  SleglsException = class(Exception)
+  private
+    FTerm: Integer;
+  public
+    constructor Create(const Msg : string; ATerm: Integer);
+    property Term: Integer read FTerm;
+  end;
+
+procedure SleglsError(const Msg: string; Term: Integer);
+
 procedure CalcError(const S: string);
 
 function GetFPUexceptionAsString: string;
@@ -16,6 +30,8 @@ function GetFPUexceptionAsString: string;
 function GetMedianInterval(const X: TDoubleArray): Double;
 
 function GetRecommendedFrequencyResolution(Xmin, Xmax: Double; TrigPolyDegree: Integer): Double;
+
+function GetNofFrequencies(lowfreq, hifreq: Double; freq_step: Double): Integer;
 
 function CalculateCycle(T, Period, Epoch: Double): Int64; inline;
 
@@ -32,6 +48,19 @@ uses
   ctypes,
 {$ENDIF}
   math, sortutils;
+
+{ SleglsException }
+
+constructor SleglsException.Create(const Msg: string; ATerm: Integer);
+begin
+  inherited Create(Msg);
+  FTerm := ATerm;
+end;
+
+procedure SleglsError(const Msg: string; Term: Integer);
+begin
+  raise SleglsException.Create(Msg, Term);
+end;
 
 procedure CalcError(const S: string);
 begin
@@ -112,6 +141,11 @@ begin
     Result := 0.05 / (Xmax - Xmin) / TrigPolyDegree
   else
     Result := NaN;
+end;
+
+function GetNofFrequencies(lowfreq, hifreq: Double; freq_step: Double): Integer;
+begin
+  Result := Trunc((hifreq - lowfreq) / freq_step) + 1;
 end;
 
 function CalculateCycle(T, Period, Epoch: Double): Int64; inline;

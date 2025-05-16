@@ -8,10 +8,10 @@ object FormPhaseDialog: TFormPhaseDialog
   Caption = 'Phase Plot'
   ClientHeight = 130
   ClientWidth = 321
+  Position = poMainFormCenter
+  LCLVersion = '4.0.0.4'
   OnCreate = FormCreate
   OnShow = FormShow
-  Position = poMainFormCenter
-  LCLVersion = '3.8.0.0'
   object LabelPeriod: TLabel
     Left = 24
     Height = 15

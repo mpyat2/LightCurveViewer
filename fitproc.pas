@@ -68,9 +68,9 @@ procedure PolyFitSolution(const a: TArbFloatArray;              // 'Design matri
 var
   ndata: Integer;
   term: Integer;
-  msg: string;
+  //msg: string;
 begin
-  msg := {$I %CURRENTROUTINE%} + ': SizeOf(ArbFloat) = ' + IntToStr(SizeOf(ArbFloat));
+//msg := {$I %CURRENTROUTINE%} + ': SizeOf(ArbFloat) = ' + IntToStr(SizeOf(ArbFloat));
 //{$if defined(windows)}
 //  OutputDebugString(PChar(msg));
 //{$elseif defined(linux)}
@@ -82,10 +82,10 @@ begin
   slegls(a[0], ndata, NofParameters, NofParameters, Yarray[0], solution_vector[0], term);
   case term of
     1: ; // successful completion, the solution vector x is valid
-    2: CalcError('"slegls" error: ' + IntToStr(term) + ': there is no unambiguous solution because the columns of the matrix are linearly dependant.');
-    3: CalcError('"slegls" error: ' + IntToStr(term) + ': error in input values: n < 1, or n > m.');
+    2: SleglsError('"slegls" error: ' + IntToStr(term) + ': there is no unambiguous solution because the columns of the matrix are linearly dependant.', Term);
+    3: SleglsError('"slegls" error: ' + IntToStr(term) + ': error in input values: n < 1, or n > m.', Term);
   else
-    CalcError('"slegls" error: ' + IntToStr(term));
+    SleglsError('"slegls" error: ' + IntToStr(term), Term);
   end;
 end;
 

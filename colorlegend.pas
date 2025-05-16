@@ -78,7 +78,6 @@ end;
 procedure TFormColorLegend.DrawGrid1DrawCell(Sender: TObject; aCol, aRow: Integer; aRect: TRect; aState: TGridDrawState);
 var
   GridCanvas: TCanvas;
-  DrawTextStyle: TTextStyle;
 begin
   GridCanvas := DrawGrid1.Canvas;
   if aCol = 0 then begin

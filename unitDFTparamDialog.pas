@@ -17,12 +17,14 @@ type
   TFormDFTparams = class(TForm)
     ButtonOk: TButton;
     ButtonCancel: TButton;
+    EditNofPoints: TEdit;
     EditRecommendedResolution: TEdit;
     EditTrendDegree: TEdit;
     EditTrigPolyDegree: TEdit;
     EditFrequencyMin: TEdit;
     EditFrequencyMax: TEdit;
     EditFrequencyResolution: TEdit;
+    LabelNofPoints: TLabel;
     LabelP2: TLabel;
     LabelP1: TLabel;
     LabelRecommendedResolution: TLabel;
@@ -34,6 +36,7 @@ type
     procedure ButtonOkClick(Sender: TObject);
     procedure EditFrequencyMaxChange(Sender: TObject);
     procedure EditFrequencyMinChange(Sender: TObject);
+    procedure EditFrequencyResolutionChange(Sender: TObject);
     procedure EditTrigPolyDegreeChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -226,9 +229,39 @@ procedure TFormDFTparams.UpdateView;
       L.Caption := '';
     end;
   end;
+
+  procedure UpdateNpoints;
+  var
+    FPUExceptionMask: TFPUExceptionMask;
+    Fmin, Fmax, Resolution: Double;
+    N: Integer;
+  begin
+    try
+      Fmin := EditFrequencyMin.Evaluate;
+      if IsNan(Fmin) then
+        raise Exception.Create('Error');
+      Fmax := EditFrequencyMax.Evaluate;
+      if IsNan(Fmax) then
+        raise Exception.Create('Error');
+      Resolution := EditFrequencyResolution.Evaluate;
+      if IsNan(Resolution) then
+        raise Exception.Create('Error');
+      FPUExceptionMask := GetExceptionMask;
+      SetExceptionMask([exInvalidOp, exDenormalized, exZeroDivide, exOverflow, exUnderflow, exPrecision]);
+      try
+        N := GetNofFrequencies(Fmin, Fmax, Resolution);
+      finally
+        SetExceptionMask(FPUExceptionMask);
+      end;
+      EditNofPoints.Text := IntToStr(N);
+    except
+      EditNofPoints.Text := '?';
+    end;
+  end;
 begin
   UpdateP(EditFrequencyMin, LabelP1);
   UpdateP(EditFrequencyMax, LabelP2);
+  UpdateNpoints;
 end;
 
 procedure TFormDFTparams.FormShow(Sender: TObject);
@@ -248,6 +281,11 @@ begin
 end;
 
 procedure TFormDFTparams.EditFrequencyMaxChange(Sender: TObject);
+begin
+  UpdateView;
+end;
+
+procedure TFormDFTparams.EditFrequencyResolutionChange(Sender: TObject);
 begin
   UpdateView;
 end;

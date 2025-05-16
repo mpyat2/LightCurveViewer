@@ -155,7 +155,6 @@ end;
 
 function TFormPhaseDialog.GetEpoch: Double;
 var
-  S: string;
   V: Double;
 begin
   if GetFieldValue(EditEpoch, NaN, NaN, LabelEpoch.Caption, V) then
@@ -166,7 +165,6 @@ end;
 
 function TFormPhaseDialog.GetPeriod: Double;
 var
-  S: string;
   V: Double;
 begin
   if GetFieldValue(EditPeriod, 1e-8, NaN, LabelPeriod.Caption, V) then

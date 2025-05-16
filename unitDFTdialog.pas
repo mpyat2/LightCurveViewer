@@ -106,18 +106,25 @@ const
 
 procedure PlotDFTresult(const Caption: string; const frequencies, power: TDoubleArray; ApplyPhasePlotParamsProc: TApplyPhasePlotParams);
 var
+  NaNfound: Boolean;
   F: TFormDFTDialog;
   I: Integer;
 begin
   F := TFormDFTDialog.Create(Application);
   try
     F.Caption := Caption;
+    NaNfound := False;
     for I := 0 to Length(frequencies) - 1 do begin
       if (I > 0) and (frequencies[I] < frequencies[I - 1]) then
         raise Exception.Create('PlotDFTresult: Internal error: "frequencies" must be sorted.');
       if not IsNan(power[I]) then
-        F.Chart1LineSeries1.AddXY(frequencies[I], power[I]);
+        F.Chart1LineSeries1.AddXY(frequencies[I], power[I])
+      else
+        NaNfound := True;
     end;
+    if NaNfound then
+      ShowMessage('The result could not be calculated for some frequencies');
+
     F.InitMaxima;
 
     F.DrawGridFrequencies.ColCount := 3 + F.DrawGridFrequencies.FixedCols;

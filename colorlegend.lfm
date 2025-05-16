@@ -10,7 +10,7 @@ object FormColorLegend: TFormColorLegend
   ClientWidth = 500
   FormStyle = fsStayOnTop
   Position = poDefaultPosOnly
-  LCLVersion = '3.8.0.0'
+  LCLVersion = '4.0.0.4'
   object DrawGrid1: TDrawGrid
     Left = 0
     Height = 191
@@ -43,18 +43,18 @@ object FormColorLegend: TFormColorLegend
     Top = 39
     object ActionCopy: TAction
       Caption = '&Copy'
-      OnExecute = ActionCopyExecute
       ShortCut = 16451
+      OnExecute = ActionCopyExecute
     end
     object ActionCopyWithTitles: TAction
       Caption = 'Copy With &Titles'
-      OnExecute = ActionCopyWithTitlesExecute
       ShortCut = 24643
+      OnExecute = ActionCopyWithTitlesExecute
     end
     object ActionSelectAll: TAction
       Caption = 'Select &All'
-      OnExecute = ActionSelectAllExecute
       ShortCut = 16449
+      OnExecute = ActionSelectAllExecute
     end
   end
 end

@@ -159,6 +159,7 @@ type
     procedure UDFSrcModelFoldedGetChartDataItem(ASource: TUserDefinedChartSource; AIndex: Integer; var AItem: TChartDataItem);
     procedure UDFSrcModelGetChartDataItem(ASource: TUserDefinedChartSource; AIndex: Integer; var AItem: TChartDataItem);
   private
+    FFileNameParamStr: string;
     FCalculationInProgress: Boolean;
     FFileName: string;
     FObjectName: string;
@@ -184,6 +185,7 @@ type
     procedure ClearModelFolded;
     procedure CloseFile;
     procedure OpenFile(const AFileName: string);
+    procedure AsyncOpenFile(Data: PtrInt);
     procedure Detrend;
     procedure SaveFileAs(const AFileName: string; const X, Y, Errors: TDoubleArray);
     procedure SaveDataSettingsAs(AFileName: string);
@@ -242,6 +244,10 @@ begin
     Chart.AxisList[1].Grid.Visible := Chart.AxisList[0].Grid.Visible;
   except
     // nothing
+  end;
+  if ParamCount > 0 then begin
+    FFileNameParamStr := ParamStr(1);
+    Application.QueueAsyncCall(@AsyncOpenFile, 0);
   end;
 end;
 
@@ -394,14 +400,6 @@ procedure TFormMain.ActionOpenExecute(Sender: TObject);
 var
   TempFileName: string;
 begin
-  //if (FFileName <> '') and (Copy(FFileName, 1, 1) <> '#') then begin
-  //  OpenDialog.InitialDir := ExtractFileDir(FFileName);
-  //  OpenDialog.FileName := ExtractFileName(FFileName);
-  //end
-  //else begin
-  //  //OpenDialog.InitialDir := '';
-  //  //OpenDialog.FileName := '';
-  //end;
   TempFileName := OpenDialog.FileName;
   if TempFileName <> '' then begin
     OpenDialog.InitialDir := ExtractFileDir(TempFileName);
@@ -963,6 +961,11 @@ begin
   LoadDataSettings;
   UpdateTitle;
   PlotData;
+end;
+
+procedure TFormMain.AsyncOpenFile(Data: PtrInt);
+begin
+  OpenFile(ExpandFileName(FFileNameParamStr));
 end;
 
 procedure TFormMain.Detrend;

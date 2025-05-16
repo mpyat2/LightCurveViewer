@@ -243,7 +243,20 @@ begin
         end;
       end;
 
-      PolyFit(a, magArbFloatArray, FTrendDegree, FTrigPolyDegree, fit);
+      try
+        PolyFit(a, magArbFloatArray, FTrendDegree, FTrigPolyDegree, fit);
+      except
+        on ex: SleglsException do begin
+          case ex.Term of
+            2: begin
+                 Fpartial_power[I] := NaN;
+                 Continue;
+               end;
+            else
+              raise;
+          end;
+        end;
+      end;
 
       for II := 0 to ndata - 1 do begin
         temp_mags[II] := magArbFloatArray[II] - fit[II];
@@ -347,10 +360,10 @@ var
   I, II, Idx: Integer;
   Threads: array of TCalcThread;
 begin
-  n_freq := Floor((hifreq - lowfreq) / freq_step);
+  n_freq := GetNofFrequencies(lowfreq, hifreq, freq_step);
 
-  SetLength(frequencies, n_freq + 1);
-  SetLength(power, n_freq + 1);
+  SetLength(frequencies, n_freq);
+  SetLength(power, n_freq);
 
   if CmdLineNumberOfThreads < 1 then
     NumberOfThreads := GetLogicalCpuCount()
@@ -359,8 +372,8 @@ begin
 
   //OutputDebugString(PChar('Number of threads: ' + IntToStr(NumberOfThreads)));
 
-  StepsPerThread := (n_freq + 1) div NumberOfThreads;
-  Remainder := (n_freq + 1) - StepsPerThread * NumberOfThreads;
+  StepsPerThread := n_freq div NumberOfThreads;
+  Remainder := n_freq - StepsPerThread * NumberOfThreads;
 
   GlobalTerminateAllThreads := False;
   SetLength(Threads, NumberOfThreads);
@@ -376,7 +389,7 @@ begin
         if I = NumberOfThreads - 1 then
           StepsToDo := StepsToDo + Remainder;
         //OutputDebugString(PChar('Thread ' + IntToStr(I) + '; steps: ' + IntToStr(StepsToDo)));
-        Threads[I] := TCalcThread.Create(I, t, mag, startfreq, freq_step, StepsToDo, TrendDegree, TrigPolyDegree, n_freq + 1, ProgressCaptionProc);
+        Threads[I] := TCalcThread.Create(I, t, mag, startfreq, freq_step, StepsToDo, TrendDegree, TrigPolyDegree, n_freq, ProgressCaptionProc);
         // check for exception while creation (see FPC docs)
         if Assigned(Threads[I].FatalException) then begin
           if Assigned(Threads[I].FatalException) then begin
@@ -431,7 +444,7 @@ begin
 
   sigmaSquaredO := CalcSigmaSquaredO(t, mag, TrendDegree);
 
-  for I := 0 to n_freq do begin
+  for I := 0 to n_freq - 1 do begin
     power[I] := 1.0 - power[I] / sigmaSquaredO;
   end;
 
