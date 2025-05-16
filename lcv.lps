@@ -56,8 +56,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <EditorIndex Value="3"/>
-        <TopLine Value="99"/>
-        <CursorPos Y="113"/>
+        <TopLine Value="126"/>
+        <CursorPos X="52" Y="120"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -78,8 +78,8 @@
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="4"/>
-        <TopLine Value="251"/>
-        <CursorPos X="6" Y="261"/>
+        <TopLine Value="207"/>
+        <CursorPos Y="277"/>
         <UsageCount Value="218"/>
         <Loaded Value="True"/>
       </Unit>
@@ -253,7 +253,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="41"/>
         <CursorPos X="87" Y="64"/>
-        <UsageCount Value="59"/>
+        <UsageCount Value="61"/>
       </Unit>
       <Unit>
         <Filename Value="edithelper.pas"/>
@@ -261,7 +261,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="19"/>
         <CursorPos X="14" Y="17"/>
-        <UsageCount Value="41"/>
+        <UsageCount Value="43"/>
       </Unit>
       <Unit>
         <Filename Value="C:\lazarus64\fpc\3.2.2\source\packages\numlib\src\sle.pas"/>
@@ -319,7 +319,7 @@
         <EditorIndex Value="2"/>
         <TopLine Value="52"/>
         <CursorPos X="3" Y="66"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="11"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -331,107 +331,126 @@
         <UsageCount Value="10"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="25">
+    <JumpHistory HistoryIndex="29">
       <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="115" TopLine="99"/>
+        <Filename Value="unitDFT.pas"/>
+        <Caret Line="228" TopLine="213"/>
+      </Position>
+      <Position>
+        <Filename Value="unitDFT.pas"/>
+        <Caret Line="248" TopLine="233"/>
+      </Position>
+      <Position>
+        <Filename Value="unitDFT.pas"/>
+        <Caret Line="249" TopLine="233"/>
+      </Position>
+      <Position>
+        <Filename Value="unitDFT.pas"/>
+        <Caret Line="266" TopLine="251"/>
+      </Position>
+      <Position>
+        <Filename Value="unitDFT.pas"/>
+        <Caret Line="228" TopLine="213"/>
+      </Position>
+      <Position>
+        <Filename Value="unitDFT.pas"/>
+        <Caret Line="248" TopLine="233"/>
+      </Position>
+      <Position>
+        <Filename Value="unitDFT.pas"/>
+        <Caret Line="228" TopLine="213"/>
+      </Position>
+      <Position>
+        <Filename Value="unitDFT.pas"/>
+        <Caret Line="262" Column="12" TopLine="239"/>
+      </Position>
+      <Position>
+        <Filename Value="unitDFT.pas"/>
+        <Caret Line="263" TopLine="239"/>
+      </Position>
+      <Position>
+        <Filename Value="unitDFT.pas"/>
+        <Caret Line="262" TopLine="239"/>
+      </Position>
+      <Position>
+        <Filename Value="unitDFT.pas"/>
+        <Caret Line="266" Column="22" TopLine="239"/>
+      </Position>
+      <Position>
+        <Filename Value="unitDFT.pas"/>
+        <Caret Line="269" TopLine="254"/>
+      </Position>
+      <Position>
+        <Filename Value="unitDFT.pas"/>
+        <Caret Line="234" Column="25" TopLine="218"/>
+      </Position>
+      <Position>
+        <Filename Value="unitDFT.pas"/>
+        <Caret Line="269" TopLine="251"/>
+      </Position>
+      <Position>
+        <Filename Value="unitDFT.pas"/>
+        <Caret Line="263" Column="23" TopLine="251"/>
+      </Position>
+      <Position>
+        <Filename Value="unitDFT.pas"/>
+        <Caret Line="228" Column="8" TopLine="212"/>
+      </Position>
+      <Position>
+        <Filename Value="unitDFT.pas"/>
+        <Caret Line="234" Column="27" TopLine="227"/>
+      </Position>
+      <Position>
+        <Filename Value="unitDFT.pas"/>
+        <Caret Line="266" Column="23" TopLine="243"/>
+      </Position>
+      <Position>
+        <Filename Value="unitDFT.pas"/>
+        <Caret Line="269" Column="23" TopLine="243"/>
+      </Position>
+      <Position>
+        <Filename Value="unitDFT.pas"/>
+        <Caret Line="266" TopLine="243"/>
+      </Position>
+      <Position>
+        <Filename Value="unitDFT.pas"/>
+        <Caret Line="284" TopLine="261"/>
+      </Position>
+      <Position>
+        <Filename Value="unitDFT.pas"/>
+        <Caret Line="189" TopLine="170"/>
+      </Position>
+      <Position>
+        <Filename Value="unitDFT.pas"/>
+        <Caret Line="286" TopLine="269"/>
+      </Position>
+      <Position>
+        <Filename Value="unitDFT.pas"/>
+        <Caret Line="189" TopLine="170"/>
+      </Position>
+      <Position>
+        <Filename Value="unitDFT.pas"/>
+        <Caret Line="286" TopLine="269"/>
+      </Position>
+      <Position>
+        <Filename Value="unitDFT.pas"/>
+        <Caret Line="156" TopLine="137"/>
+      </Position>
+      <Position>
+        <Filename Value="unitDFT.pas"/>
+        <Caret Line="445" TopLine="416"/>
       </Position>
       <Position>
         <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="116" TopLine="99"/>
+        <Caret Line="120" Column="52" TopLine="105"/>
       </Position>
       <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="117" TopLine="99"/>
+        <Filename Value="unitDFT.pas"/>
+        <Caret Line="9" Column="21"/>
       </Position>
       <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="118" TopLine="99"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="120" TopLine="99"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="123" TopLine="99"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="113" TopLine="99"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="250" Column="48" TopLine="220"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="188" Column="15" TopLine="230"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="296" TopLine="281"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="302" Column="7" TopLine="242"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="164" Column="14" TopLine="140"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="717" Column="15" TopLine="699"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="718" Column="41" TopLine="699"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="880" Column="12" TopLine="874"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="956" Column="12" TopLine="933"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="1004" Column="12" TopLine="996"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="1041" Column="15" TopLine="1050"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="187" Column="23" TopLine="164"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="930" Column="29" TopLine="922"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="973" Column="11" TopLine="949"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="1000" Column="22" TopLine="976"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="187" Column="23" TopLine="164"/>
+        <Filename Value="unitDFT.pas"/>
+        <Caret Line="176" Column="5" TopLine="146"/>
       </Position>
     </JumpHistory>
     <RunParams>
@@ -457,7 +476,19 @@
   <Debugging>
     <Watches>
       <Item>
-        <Expression Value="((hifreq - lowfreq) / freq_step)"/>
+        <Expression Value="Fpartial_power"/>
+      </Item>
+      <Item>
+        <Expression Value="Fpartial_frequencies"/>
+      </Item>
+      <Item>
+        <Expression Value="I"/>
+      </Item>
+      <Item>
+        <Expression Value="fit_calculated"/>
+      </Item>
+      <Item>
+        <Expression Value="nu"/>
       </Item>
     </Watches>
   </Debugging>

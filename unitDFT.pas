@@ -224,12 +224,13 @@ begin
   SetLength(fit, ndata);
 
   Nrest := Fn_freq;
-  nu := Flowfreq;
   for I := 0 to Fn_freq - 1 do begin
     if Terminated or GlobalTerminateAllThreads then begin
       //OutputDebugString(PChar('Thread #' + IntToStr(FThreadNo) + ' terminated!'));
       Exit;
     end;
+
+    nu := Flowfreq + Ffreq_step * I;
 
     Fpartial_frequencies[I] := nu;
     fit_calculated := False;
@@ -251,7 +252,7 @@ begin
         on ex: SleglsException do begin
           case ex.Term of
             2: begin
-                 // ignore this exception
+                 fit_calculated := False;
                end;
             else
               raise;
@@ -274,7 +275,6 @@ begin
       FInfoMessage := IntToStr(N) + ' / ' + IntToStr(FTotalNfreq);
       Synchronize(@InfoMessageProc);
     end;
-    nu := nu + Ffreq_step;
   end;
 
   N := IncrementGlobalCounter(Nrest);

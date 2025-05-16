@@ -9,6 +9,7 @@ object FormDFTDialog: TFormDFTDialog
   ClientWidth = 718
   FormStyle = fsStayOnTop
   Position = poMainFormCenter
+  LCLVersion = '4.0.0.4'
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
