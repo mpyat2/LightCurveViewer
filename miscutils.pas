@@ -39,6 +39,10 @@ function CalculatePhase(T, Period, Epoch: Double): Double; inline;
 
 function GetLogicalCpuCount: Integer;
 
+{$IFDEF Linux}
+procedure OpenURLasync(const URL: string);
+{$ENDIF}
+
 implementation
 
 uses
@@ -46,6 +50,7 @@ uses
   Windows,
 {$ELSEIF defined(linux)}
   ctypes,
+  Process,
 {$ENDIF}
   math, sortutils;
 
@@ -206,6 +211,23 @@ function GetLogicalCpuCount: Integer;
 begin
   Result := Min(32, GetLogicalCpuCount1);
 end;
+
+{$IFDEF Linux}
+procedure OpenURLasync(const URL: string);
+var
+  P: TProcess;
+begin
+  P := TProcess.Create(nil);
+  try
+    P.Executable := 'xdg-open';
+    P.Parameters.Add(URL);
+    P.Options := [poNoConsole];
+    P.Execute;
+  finally
+    FreeAndNil(P);
+  end;
+end;
+{$ENDIF}
 
 end.
 

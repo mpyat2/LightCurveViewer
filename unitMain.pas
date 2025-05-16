@@ -522,8 +522,17 @@ end;
 
 procedure TFormMain.ActionUserManualExecute(Sender: TObject);
 begin
+{$IFDEF Linux}
+  try
+    OpenURLasync(defRemoteManual);
+  except
+    on Ex: Exception do
+      ShowMessage(Ex.Message);
+  end;
+{$ELSE}
   if not OpenURL(defRemoteManual) then
     ShowMessage('Cannot open ' + defRemoteManual);
+{$ENDIF}
 end;
 
 procedure TFormMain.ActionUserManualLocalExecute(Sender: TObject);
