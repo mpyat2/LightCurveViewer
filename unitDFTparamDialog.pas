@@ -17,6 +17,8 @@ type
   TFormDFTparams = class(TForm)
     ButtonOk: TButton;
     ButtonCancel: TButton;
+    EditP1: TEdit;
+    EditP2: TEdit;
     EditNofPoints: TEdit;
     EditRecommendedResolution: TEdit;
     EditTrendDegree: TEdit;
@@ -25,8 +27,6 @@ type
     EditFrequencyMax: TEdit;
     EditFrequencyResolution: TEdit;
     LabelNofPoints: TLabel;
-    LabelP2: TLabel;
-    LabelP1: TLabel;
     LabelRecommendedResolution: TLabel;
     LabelTrendDegree: TLabel;
     LabelTrigPolyDegree: TLabel;
@@ -197,7 +197,7 @@ begin
 end;
 
 procedure TFormDFTparams.UpdateView;
-  procedure UpdateP(E: TEdit; L: TLabel);
+  procedure UpdateP(E, E2: TEdit);
   var
     FPUExceptionMask: TFPUExceptionMask;
     S: string;
@@ -217,16 +217,13 @@ procedure TFormDFTparams.UpdateView;
           SetExceptionMask(FPUExceptionMask);
         end;
         S := 'P = ' + FloatToStrF(V, ffGeneral, 7, 0);
-        if L.Canvas.TextWidth(S) <= L.Width then
-          L.Caption := S
-        else
-          L.Caption := '**********';
+        E2.Text := S
       except
-        L.Caption := '?';
+        E2.Text := '?';
       end;
     end
     else begin
-      L.Caption := '';
+      E.Text := '';
     end;
   end;
 
@@ -259,8 +256,8 @@ procedure TFormDFTparams.UpdateView;
     end;
   end;
 begin
-  UpdateP(EditFrequencyMin, LabelP1);
-  UpdateP(EditFrequencyMax, LabelP2);
+  UpdateP(EditFrequencyMin, EditP1);
+  UpdateP(EditFrequencyMax, EditP2);
   UpdateNpoints;
 end;
 

@@ -16,7 +16,7 @@ procedure WriteData(const AFileName: string; const X: TDoubleArray; const Y: TDo
 implementation
 
 uses
-  formatutils, sortutils;
+  math, formatutils, sortutils;
 
 const
   defNameDirective = '#NAME=';
@@ -139,14 +139,19 @@ begin
       SplitSpecial(S, Fields, 0);
       if Length(Fields) > 1 then begin
         if StringToFloatLocaleIndependent(Fields[0], FX) and StringToFloatLocaleIndependent(Fields[1], FY) then begin
-          X[N] := FX;
-          Y[N] := FY;
-          Errors[N] := 0;
-          if Length(Fields) > 2 then begin
-            if StringToFloatLocaleIndependent(Fields[2], Error) then
-              Errors[N] := Error;
+          if not IsNan(FX) and not IsNan(FY) then begin
+            X[N] := FX;
+            Y[N] := FY;
+            Errors[N] := 0;
+            if Length(Fields) > 2 then begin
+              if StringToFloatLocaleIndependent(Fields[2], Error) then begin
+                if not IsNan(Error) then begin
+                  Errors[N] := Error;
+                end;
+              end;
+            end;
+            Inc(N);
           end;
-          Inc(N);
         end;
       end;
     end;
