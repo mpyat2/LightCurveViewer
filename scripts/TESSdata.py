@@ -30,6 +30,7 @@ search_result = None
 current_nn = None
 current_time = None
 current_obs = None
+current_obs_err = None
 current_to_mag = None
 current_lc_info = None
 
@@ -75,11 +76,13 @@ def getStarName():
         global search_result
         global current_time
         global current_obs
+        global current_obs_err
         global current_nn
         global current_to_mag
         search_result = None
         current_time = None
         current_obs = None
+        current_obs_err = None
         current_nn = None
         current_to_mag = None
         plt.close('all')
@@ -155,6 +158,7 @@ def downloadLC(to_mag):
     global search_result
     global current_time
     global current_obs
+    global current_obs_err
     global current_nn
     global current_to_mag
     global current_lc_info
@@ -169,6 +173,7 @@ def downloadLC(to_mag):
         return
     current_time = None
     current_obs = None
+    current_obs_err = None
     current_nn = None
     current_to_mag = None
     current_lc_info = None
@@ -176,10 +181,11 @@ def downloadLC(to_mag):
     print("Loading light curve(s)...")
     tess_mags = [UNKNOWN_MAG]
     try:
-        current_time, current_obs, tess_mags = get_lc(search_result, nn, to_mag)
+        current_time, current_obs, current_obs_err, tess_mags = get_lc(search_result, nn, to_mag)
     except Exception as e:
         current_time = None
         current_obs = None
+        current_obs_err = None
         current_nn = None
         current_to_mag = None
         current_lc_info = None
@@ -203,6 +209,7 @@ def saveLC():
     global starName
     global current_time
     global current_obs
+    global current_obs_err
     global current_nn
     global current_to_mag
     global current_lc_info
@@ -217,13 +224,25 @@ def saveLC():
         return
     try:
         with open(fname, "w") as f:
-            f.write("#NAME=" + starName + "\n")
+            # The following directives are for the VStar FlexText plug-in
+            f.write('## Created with TESSdata.py\n')
+            f.write('## VStar Flexible Text Format 1.2\n')
+            f.write('\n')
+            f.write("#DELIM=space\n")
+            f.write("#FIELDS=time,mag,magerr\n")
+            f.write("#DATE=BJD\n")
+            f.write("#DEFINESERIES=TESS data,TESS data,#AA00AA\n")
+            f.write("#FILTER=TESS data\n")            
+            f.write("#NAME=" + starName + "\n")                        
+            f.write("#TITLEX=BJD_TDB\n")
             if current_to_mag:
-                f.write("#Time Mag\n")
+                f.write("#TITLEY=Magnitude\n")
+                f.write("##Time Mag MagErr\n")
             else:
-                f.write("#Time Flux\n")
-            for t, m in zip(current_time, current_obs):
-                f.write(f"{t} {m}\n")
+                f.write("#TITLEY=Flux\n")
+                f.write("##Time Flux FluxErr\n")
+            for t, o, e in zip(current_time, current_obs, current_obs_err):
+                f.write(f"{t} {o} {e}\n")
     except Exception as e:
         printError(f"Error: {e}. Press ENTER to continue:")
         input("")
@@ -237,6 +256,7 @@ def plotLC():
     global starName
     global current_time
     global current_obs
+    global current_obs_err
     global current_to_mag
     plt.plot(current_time, current_obs, 'r.')
     plt.title(starName)
@@ -256,30 +276,41 @@ def get_lc(search_result, nn, to_mag):
     tess_mags = []
     time = np.array([], dtype=np.float64)
     obs = np.array([], dtype=np.float64)
+    obs_err = np.array([], dtype=np.float64)
     for n in nn:
         lc = search_result[n].download()
         btjd_ref = lc.meta.get("BJDREFI", 0) + lc.meta.get("BJDREFF", 0)        
+        # use only 'quality' values
         lc = lc[lc.quality == 0]
+        # There may be cases when the flux = nan even if quality = 0.
+        # Filter them off
+        mask = ~np.isnan(lc.flux)
+        lc = lc[mask]
         t = lc.time.value + btjd_ref
         o = lc.flux.value
-        median_flux = np.nanmedian(o)
+        e = lc.flux_err.value
+        # replace nan in uncertainties with 0 for compatibility with VStar
+        e = np.nan_to_num(e, nan=0.0)
         tess_mag = lc.meta.get("TESSMAG", UNKNOWN_MAG)
         if to_mag:
-            o = -2.5 * np.log10(o)
+            # There can be cases when the flux < 0: an exception will be raised for log10().
+            median_flux = np.median(o)
+            e = 1.086 * e / o
+            o = -2.5  * np.log10(o)
             if tess_mag != UNKNOWN_MAG:
-                # Use nanmedian here.
-                # There are cases when the flux = nan even when quality = 0.
                 median_mag = -2.5 * np.log10(median_flux)
                 o = o - median_mag + tess_mag
         tess_mags.append(tess_mag)
         time = np.append(time, t)
         obs = np.append(obs, o)
-    return time, obs, tess_mags
+        obs_err = np.append(obs_err, e)
+    return time, obs, obs_err, tess_mags
 
 def main():
     global starName
     global current_time
     global current_obs
+    global current_obs_err
     global current_nn
     global current_to_mag
     global current_lc_info
