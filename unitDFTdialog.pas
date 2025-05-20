@@ -119,11 +119,15 @@ begin
         raise Exception.Create('PlotDFTresult: Internal error: "frequencies" must be sorted.');
       if (not IsNan(power[I])) and (power[I] >= 0.0) then
         F.Chart1LineSeries1.AddXY(frequencies[I], power[I])
-      else
-        InvalidValuesFound := True;
+      else begin
+        // Indicate invalid values (nan) for the non-zero frequencies only.
+        // Zero-frequency is a special case: this is a common start value and is always ignored.
+        if frequencies[I] <> 0.0 then
+          InvalidValuesFound := True;
+      end;
     end;
     if InvalidValuesFound then
-      ShowMessage('The result could not be calculated for some frequencies');
+      ShowMessage('The result could not be calculated for some non-zero frequencies');
 
     F.InitMaxima;
 

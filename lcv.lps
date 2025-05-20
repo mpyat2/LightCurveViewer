@@ -3,7 +3,7 @@
   <ProjectSession>
     <PathDelim Value="\"/>
     <Version Value="12"/>
-    <BuildModes Active="NoDebug"/>
+    <BuildModes Active="MemoryLeakCheck"/>
     <Units>
       <Unit>
         <Filename Value="lcv.lpr"/>
@@ -18,8 +18,8 @@
         <ComponentName Value="FormMain"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <TopLine Value="1437"/>
-        <CursorPos X="18" Y="1454"/>
+        <TopLine Value="1618"/>
+        <CursorPos X="3" Y="1624"/>
         <UsageCount Value="203"/>
         <Bookmarks Count="3">
           <Item0 X="14" Y="216" ID="2"/>
@@ -32,9 +32,9 @@
       <Unit>
         <Filename Value="dataio.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="1"/>
-        <TopLine Value="125"/>
-        <CursorPos X="15" Y="154"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="103"/>
+        <CursorPos Y="115"/>
         <UsageCount Value="203"/>
         <Loaded Value="True"/>
       </Unit>
@@ -55,10 +55,13 @@
         <ComponentName Value="FormDFTDialog"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="126"/>
-        <CursorPos X="52" Y="120"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="110"/>
+        <CursorPos X="8" Y="122"/>
         <UsageCount Value="200"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="unitDFTparamDialog.pas"/>
@@ -66,9 +69,8 @@
         <ComponentName Value="FormDFTparams"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="2"/>
-        <TopLine Value="234"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="235"/>
         <CursorPos X="33" Y="260"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
@@ -77,18 +79,20 @@
       <Unit>
         <Filename Value="unitDFT.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="208"/>
-        <CursorPos Y="277"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="419"/>
+        <CursorPos Y="451"/>
         <UsageCount Value="218"/>
+        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="dftThread.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="36"/>
-        <CursorPos X="17" Y="25"/>
+        <EditorIndex Value="6"/>
+        <TopLine Value="42"/>
+        <CursorPos X="21" Y="47"/>
         <UsageCount Value="200"/>
+        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="fitproc.pas"/>
@@ -146,10 +150,11 @@
       <Unit>
         <Filename Value="sortutils.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="33"/>
-        <CursorPos X="19" Y="52"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="171"/>
+        <CursorPos Y="204"/>
         <UsageCount Value="211"/>
+        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="lcvtypes.pas"/>
@@ -161,7 +166,7 @@
       <Unit>
         <Filename Value="miscutils.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="8"/>
         <TopLine Value="35"/>
         <CursorPos X="6" Y="215"/>
         <UsageCount Value="211"/>
@@ -252,7 +257,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="41"/>
         <CursorPos X="87" Y="64"/>
-        <UsageCount Value="61"/>
+        <UsageCount Value="62"/>
       </Unit>
       <Unit>
         <Filename Value="edithelper.pas"/>
@@ -260,7 +265,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="19"/>
         <CursorPos X="14" Y="17"/>
-        <UsageCount Value="43"/>
+        <UsageCount Value="44"/>
       </Unit>
       <Unit>
         <Filename Value="C:\lazarus64\fpc\3.2.2\source\packages\numlib\src\sle.pas"/>
@@ -293,10 +298,11 @@
       <Unit>
         <Filename Value="C:\lazarus64\fpc\3.2.2\source\rtl\objpas\math.pp"/>
         <UnitName Value="Math"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="1107"/>
-        <CursorPos X="5" Y="1109"/>
+        <EditorIndex Value="7"/>
+        <TopLine Value="240"/>
+        <CursorPos X="20" Y="267"/>
         <UsageCount Value="11"/>
+        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="C:\lazarus64\fpc\3.2.2\source\rtl\inc\mathh.inc"/>
@@ -329,57 +335,126 @@
         <UsageCount Value="10"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="12">
+    <JumpHistory HistoryIndex="29">
       <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="409" Column="15" TopLine="390"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-      </Position>
-      <Position>
-        <Filename Value="miscutils.pas"/>
-        <Caret Line="215" Column="6" TopLine="35"/>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="148" Column="59" TopLine="119"/>
       </Position>
       <Position>
         <Filename Value="dataio.pas"/>
-        <Caret Line="149" Column="19" TopLine="122"/>
+        <Caret Line="128" TopLine="121"/>
       </Position>
       <Position>
         <Filename Value="dataio.pas"/>
-        <Caret Line="19" Column="9" TopLine="7"/>
+        <Caret Line="129" TopLine="121"/>
       </Position>
       <Position>
-        <Filename Value="unitDFTparamDialog.pas"/>
-        <Caret Line="192" Column="85" TopLine="178"/>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="130" TopLine="121"/>
       </Position>
       <Position>
-        <Filename Value="unitDFTparamDialog.pas"/>
-        <Caret Line="194" Column="85" TopLine="180"/>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="131" TopLine="121"/>
       </Position>
       <Position>
-        <Filename Value="unitDFTparamDialog.pas"/>
-        <Caret Line="274" TopLine="272"/>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="132" TopLine="121"/>
       </Position>
       <Position>
-        <Filename Value="unitDFTparamDialog.pas"/>
-        <Caret Line="44" TopLine="19"/>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="133" TopLine="121"/>
       </Position>
       <Position>
-        <Filename Value="unitDFTparamDialog.pas"/>
-        <Caret Line="43" TopLine="19"/>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="134" TopLine="127"/>
       </Position>
       <Position>
-        <Filename Value="unitDFTparamDialog.pas"/>
-        <Caret Line="44" TopLine="19"/>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="135" TopLine="127"/>
       </Position>
       <Position>
-        <Filename Value="unitDFTparamDialog.pas"/>
-        <Caret Line="43" TopLine="19"/>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="137" TopLine="127"/>
       </Position>
       <Position>
-        <Filename Value="unitDFTparamDialog.pas"/>
-        <Caret Line="262" Column="29" TopLine="245"/>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="145" TopLine="130"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="146" TopLine="130"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="147" TopLine="130"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="148" TopLine="130"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="114" TopLine="95"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="115" TopLine="95"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="116" TopLine="95"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="114" TopLine="95"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="115" TopLine="95"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="116" TopLine="95"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="133" TopLine="116"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="134" TopLine="116"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="135" TopLine="116"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="137" TopLine="116"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="145" TopLine="122"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="146" TopLine="122"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="147" TopLine="122"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="128" TopLine="97"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="115" Column="7" TopLine="97"/>
+      </Position>
+      <Position>
+        <Filename Value="dataio.pas"/>
+        <Caret Line="133" TopLine="103"/>
       </Position>
     </JumpHistory>
     <RunParams>

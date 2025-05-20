@@ -109,6 +109,12 @@ end;
 // The columns are assumed to be separated by tabs, commas, semicolons, or spaces.
 // The data is sorted by X
 procedure ReadData(const AFileName: string; out X: TDoubleArray; out Y: TDoubleArray; out Errors: TDoubleArray; out ObjectName: string);
+
+function IsSpecialValue(V: Double): Boolean;
+begin
+  Result := IsNan(V) or IsInfinite(V);
+end;
+
 var
   Lines: TStrings;
   Fields: TStringArray;
@@ -139,13 +145,13 @@ begin
       SplitSpecial(S, Fields, 0);
       if Length(Fields) > 1 then begin
         if StringToFloatLocaleIndependent(Fields[0], FX) and StringToFloatLocaleIndependent(Fields[1], FY) then begin
-          if not IsNan(FX) and not IsNan(FY) then begin
+          if not IsSpecialValue(FX) and not IsSpecialValue(FY) then begin
             X[N] := FX;
             Y[N] := FY;
             Errors[N] := 0;
             if Length(Fields) > 2 then begin
               if StringToFloatLocaleIndependent(Fields[2], Error) then begin
-                if not IsNan(Error) then begin
+                if not IsSpecialValue(Error) and (Error >= 0.0) then begin
                   Errors[N] := Error;
                 end;
               end;
