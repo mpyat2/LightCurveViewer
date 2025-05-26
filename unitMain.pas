@@ -17,6 +17,7 @@ type
   { TFormMain }
 
   TFormMain = class(TForm)
+    ActionMagShift: TAction;
     ActionOptions: TAction;
     ActionDetrend: TAction;
     ActionShowErrors: TAction;
@@ -59,6 +60,7 @@ type
     LCSrcData: TListChartSource;
     MainMenu: TMainMenu;
     MenuFile: TMenuItem;
+    MenuItemMagShift: TMenuItem;
     MenuItemOptions: TMenuItem;
     MenuTools: TMenuItem;
     MenuItemDetrend: TMenuItem;
@@ -95,6 +97,7 @@ type
     MenuItemExit: TMenuItem;
     OpenDialog: TOpenDialog;
     Separator10: TMenuItem;
+    Separator11: TMenuItem;
     Separator2: TMenuItem;
     Separator3: TMenuItem;
     Separator4: TMenuItem;
@@ -129,6 +132,7 @@ type
     procedure ActionAboutExecute(Sender: TObject);
     procedure ActionInvertedYExecute(Sender: TObject);
     procedure ActionLogicalExtentExecute(Sender: TObject);
+    procedure ActionMagShiftExecute(Sender: TObject);
     procedure ActionModelInfoExecute(Sender: TObject);
     procedure ActionObservationsExecute(Sender: TObject);
     procedure ActionOpenExecute(Sender: TObject);
@@ -196,6 +200,8 @@ type
     procedure PlotFolded;
     procedure PlotFoldedSimple;
     procedure PlotFoldedProc;
+    procedure MagShift;
+    procedure MagShiftProc;
     procedure ShowColorLegend;
     procedure HideColorLegend;
     procedure CalculateModelPhasePlot;
@@ -226,11 +232,11 @@ implementation
 {$R *.lfm}
 
 uses
-  lclintf, math, guiutils, unitPhaseDialog, unitFitParamDialog,
-  unitDFTparamDialog, unitDFTdialog, unitTableDialog, unitModelInfoDialog,
-  colorLegend, floattextform, unitFormChartprops, unitGetExtent,
-  unitOptionsDialog, unitAbout, dftThread, dataio, sortutils, formatutils,
-  miscutils, fitproc, settings;
+  lclintf, math, guiutils, unitPhaseDialog, unitMagShiftDialog,
+  unitFitParamDialog, unitDFTparamDialog, unitDFTdialog, unitTableDialog,
+  unitModelInfoDialog, colorLegend, floattextform, unitFormChartprops,
+  unitGetExtent, unitOptionsDialog, unitAbout, dftThread, dataio, sortutils,
+  formatutils, miscutils, fitproc, settings;
 
 { TFormMain }
 
@@ -394,6 +400,11 @@ end;
 procedure TFormMain.ActionPhasePlotSimpleExecute(Sender: TObject);
 begin
   PlotFoldedSimple;
+end;
+
+procedure TFormMain.ActionMagShiftExecute(Sender: TObject);
+begin
+  MagShift;
 end;
 
 procedure TFormMain.ActionPolyFitExecute(Sender: TObject);
@@ -670,6 +681,10 @@ begin
     (AAction as TAction).Enabled := (LCSrcData.Count > 0) and not FCalculationInProgress;
   end
   else
+  if AAction = ActionMagShift then begin
+    (AAction as TAction).Enabled := (LCSrcData.Count > 0) and not FCalculationInProgress;
+  end
+  else
   if AAction = ActionPeriodogram then begin
     (AAction as TAction).Enabled := (LCSrcData.Count > 0) and not FCalculationInProgress;
   end
@@ -933,6 +948,7 @@ begin
   unitFitParamDialog.SetCurrentTrendDegree(1);
   unitFitParamDialog.SetCurrentPeriods(tempDArray);
   unitFitParamDialog.SetCurrentTrigPolyDegrees(tempIArray);
+  unitMagShiftDialog.SetCurrentMagShift(NaN);
   //CloseDFTdialogs;
 end;
 
@@ -1200,6 +1216,33 @@ begin
   UpdateTitle;
   if ChartSeriesData.ColorEach = cePoint then
     ShowColorLegend;
+end;
+
+procedure TFormMain.MagShift;
+begin
+  MagnitudeShifter(@MagShiftProc);
+end;
+
+procedure TFormMain.MagShiftProc;
+var
+  Shift: Double;
+  Item: PChartDataItem;
+  I, L: Integer;
+begin
+  L := LCSrcData.Count;
+  if L > 0 then begin
+    Shift := unitMagShiftDialog.GetCurrentMagShift;
+    LCSrcData.BeginUpdate;
+    try
+      for I := 0 to L - 1 do begin
+        Item := LCSrcData.Item[I];
+        Item^.Text := '';
+        Item^.Y := Item^.Y + Shift;
+      end;
+    finally
+      LCSrcData.EndUpdate;
+    end;
+  end;
 end;
 
 procedure TFormMain.ShowColorLegend;

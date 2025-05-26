@@ -8,7 +8,6 @@ object FormMain: TFormMain
   ClientWidth = 800
   Menu = MainMenu
   Position = poDefaultPosOnly
-  LCLVersion = '4.0.0.4'
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
@@ -132,7 +131,7 @@ object FormMain: TFormMain
     end
     object ToolButtonDiv1: TToolButton
       Left = 24
-      Height = 5
+      Height = 22
       Top = 2
       Caption = 'ToolButtonDiv1'
       Style = tbsDivider
@@ -149,7 +148,7 @@ object FormMain: TFormMain
     end
     object ToolButtonDiv2: TToolButton
       Left = 75
-      Height = 5
+      Height = 22
       Top = 2
       Caption = 'ToolButtonDiv2'
       Style = tbsDivider
@@ -171,7 +170,7 @@ object FormMain: TFormMain
     end
     object ToolButtonDiv3: TToolButton
       Left = 149
-      Height = 5
+      Height = 22
       Top = 2
       Caption = 'ToolButtonDiv3'
       Style = tbsDivider
@@ -291,6 +290,12 @@ object FormMain: TFormMain
     end
     object MenuTools: TMenuItem
       Caption = '&Tools'
+      object MenuItemMagShift: TMenuItem
+        Action = ActionMagShift
+      end
+      object Separator11: TMenuItem
+        Caption = '-'
+      end
       object MenuItemOptions: TMenuItem
         Action = ActionOptions
       end
@@ -456,6 +461,11 @@ object FormMain: TFormMain
       Category = 'Tools'
       Caption = 'Options...'
       OnExecute = ActionOptionsExecute
+    end
+    object ActionMagShift: TAction
+      Category = 'Tools'
+      Caption = 'Magnitude Shift...'
+      OnExecute = ActionMagShiftExecute
     end
   end
   object OpenDialog: TOpenDialog

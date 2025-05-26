@@ -1,0 +1,77 @@
+object FormMagShift: TFormMagShift
+  Left = 418
+  Height = 86
+  Top = 250
+  Width = 266
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsDialog
+  Caption = 'Magnitude Shifter'
+  ClientHeight = 86
+  ClientWidth = 266
+  Position = poMainFormCenter
+  OnCreate = FormCreate
+  OnShow = FormShow
+  object PanelControls: TPanel
+    Left = 0
+    Height = 44
+    Top = 0
+    Width = 266
+    Align = alClient
+    ClientHeight = 44
+    ClientWidth = 266
+    TabOrder = 0
+    object LabelMagShift: TLabel
+      Left = 8
+      Height = 15
+      Top = 11
+      Width = 85
+      Caption = 'Magnitude Shift'
+    end
+    object EditMagShift: TEdit
+      Left = 104
+      Height = 23
+      Top = 8
+      Width = 155
+      TabOrder = 0
+    end
+  end
+  object PanelButtons: TPanel
+    Left = 0
+    Height = 42
+    Top = 44
+    Width = 266
+    Align = alBottom
+    ClientHeight = 42
+    ClientWidth = 266
+    TabOrder = 1
+    object ButtonOK: TButton
+      Left = 8
+      Height = 25
+      Top = 8
+      Width = 75
+      Caption = 'OK'
+      Default = True
+      TabOrder = 0
+      OnClick = ButtonOKClick
+    end
+    object ButtonCancel: TButton
+      Left = 96
+      Height = 25
+      Top = 8
+      Width = 75
+      Cancel = True
+      Caption = 'Cancel'
+      ModalResult = 2
+      TabOrder = 1
+    end
+    object ButtonApply: TButton
+      Left = 184
+      Height = 25
+      Top = 8
+      Width = 75
+      Caption = 'Apply'
+      TabOrder = 2
+      OnClick = ButtonApplyClick
+    end
+  end
+end
