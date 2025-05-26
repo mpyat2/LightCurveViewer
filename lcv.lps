@@ -262,6 +262,18 @@
         <UsageCount Value="47"/>
       </Unit>
       <Unit>
+        <Filename Value="unitMagShiftDialog.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormMagShift"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <TopLine Value="30"/>
+        <CursorPos X="29" Y="57"/>
+        <UsageCount Value="23"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
         <Filename Value="C:\lazarus64\fpc\3.2.2\source\packages\numlib\src\sle.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="52"/>
@@ -328,17 +340,6 @@
         <UsageCount Value="10"/>
       </Unit>
       <Unit>
-        <Filename Value="unitMagShiftDialog.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="FormMagShift"/>
-        <ResourceBaseClass Value="Form"/>
-        <TopLine Value="30"/>
-        <CursorPos X="29" Y="57"/>
-        <UsageCount Value="23"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
-      </Unit>
-      <Unit>
         <Filename Value="C:\lazarus64\components\tachart\tacustomsource.pas"/>
         <UnitName Value="TACustomSource"/>
         <EditorIndex Value="-1"/>
@@ -355,7 +356,7 @@
         <UsageCount Value="10"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="22">
+    <JumpHistory HistoryIndex="21">
       <Position>
         <Filename Value="unitMain.pas"/>
         <Caret Line="209" Column="15" TopLine="193"/>
@@ -367,10 +368,6 @@
       <Position>
         <Filename Value="unitMain.pas"/>
         <Caret Line="1352" TopLine="1338"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret TopLine="67"/>
       </Position>
       <Position>
         <Filename Value="unitMain.pas"/>
