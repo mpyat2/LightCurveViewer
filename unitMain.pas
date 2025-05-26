@@ -1224,25 +1224,33 @@ begin
 end;
 
 procedure TFormMain.MagShiftProc;
-var
-  Shift: Double;
-  Item: PChartDataItem;
-  I, L: Integer;
-begin
-  L := LCSrcData.Count;
-  if L > 0 then begin
-    Shift := unitMagShiftDialog.GetCurrentMagShift;
-    LCSrcData.BeginUpdate;
-    try
-      for I := 0 to L - 1 do begin
-        Item := LCSrcData.Item[I];
-        Item^.Text := '';
-        Item^.Y := Item^.Y + Shift;
+
+  procedure UpdateChartSource(Src: TListChartSource; Shift: Double);
+  var
+    Item: PChartDataItem;
+    I, L: Integer;
+  begin
+    L := Src.Count;
+    if L > 0 then begin
+      Src.BeginUpdate;
+      try
+        for I := 0 to L - 1 do begin
+          Item := Src.Item[I];
+          Item^.Text := '';
+          Item^.Y := Item^.Y + Shift;
+        end;
+      finally
+        Src.EndUpdate;
       end;
-    finally
-      LCSrcData.EndUpdate;
     end;
   end;
+
+var
+  Shift: Double;
+begin
+  Shift := unitMagShiftDialog.GetCurrentMagShift;
+  UpdateChartSource(LCSrcData, Shift);
+  UpdateChartSource(LCSrcFoldedData, Shift);
 end;
 
 procedure TFormMain.ShowColorLegend;
