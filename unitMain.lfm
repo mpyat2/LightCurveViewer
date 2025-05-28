@@ -41,7 +41,6 @@ object FormMain: TFormMain
         Intervals.MaxLength = 100
         Intervals.MinLength = 25
         Intervals.NiceSteps = '0.1|1'
-        Intervals.Options = [aipUseCount, aipUseMaxLength, aipUseMinLength, aipUseNiceSteps]
         Intervals.Tolerance = 2
         Alignment = calBottom
         Marks.LabelFont.Height = -16
