@@ -21,7 +21,6 @@ object FormMain: TFormMain
     AxisList = <    
       item
         Grid.Color = clSilver
-        Intervals.Options = [aipUseCount, aipUseMaxLength, aipUseMinLength, aipUseNiceSteps]
         Intervals.Tolerance = 1
         Marks.LabelFont.Height = -16
         Marks.LabelFont.Name = 'Times New Roman'
@@ -40,8 +39,7 @@ object FormMain: TFormMain
         Grid.Color = clSilver
         Intervals.MaxLength = 100
         Intervals.MinLength = 25
-        Intervals.NiceSteps = '0.1|1'
-        Intervals.Tolerance = 2
+        Intervals.Tolerance = 1
         Alignment = calBottom
         Marks.LabelFont.Height = -16
         Marks.LabelFont.Name = 'Times New Roman'
