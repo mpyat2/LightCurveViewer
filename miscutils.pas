@@ -27,6 +27,9 @@ procedure CalcError(const S: string);
 
 function GetFPUexceptionAsString: string;
 
+// WARNING!! The input array is changed.
+function WirthMedian(var data: TDoubleArray): Double;
+
 function GetMedianInterval(const X: TDoubleArray): Double;
 
 function GetRecommendedFrequencyResolution(Xmin, Xmax: Double; TrigPolyDegree: Integer): Double;
@@ -104,6 +107,55 @@ begin
     if FPUexception in FPUExceptionMask then
       Result := Result + FPUexceptionToString(FPUexception) + ' ';
   end;
+end;
+
+// from: N.Wirth. "Algorithms and Data Structures. Oberon version": "2.3.4 Finding the Median"
+// Translated from Oberon (with 1 fix!)
+// See also http://ndevilla.free.fr/median/median/src/wirth.c
+function WirthFind(var a: TDoubleArray; k: SizeInt; n: SizeInt): Double;
+var
+ L, R, i, j: SizeInt;
+ w, x: Double;
+begin
+  L := 0; R := n - 1;
+  while L < R do begin
+    x := a[k]; i := L; j := R;
+    repeat
+      while a[i] < x do Inc(i);
+      while x < a[j] do Dec(j);
+      if i <= j then begin
+        w := a[i]; a[i] := a[j]; a[j] := w;
+        Inc(i); Dec(j);
+      end;
+    until i > j;
+    if j < k then L := i;
+    if k < i then R := j;
+  end;
+  Result := a[k];
+end;
+
+// 'data' changed but not sorted completely!
+function WirthMedian(var data: TDoubleArray): Double;
+var
+  k, n: SizeInt;
+begin
+  Result := 0;
+  n := Length(data);
+  if n < 1 then Exit;
+  if n = 1 then begin
+    Result := data[0];
+    Exit;
+  end;
+  if n = 2 then begin
+    Result := data[0];
+    Result := (Result + data[1]) / 2; // to prevent integer overflow
+    Exit;
+  end;
+  k := n div 2;
+  Result := WirthFind(data, k, n);
+  if Odd(n) then
+    Exit;
+  Result := (Result + WirthFind(data, k - 1, n)) / 2;
 end;
 
 function GetMedianInterval(const X: TDoubleArray): Double;

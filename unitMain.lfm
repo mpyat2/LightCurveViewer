@@ -183,10 +183,10 @@ object FormMain: TFormMain
     end
   end
   object PanelCalculatingMessage: TPanel
-    Left = 616
+    Left = 568
     Height = 24
     Top = 32
-    Width = 178
+    Width = 226
     Anchors = [akTop, akRight]
     Caption = 'Calculating...'
     Color = clYellow
@@ -293,6 +293,9 @@ object FormMain: TFormMain
       Caption = '&Tools'
       object MenuItemMagShift: TMenuItem
         Action = ActionMagShift
+      end
+      object MenuItemStatistics: TMenuItem
+        Action = ActionStatistics
       end
       object Separator11: TMenuItem
         Caption = '-'
@@ -467,6 +470,11 @@ object FormMain: TFormMain
       Category = 'Tools'
       Caption = 'Magnitude Shift...'
       OnExecute = ActionMagShiftExecute
+    end
+    object ActionStatistics: TAction
+      Category = 'Tools'
+      Caption = 'Descriptive Statistics...'
+      OnExecute = ActionStatisticsExecute
     end
   end
   object OpenDialog: TOpenDialog

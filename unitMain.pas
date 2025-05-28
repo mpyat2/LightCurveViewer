@@ -17,6 +17,7 @@ type
   { TFormMain }
 
   TFormMain = class(TForm)
+    ActionStatistics: TAction;
     ActionMagShift: TAction;
     ActionOptions: TAction;
     ActionDetrend: TAction;
@@ -60,6 +61,7 @@ type
     LCSrcData: TListChartSource;
     MainMenu: TMainMenu;
     MenuFile: TMenuItem;
+    MenuItemStatistics: TMenuItem;
     MenuItemMagShift: TMenuItem;
     MenuItemOptions: TMenuItem;
     MenuTools: TMenuItem;
@@ -148,6 +150,7 @@ type
     procedure ActionShowDataExecute(Sender: TObject);
     procedure ActionShowErrorsExecute(Sender: TObject);
     procedure ActionShowModelExecute(Sender: TObject);
+    procedure ActionStatisticsExecute(Sender: TObject);
     procedure ActionStopExecute(Sender: TObject);
     procedure ActionUserManualExecute(Sender: TObject);
     procedure ActionUserManualLocalExecute(Sender: TObject);
@@ -235,8 +238,8 @@ uses
   lclintf, math, guiutils, unitPhaseDialog, unitMagShiftDialog,
   unitFitParamDialog, unitDFTparamDialog, unitDFTdialog, unitTableDialog,
   unitModelInfoDialog, colorLegend, floattextform, unitFormChartprops,
-  unitGetExtent, unitOptionsDialog, unitAbout, dftThread, dataio, sortutils,
-  formatutils, miscutils, fitproc, settings;
+  unitGetExtent, unitOptionsDialog, unitFormStat, unitAbout, dftThread, dataio,
+  sortutils, formatutils, miscutils, fitproc, settings;
 
 { TFormMain }
 
@@ -496,6 +499,24 @@ begin
   ActionList.UpdateAction(Sender as TAction); // Ubuntu bug (check state not always updated)? (GNOME)
 end;
 
+procedure TFormMain.ActionStatisticsExecute(Sender: TObject);
+var
+  Item: PChartDataItem;
+  X, Y: TDoubleArray;
+  I: Integer;
+begin
+  if LCSrcData.Count > 0 then begin
+    SetLength(X, LCSrcData.Count);
+    SetLength(Y, LCSrcData.Count);
+    for I := 0 to LCSrcData.Count - 1 do begin
+      Item := LCSrcData.Item[I];
+      X[I] := Item^.X;
+      Y[I] := Item^.Y;
+    end;
+    ShowStatistics(X, Y);
+  end;
+end;
+
 procedure TFormMain.ActionStopExecute(Sender: TObject);
 begin
   DFTGlobalTerminate;
@@ -682,6 +703,10 @@ begin
   end
   else
   if AAction = ActionMagShift then begin
+    (AAction as TAction).Enabled := (LCSrcData.Count > 0) and not FCalculationInProgress;
+  end
+  else
+  if AAction = ActionStatistics then begin
     (AAction as TAction).Enabled := (LCSrcData.Count > 0) and not FCalculationInProgress;
   end
   else

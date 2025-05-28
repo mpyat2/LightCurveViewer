@@ -2,6 +2,8 @@ unit unitMagShiftDialog;
 
 {$mode ObjFPC}{$H+}
 
+{$include lcv.inc}
+
 interface
 
 uses

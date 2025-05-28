@@ -9,6 +9,7 @@ object FormMagShift: TFormMagShift
   ClientHeight = 86
   ClientWidth = 266
   Position = poMainFormCenter
+  LCLVersion = '4.0.0.4'
   OnCreate = FormCreate
   OnShow = FormShow
   object PanelControls: TPanel
@@ -28,10 +29,10 @@ object FormMagShift: TFormMagShift
       Caption = 'Magnitude Shift'
     end
     object EditMagShift: TEdit
-      Left = 104
+      Left = 112
       Height = 23
       Top = 8
-      Width = 155
+      Width = 147
       TabOrder = 0
     end
   end
