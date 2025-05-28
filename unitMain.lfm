@@ -8,7 +8,6 @@ object FormMain: TFormMain
   ClientWidth = 800
   Menu = MainMenu
   Position = poDefaultPosOnly
-  LCLVersion = '4.0.0.4'
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
@@ -39,12 +38,11 @@ object FormMain: TFormMain
       end    
       item
         Grid.Color = clSilver
-        Intervals.Count = 10
         Intervals.MaxLength = 100
-        Intervals.MinLength = 50
-        Intervals.NiceSteps = '0.01|0.1|1'
+        Intervals.MinLength = 25
+        Intervals.NiceSteps = '0.1|1'
         Intervals.Options = [aipUseCount, aipUseMaxLength, aipUseMinLength, aipUseNiceSteps]
-        Intervals.Tolerance = 10
+        Intervals.Tolerance = 2
         Alignment = calBottom
         Marks.LabelFont.Height = -16
         Marks.LabelFont.Name = 'Times New Roman'
@@ -132,7 +130,7 @@ object FormMain: TFormMain
     end
     object ToolButtonDiv1: TToolButton
       Left = 24
-      Height = 5
+      Height = 22
       Top = 2
       Caption = 'ToolButtonDiv1'
       Style = tbsDivider
@@ -149,7 +147,7 @@ object FormMain: TFormMain
     end
     object ToolButtonDiv2: TToolButton
       Left = 75
-      Height = 5
+      Height = 22
       Top = 2
       Caption = 'ToolButtonDiv2'
       Style = tbsDivider
@@ -171,7 +169,7 @@ object FormMain: TFormMain
     end
     object ToolButtonDiv3: TToolButton
       Left = 149
-      Height = 5
+      Height = 22
       Top = 2
       Caption = 'ToolButtonDiv3'
       Style = tbsDivider
