@@ -52,6 +52,7 @@ object FormStatistics: TFormStatistics
       Anchors = [akTop, akRight]
       Cancel = True
       Caption = 'Close'
+      Default = True
       ModalResult = 2
       TabOrder = 0
     end

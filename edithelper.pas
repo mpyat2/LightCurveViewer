@@ -27,12 +27,16 @@ function TEditHelper.Evaluate: Double;
 var
   FParser: TFPExpressionParser;
   ParserResult: TFPExpressionResult;
+  S: string;
 begin
   Result := NaN;
+  S := Trim(self.Text);
+  if S = '' then
+    Exit;
   FParser := TFpExpressionParser.Create(nil);
   try
     try
-      FParser.Expression := Trim(self.Text);
+      FParser.Expression := S;
       ParserResult := FParser.Evaluate;
       if ParserResult.ResultType = rtFloat then
         Result := ParserResult.ResFloat

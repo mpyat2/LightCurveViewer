@@ -86,6 +86,7 @@ end;
 procedure TFormChartProperties.FormCreate(Sender: TObject);
 begin
   RearrangeButtons(ButtonOK, ButtonCancel);
+  Self.ActiveControl := EditObjectName;
 end;
 
 procedure TFormChartProperties.InitProps;

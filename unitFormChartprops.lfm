@@ -8,9 +8,8 @@ object FormChartProperties: TFormChartProperties
   Caption = 'Chart Properties'
   ClientHeight = 292
   ClientWidth = 343
-  OnCreate = FormCreate
   Position = poMainFormCenter
-  LCLVersion = '3.8.0.0'
+  OnCreate = FormCreate
   object PanelButtons: TPanel
     Left = 0
     Height = 46

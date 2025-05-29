@@ -2,12 +2,12 @@ object FormDFTparams: TFormDFTparams
   Left = 668
   Height = 340
   Top = 422
-  Width = 366
+  Width = 382
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Parameters'
   ClientHeight = 340
-  ClientWidth = 366
+  ClientWidth = 382
   Position = poMainFormCenter
   OnCreate = FormCreate
   OnShow = FormShow
@@ -19,7 +19,7 @@ object FormDFTparams: TFormDFTparams
     Caption = 'Minimum Frequency'
   end
   object EditFrequencyMin: TEdit
-    Left = 144
+    Left = 160
     Height = 23
     Top = 16
     Width = 120
@@ -34,7 +34,7 @@ object FormDFTparams: TFormDFTparams
     Caption = 'Maximum Frequency'
   end
   object EditFrequencyMax: TEdit
-    Left = 144
+    Left = 160
     Height = 23
     Top = 48
     Width = 120
@@ -49,7 +49,7 @@ object FormDFTparams: TFormDFTparams
     Caption = 'Resolution'
   end
   object EditFrequencyResolution: TEdit
-    Left = 144
+    Left = 160
     Height = 23
     Top = 80
     Width = 120
@@ -57,7 +57,7 @@ object FormDFTparams: TFormDFTparams
     OnChange = EditFrequencyResolutionChange
   end
   object ButtonOk: TButton
-    Left = 80
+    Left = 78
     Height = 25
     Top = 296
     Width = 75
@@ -67,7 +67,7 @@ object FormDFTparams: TFormDFTparams
     OnClick = ButtonOkClick
   end
   object ButtonCancel: TButton
-    Left = 189
+    Left = 205
     Height = 25
     Top = 296
     Width = 75
@@ -84,7 +84,7 @@ object FormDFTparams: TFormDFTparams
     Caption = 'Trig. Polynomyal Degree'
   end
   object EditTrigPolyDegree: TEdit
-    Left = 176
+    Left = 192
     Height = 23
     Top = 240
     Width = 88
@@ -99,7 +99,7 @@ object FormDFTparams: TFormDFTparams
     Caption = 'Polynomial Trend Degree'
   end
   object EditTrendDegree: TEdit
-    Left = 176
+    Left = 192
     Height = 23
     Top = 208
     Width = 88
@@ -113,7 +113,7 @@ object FormDFTparams: TFormDFTparams
     Caption = 'Recommended Res.'
   end
   object EditRecommendedResolution: TEdit
-    Left = 144
+    Left = 160
     Height = 23
     Top = 112
     Width = 120
@@ -129,7 +129,7 @@ object FormDFTparams: TFormDFTparams
     Caption = 'Number of Points'
   end
   object EditNofPoints: TEdit
-    Left = 144
+    Left = 160
     Height = 15
     Top = 144
     Width = 120
@@ -140,7 +140,7 @@ object FormDFTparams: TFormDFTparams
     TabOrder = 6
   end
   object EditP1: TEdit
-    Left = 272
+    Left = 288
     Height = 15
     Top = 16
     Width = 88
@@ -151,7 +151,7 @@ object FormDFTparams: TFormDFTparams
     TabOrder = 1
   end
   object EditP2: TEdit
-    Left = 272
+    Left = 288
     Height = 15
     Top = 48
     Width = 88

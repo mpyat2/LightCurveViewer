@@ -18,8 +18,7 @@
         <ComponentName Value="FormMain"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="40"/>
         <CursorPos X="19" Y="5"/>
         <UsageCount Value="203"/>
@@ -27,8 +26,6 @@
           <Item0 X="15" Y="657"/>
           <Item1 Y="1350" Left="1" Top="1332" ID="2"/>
         </Bookmarks>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="dataio.pas"/>
@@ -45,8 +42,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="40"/>
-        <CursorPos Y="50"/>
+        <TopLine Value="119"/>
+        <CursorPos X="17" Y="126"/>
         <UsageCount Value="202"/>
       </Unit>
       <Unit>
@@ -56,7 +53,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="111"/>
+        <TopLine Value="112"/>
         <CursorPos X="8" Y="122"/>
         <UsageCount Value="200"/>
       </Unit>
@@ -66,10 +63,13 @@
         <ComponentName Value="FormDFTparams"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="235"/>
-        <CursorPos X="33" Y="260"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="195"/>
+        <CursorPos X="5" Y="207"/>
         <UsageCount Value="200"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="unitDFT.pas"/>
@@ -117,12 +117,10 @@
         <ComponentName Value="FormTable"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="83"/>
         <CursorPos Y="110"/>
         <UsageCount Value="218"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="unitModelInfoDialog.pas"/>
@@ -162,9 +160,8 @@
       <Unit>
         <Filename Value="miscutils.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="-1"/>
         <UsageCount Value="211"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="formatutils.pas"/>
@@ -177,11 +174,10 @@
       <Unit>
         <Filename Value="guiutils.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="7"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="13"/>
         <CursorPos X="10" Y="31"/>
         <UsageCount Value="211"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="floattextform.pas"/>
@@ -201,6 +197,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <EditorIndex Value="-1"/>
+        <TopLine Value="70"/>
+        <CursorPos Y="91"/>
         <UsageCount Value="232"/>
       </Unit>
       <Unit>
@@ -252,15 +250,16 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="41"/>
         <CursorPos X="87" Y="64"/>
-        <UsageCount Value="69"/>
+        <UsageCount Value="70"/>
       </Unit>
       <Unit>
         <Filename Value="edithelper.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="19"/>
-        <CursorPos X="14" Y="17"/>
-        <UsageCount Value="51"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="25"/>
+        <CursorPos Y="39"/>
+        <UsageCount Value="52"/>
+        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="unitMagShiftDialog.pas"/>
@@ -268,11 +267,9 @@
         <ComponentName Value="FormMagShift"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="-1"/>
         <CursorPos X="19" Y="5"/>
-        <UsageCount Value="27"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
+        <UsageCount Value="28"/>
       </Unit>
       <Unit>
         <Filename Value="unitFormStat.pas"/>
@@ -280,15 +277,12 @@
         <ComponentName Value="FormStatistics"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="1"/>
-        <TopLine Value="24"/>
+        <EditorIndex Value="-1"/>
         <CursorPos X="12" Y="47"/>
-        <UsageCount Value="24"/>
+        <UsageCount Value="25"/>
         <Bookmarks Count="1">
           <Item0 X="5" Y="111" Left="1" Top="89" ID="1"/>
         </Bookmarks>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="C:\lazarus64\fpc\3.2.2\source\packages\numlib\src\sle.pas"/>
@@ -374,127 +368,39 @@
       </Unit>
       <Unit>
         <Filename Value="C:\lazarus64\fpc\3.2.2\source\rtl\objpas\sysutils\syshelph.inc"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="-1"/>
         <CursorPos X="3" Y="5"/>
         <UsageCount Value="12"/>
-        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus64\lcl\controls.pp"/>
+        <UnitName Value="Controls"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="2384"/>
+        <CursorPos X="14" Y="2401"/>
+        <UsageCount Value="10"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="28">
+    <JumpHistory HistoryIndex="4">
       <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="516" Column="17" TopLine="498"/>
+        <Filename Value="unitDFTparamDialog.pas"/>
+        <Caret Line="260" Column="33" TopLine="236"/>
       </Position>
       <Position>
-        <Filename Value="unitFormStat.pas"/>
-        <Caret Line="30" Column="11" TopLine="12"/>
+        <Filename Value="edithelper.pas"/>
+        <Caret Line="35" Column="10" TopLine="25"/>
       </Position>
       <Position>
-        <Filename Value="unitFormStat.pas"/>
-        <Caret Line="81" TopLine="56"/>
+        <Filename Value="unitDFTparamDialog.pas"/>
+        <Caret Line="242" TopLine="236"/>
       </Position>
       <Position>
-        <Filename Value="unitFormStat.pas"/>
-        <Caret Line="80" TopLine="56"/>
+        <Filename Value="edithelper.pas"/>
+        <Caret Line="39" TopLine="25"/>
       </Position>
       <Position>
-        <Filename Value="unitFormStat.pas"/>
-        <Caret Line="81" TopLine="56"/>
-      </Position>
-      <Position>
-        <Filename Value="unitFormStat.pas"/>
-        <Caret Line="63" TopLine="56"/>
-      </Position>
-      <Position>
-        <Filename Value="unitFormStat.pas"/>
-        <Caret Line="82" TopLine="56"/>
-      </Position>
-      <Position>
-        <Filename Value="miscutils.pas"/>
-        <Caret Line="31" Column="10" TopLine="13"/>
-      </Position>
-      <Position>
-        <Filename Value="unitFormStat.pas"/>
-        <Caret Line="60" Column="35" TopLine="56"/>
-      </Position>
-      <Position>
-        <Filename Value="unitFormStat.pas"/>
-      </Position>
-      <Position>
-        <Filename Value="unitFormStat.pas"/>
-        <Caret Line="24" Column="23"/>
-      </Position>
-      <Position>
-        <Filename Value="unitFormStat.pas"/>
-        <Caret Line="48" Column="90" TopLine="16"/>
-      </Position>
-      <Position>
-        <Filename Value="unitFormStat.pas"/>
-        <Caret Line="46" Column="37" TopLine="28"/>
-      </Position>
-      <Position>
-        <Filename Value="unitFormStat.pas"/>
-        <Caret Line="24" Column="15" TopLine="6"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMagShiftDialog.pas"/>
-        <Caret Line="57" Column="29" TopLine="30"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="516" Column="17" TopLine="498"/>
-      </Position>
-      <Position>
-        <Filename Value="miscutils.pas"/>
-        <Caret Line="142" Column="3" TopLine="107"/>
-      </Position>
-      <Position>
-        <Filename Value="unitFormStat.pas"/>
-        <Caret Line="86" Column="5" TopLine="63"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMagShiftDialog.pas"/>
-        <Caret Line="5" Column="19"/>
-      </Position>
-      <Position>
-        <Filename Value="unitFormStat.pas"/>
-        <Caret Line="88" Column="54" TopLine="71"/>
-      </Position>
-      <Position>
-        <Filename Value="unitFormStat.pas"/>
-        <Caret Line="89" Column="54" TopLine="72"/>
-      </Position>
-      <Position>
-        <Filename Value="unitFormStat.pas"/>
-        <Caret Line="90" Column="54" TopLine="73"/>
-      </Position>
-      <Position>
-        <Filename Value="unitFormStat.pas"/>
-        <Caret Line="91" Column="54" TopLine="74"/>
-      </Position>
-      <Position>
-        <Filename Value="unitFormStat.pas"/>
-        <Caret Line="98" Column="54" TopLine="81"/>
-      </Position>
-      <Position>
-        <Filename Value="unitFormStat.pas"/>
-        <Caret Line="73" Column="3" TopLine="70"/>
-      </Position>
-      <Position>
-        <Filename Value="unitFormStat.pas"/>
-        <Caret Line="78" Column="3" TopLine="70"/>
-      </Position>
-      <Position>
-        <Filename Value="unitFormStat.pas"/>
-        <Caret Line="79" Column="3" TopLine="71"/>
-      </Position>
-      <Position>
-        <Filename Value="unitFormStat.pas"/>
-        <Caret Line="80" Column="71" TopLine="72"/>
-      </Position>
-      <Position>
-        <Filename Value="unitFormStat.pas"/>
-        <Caret Line="88" TopLine="72"/>
+        <Filename Value="unitDFTparamDialog.pas"/>
+        <Caret Line="242" TopLine="226"/>
       </Position>
     </JumpHistory>
     <RunParams>

@@ -223,7 +223,7 @@ procedure TFormDFTparams.UpdateView;
       end;
     end
     else begin
-      E.Text := '';
+      E2.Text := '';
     end;
   end;
 
