@@ -63,7 +63,6 @@
         <ComponentName Value="FormDFTparams"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <TopLine Value="195"/>
         <CursorPos X="5" Y="207"/>
@@ -160,8 +159,9 @@
       <Unit>
         <Filename Value="miscutils.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
+        <EditorIndex Value="2"/>
         <UsageCount Value="211"/>
+        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="formatutils.pas"/>
@@ -250,15 +250,16 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="41"/>
         <CursorPos X="87" Y="64"/>
-        <UsageCount Value="70"/>
+        <UsageCount Value="71"/>
       </Unit>
       <Unit>
         <Filename Value="edithelper.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="2"/>
-        <TopLine Value="25"/>
-        <CursorPos Y="39"/>
-        <UsageCount Value="52"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="52"/>
+        <CursorPos X="30" Y="76"/>
+        <UsageCount Value="53"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -269,7 +270,7 @@
         <ResourceBaseClass Value="Form"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="19" Y="5"/>
-        <UsageCount Value="28"/>
+        <UsageCount Value="29"/>
       </Unit>
       <Unit>
         <Filename Value="unitFormStat.pas"/>
@@ -279,7 +280,7 @@
         <ResourceBaseClass Value="Form"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="12" Y="47"/>
-        <UsageCount Value="25"/>
+        <UsageCount Value="26"/>
         <Bookmarks Count="1">
           <Item0 X="5" Y="111" Left="1" Top="89" ID="1"/>
         </Bookmarks>
@@ -380,27 +381,150 @@
         <CursorPos X="14" Y="2401"/>
         <UsageCount Value="10"/>
       </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus64\fpc\3.2.2\source\packages\fcl-base\src\fpexprpars.pp"/>
+        <EditorIndex Value="6"/>
+        <TopLine Value="917"/>
+        <CursorPos X="15" Y="947"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus64\fpc\3.2.2\source\rtl\objpas\sysutils\sysinth.inc"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="31"/>
+        <CursorPos X="21" Y="61"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus64\fpc\3.2.2\source\rtl\objpas\sysutils\sysstrh.inc"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="231"/>
+        <CursorPos X="10" Y="249"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit>
     </Units>
-    <JumpHistory HistoryIndex="4">
+    <JumpHistory HistoryIndex="29">
       <Position>
-        <Filename Value="unitDFTparamDialog.pas"/>
-        <Caret Line="260" Column="33" TopLine="236"/>
+        <Filename Value="C:\lazarus64\fpc\3.2.2\source\packages\fcl-base\src\fpexprpars.pp"/>
+        <Caret Line="2351" Column="73" TopLine="2338"/>
+      </Position>
+      <Position>
+        <Filename Value="C:\lazarus64\fpc\3.2.2\source\packages\fcl-base\src\fpexprpars.pp"/>
+        <Caret Line="2352" Column="80" TopLine="2338"/>
+      </Position>
+      <Position>
+        <Filename Value="C:\lazarus64\fpc\3.2.2\source\packages\fcl-base\src\fpexprpars.pp"/>
+        <Caret Line="2474" Column="72" TopLine="2444"/>
+      </Position>
+      <Position>
+        <Filename Value="C:\lazarus64\fpc\3.2.2\source\packages\fcl-base\src\fpexprpars.pp"/>
+        <Caret Line="2475" Column="74" TopLine="2451"/>
       </Position>
       <Position>
         <Filename Value="edithelper.pas"/>
-        <Caret Line="35" Column="10" TopLine="25"/>
+        <Caret Line="36" Column="44" TopLine="25"/>
       </Position>
       <Position>
-        <Filename Value="unitDFTparamDialog.pas"/>
-        <Caret Line="242" TopLine="236"/>
+        <Filename Value="C:\lazarus64\fpc\3.2.2\source\rtl\objpas\sysutils\sysinth.inc"/>
+        <Caret Line="57" Column="24" TopLine="39"/>
+      </Position>
+      <Position>
+        <Filename Value="edithelper.pas"/>
+        <Caret Line="36" Column="40" TopLine="25"/>
+      </Position>
+      <Position>
+        <Filename Value="C:\lazarus64\fpc\3.2.2\source\rtl\objpas\sysutils\sysinth.inc"/>
+        <Caret Line="37" Column="21" TopLine="19"/>
+      </Position>
+      <Position>
+        <Filename Value="edithelper.pas"/>
+        <Caret Line="37" Column="69" TopLine="25"/>
+      </Position>
+      <Position>
+        <Filename Value="edithelper.pas"/>
+        <Caret Line="36" TopLine="25"/>
+      </Position>
+      <Position>
+        <Filename Value="edithelper.pas"/>
+        <Caret Line="38" TopLine="25"/>
       </Position>
       <Position>
         <Filename Value="edithelper.pas"/>
         <Caret Line="39" TopLine="25"/>
       </Position>
       <Position>
-        <Filename Value="unitDFTparamDialog.pas"/>
-        <Caret Line="242" TopLine="226"/>
+        <Filename Value="edithelper.pas"/>
+        <Caret Line="40" TopLine="25"/>
+      </Position>
+      <Position>
+        <Filename Value="edithelper.pas"/>
+        <Caret Line="41" TopLine="25"/>
+      </Position>
+      <Position>
+        <Filename Value="edithelper.pas"/>
+        <Caret Line="54" TopLine="25"/>
+      </Position>
+      <Position>
+        <Filename Value="edithelper.pas"/>
+        <Caret Line="40" Column="23" TopLine="25"/>
+      </Position>
+      <Position>
+        <Filename Value="C:\lazarus64\fpc\3.2.2\source\packages\fcl-base\src\fpexprpars.pp"/>
+        <Caret Line="783" Column="22" TopLine="766"/>
+      </Position>
+      <Position>
+        <Filename Value="C:\lazarus64\fpc\3.2.2\source\packages\fcl-base\src\fpexprpars.pp"/>
+      </Position>
+      <Position>
+        <Filename Value="C:\lazarus64\fpc\3.2.2\source\packages\fcl-base\src\fpexprpars.pp"/>
+        <Caret Line="721" Column="14" TopLine="691"/>
+      </Position>
+      <Position>
+        <Filename Value="C:\lazarus64\fpc\3.2.2\source\packages\fcl-base\src\fpexprpars.pp"/>
+        <Caret Line="737" Column="26" TopLine="707"/>
+      </Position>
+      <Position>
+        <Filename Value="C:\lazarus64\fpc\3.2.2\source\packages\fcl-base\src\fpexprpars.pp"/>
+        <Caret Line="745" Column="28" TopLine="715"/>
+      </Position>
+      <Position>
+        <Filename Value="C:\lazarus64\fpc\3.2.2\source\packages\fcl-base\src\fpexprpars.pp"/>
+        <Caret Line="783" Column="76" TopLine="754"/>
+      </Position>
+      <Position>
+        <Filename Value="C:\lazarus64\fpc\3.2.2\source\packages\fcl-base\src\fpexprpars.pp"/>
+        <Caret Line="821" Column="14" TopLine="791"/>
+      </Position>
+      <Position>
+        <Filename Value="C:\lazarus64\fpc\3.2.2\source\packages\fcl-base\src\fpexprpars.pp"/>
+        <Caret Line="827" Column="108" TopLine="797"/>
+      </Position>
+      <Position>
+        <Filename Value="C:\lazarus64\fpc\3.2.2\source\packages\fcl-base\src\fpexprpars.pp"/>
+        <Caret Line="942" Column="11" TopLine="912"/>
+      </Position>
+      <Position>
+        <Filename Value="edithelper.pas"/>
+        <Caret Line="40" Column="28" TopLine="25"/>
+      </Position>
+      <Position>
+        <Filename Value="edithelper.pas"/>
+        <Caret Line="36" TopLine="25"/>
+      </Position>
+      <Position>
+        <Filename Value="edithelper.pas"/>
+        <Caret Line="38" TopLine="25"/>
+      </Position>
+      <Position>
+        <Filename Value="edithelper.pas"/>
+        <Caret Line="39" TopLine="25"/>
+      </Position>
+      <Position>
+        <Filename Value="edithelper.pas"/>
+        <Caret Line="40" TopLine="25"/>
       </Position>
     </JumpHistory>
     <RunParams>

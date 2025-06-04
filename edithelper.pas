@@ -33,8 +33,11 @@ begin
   S := Trim(self.Text);
   if S = '' then
     Exit;
+  if FormatSettings.DecimalSeparator <> '.' then
+    S := StringReplace(S, FormatSettings.DecimalSeparator, '.', [rfReplaceAll]);
   FParser := TFpExpressionParser.Create(nil);
   try
+    FParser.BuiltIns := [];
     try
       FParser.Expression := S;
       ParserResult := FParser.Evaluate;
@@ -60,13 +63,17 @@ function TEditHelper.EvaluateInt(out V: Integer): Boolean;
 var
   FParser: TFPExpressionParser;
   ParserResult: TFPExpressionResult;
+  S: string;
 begin
   Result := False;
   V := 0;
+  S := Trim(self.Text);
+  if S = '' then
+    Exit;
   FParser := TFpExpressionParser.Create(nil);
   try
     try
-      FParser.Expression := Trim(self.Text);
+      FParser.Expression := S;
       ParserResult := FParser.Evaluate;
       if ParserResult.ResultType = rtInteger then begin
         V := ParserResult.resInteger;
