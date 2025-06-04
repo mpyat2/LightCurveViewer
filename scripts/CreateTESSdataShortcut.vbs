@@ -23,7 +23,7 @@ Sub Main
   Link.WorkingDirectory = "%HOMEPATH%"
   Link.Save
   MenuPath = AddTrailingBackslash(Shell.SpecialFolders("Programs"))
-  MsgBox "Desktop shortcut have been created successfully!"
+  MsgBox "Desktop shortcut has been created successfully!"
 End Sub
 
 Main
