@@ -69,16 +69,17 @@ def chDir():
         return
 
 def getStarName():
-    global starName
-    starName = input("Enter a name or coordinates: ").strip()
-    if not (starName is None or starName == ""):
+    starNameLocal = input("Enter a name or coordinates: ").strip()
+    if not (starNameLocal is None or starNameLocal == ""):
         print("Querying a list of light curves...")
+        global starName        
         global search_result
         global current_time
         global current_obs
         global current_obs_err
         global current_nn
         global current_to_mag
+        starName = None
         search_result = None
         current_time = None
         current_obs = None
@@ -87,12 +88,13 @@ def getStarName():
         current_to_mag = None
         plt.close('all')
         try:
-            get_available_data_list(starName)
+            get_available_data_list(starNameLocal)
             if search_result is None or len(search_result) < 1:
                 search_result = None
-                starName = None
                 printError("No data found for the star. Press ENTER to continue:")
                 input("")
+            else:
+                starName = starNameLocal
         except Exception as e:
             search_result = None
             starName = None
@@ -324,7 +326,7 @@ def main():
         print("=" * 79)
         print()
         if not (starName is None or starName == ""):
-            printHeader("Selected Star:", starName)
+            printHeader("Selected Star: ", starName)
             if not (current_nn is None):
                 print("LCs:", str(current_nn))
                 if not current_lc_info is None:
