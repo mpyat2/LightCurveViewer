@@ -181,7 +181,8 @@ var
   N, Nrest: Integer;
   NofParameters: Integer;
   angle: Double;
-  // TArbFloatArray for compatibility with NumLib
+  //tanAd2, tanAd2squared: Double;
+  //TArbFloatArray for compatibility with NumLib
   a: TArbFloatArray;
   magArbFloatArray: TArbFloatArray;
   fit: TArbFloatArray;
@@ -240,8 +241,17 @@ begin
         angle := 2 * Pi * nu * times[II];
         for III := 1 to FTrigPolyDegree do begin
           Idx := II * NofParameters + 1 + FTrendDegree + 2 * (III - 1);
-          a[Idx]     := Cos(III * angle);
-          a[Idx + 1] := Sin(III * angle);
+
+          // V0: Sin, Cos
+          //a[Idx]     := Cos(III * angle);
+          //a[Idx + 1] := Sin(III * angle);
+          // V1: Sin, Cos via Tan
+          //tanAd2 := Math.tan(III * angle / 2.0);
+          //tanAd2squared := tanAd2 * tanAd2;
+          //a[Idx]     := ((1 - tanAd2squared) / (1 + tanAd2squared));
+          //a[Idx + 1] := (2.0 * tanAd2 / (1 + tanAd2squared));
+          // V3: math.sincos
+          sincos(III * angle, a[Idx + 1], a[Idx]);
         end;
       end;
 
