@@ -243,7 +243,14 @@ def saveLC():
             else:
                 f.write("#TITLEY=Flux\n")
                 f.write("##Time Flux FluxErr\n")
-            for t, o, e in zip(current_time, current_obs, current_obs_err):
+            # Sort: sectors may go in an arbitrary order
+            # Get sorting indices based on current_time
+            sort_idx = np.argsort(current_time)
+            # Apply the sorting to all arrays
+            current_time_sorted = current_time[sort_idx]
+            current_obs_sorted = current_obs[sort_idx]
+            current_obs_err_sorted = current_obs_err[sort_idx]            
+            for t, o, e in zip(current_time_sorted, current_obs_sorted, current_obs_err_sorted):
                 f.write(f"{t} {o} {e}\n")
     except Exception as e:
         printError(f"Error: {e}. Press ENTER to continue:")
