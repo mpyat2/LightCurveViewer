@@ -18,7 +18,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <RevisionNr Value="1"/>
-      <BuildNr Value="144"/>
+      <BuildNr Value="146"/>
       <StringTable CompanyName="Observatory Osokorky"/>
     </VersionInfo>
     <BuildModes>

@@ -33,6 +33,7 @@ procedure PolyFit(const Xarray: TDoubleArray;
                   out YfitErrors: TDoubleArray;
                   out FitAtPoints: TDoubleArray;
                   out FitAtPointsErrors: TDoubleArray;
+                  out FitAtPointsAlgebraic: TDoubleArray;
                   out Formula: string;
                   out Info: string);
 
@@ -198,7 +199,8 @@ procedure CalculateFitAtPointsExt(const a: TArbFloatArray;
                                   const XTXI: TArbFloatArray;
                                   ndata: Integer;
                                   out fit: TDoubleArray;
-                                  out fitError: TDoubleArray);
+                                  out fitError: TDoubleArray;
+                                  out fit_algebraic: TDoubleArray);
 var
   I, II, N, Idx, Idx1, Idx2: Integer;
   NofParameters: Integer;
@@ -208,14 +210,19 @@ begin
     NofParameters := NofParameters + ATrigPolyDegrees[I] * 2;
 
   SetLength(fit, ndata);
+  SetLength(fit_algebraic, ndata);
   SetLength(fitError, ndata);
 
   for I := 0 to Length(fit) - 1 do begin
     fit[I] := 0.0;
+    fit_algebraic[I] := 0.0;
+
     for II := 0 to ATrendDegree do begin
       Idx := I * NofParameters + II;
       fit[I] := fit[I] + solution_vector[II] * a[Idx];
     end;
+
+    fit_algebraic[I] := fit[I];
 
     Idx2 := 1 + ATrendDegree;
     for N := 0 to Length(ATrigPolyDegrees) - 1 do begin
@@ -402,6 +409,7 @@ procedure PolyFit(const Xarray: TDoubleArray;
                   out YfitErrors: TDoubleArray;
                   out FitAtPoints: TDoubleArray;
                   out FitAtPointsErrors: TDoubleArray;
+                  out FitAtPointsAlgebraic: TDoubleArray;
                   out Formula: string;
                   out Info: string);
 var
@@ -478,7 +486,7 @@ begin
 
   CalcCoefficientErrors(a, YarrayArbFloat, solution_vector, ndata, NofParameters, SigmaSq, XTXI, solution_vector_errors);
 
-  CalculateFitAtPointsExt(a, solution_vector, ATrendDegree, ATrigPolyDegrees, SigmaSq, XTXI, ndata, FitAtPoints, FitAtPointsErrors);
+  CalculateFitAtPointsExt(a, solution_vector, ATrendDegree, ATrigPolyDegrees, SigmaSq, XTXI, ndata, FitAtPoints, FitAtPointsErrors, FitAtPointsAlgebraic);
 
   CalculateFit(fitXmin, fitXmax, fitXstep, ATrendDegree, ATRigPolyDegrees, AFrequencies, solution_vector, SigmaSq, XTXI, Xfit, Yfit, YfitErrors);
 

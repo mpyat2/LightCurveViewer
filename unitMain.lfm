@@ -283,6 +283,9 @@ object FormMain: TFormMain
       object MenuItemDetrend: TMenuItem
         Action = ActionDetrend
       end
+      object MenuItemDetrendAlgebraic: TMenuItem
+        Action = ActionDetrendAlgebraic
+      end
     end
     object MenuTools: TMenuItem
       Caption = '&Tools'
@@ -470,6 +473,11 @@ object FormMain: TFormMain
       Category = 'Tools'
       Caption = 'Descriptive Statistics...'
       OnExecute = ActionStatisticsExecute
+    end
+    object ActionDetrendAlgebraic: TAction
+      Category = 'Analyses'
+      Caption = 'Detrend Alg. Polynomial Only'
+      OnExecute = ActionDetrendAlgebraicExecute
     end
   end
   object OpenDialog: TOpenDialog

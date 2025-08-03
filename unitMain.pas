@@ -17,6 +17,7 @@ type
   { TFormMain }
 
   TFormMain = class(TForm)
+    ActionDetrendAlgebraic: TAction;
     ActionStatistics: TAction;
     ActionMagShift: TAction;
     ActionOptions: TAction;
@@ -61,6 +62,7 @@ type
     LCSrcData: TListChartSource;
     MainMenu: TMainMenu;
     MenuFile: TMenuItem;
+    MenuItemDetrendAlgebraic: TMenuItem;
     MenuItemStatistics: TMenuItem;
     MenuItemMagShift: TMenuItem;
     MenuItemOptions: TMenuItem;
@@ -129,6 +131,7 @@ type
     procedure ActionChartPropertiesExecute(Sender: TObject);
     procedure ActionCopyChartImageExecute(Sender: TObject);
     procedure ActionCycleByCycleColorExecute(Sender: TObject);
+    procedure ActionDetrendAlgebraicExecute(Sender: TObject);
     procedure ActionDetrendExecute(Sender: TObject);
     procedure ActionListUpdate(AAction: TBasicAction; var Handled: Boolean);
     procedure ActionAboutExecute(Sender: TObject);
@@ -193,7 +196,7 @@ type
     procedure CloseFile;
     procedure OpenFile(const AFileName: string);
     procedure AsyncOpenFile(Data: PtrInt);
-    procedure Detrend;
+    procedure Detrend(AlgebraicOnly: Boolean);
     procedure SaveFileAs(const AFileName: string; const X, Y, Errors: TDoubleArray);
     procedure SaveDataSettingsAs(AFileName: string);
     procedure LoadDataSettings;
@@ -588,10 +591,17 @@ begin
   end;
 end;
 
+procedure TFormMain.ActionDetrendAlgebraicExecute(Sender: TObject);
+begin
+  if Length(FFitAtPoints[FitColumnType.x]) > 0 then begin
+    Detrend(True);
+  end;
+end;
+
 procedure TFormMain.ActionDetrendExecute(Sender: TObject);
 begin
   if Length(FFitAtPoints[FitColumnType.x]) > 0 then begin
-    Detrend;
+    Detrend(False);
   end;
 end;
 
@@ -722,7 +732,7 @@ begin
     (AAction as TAction).Enabled := (Length(FModelData[FitColumnType.x]) > 0) and not FCalculationInProgress;
   end
   else
-  if AAction = ActionDetrend then begin
+  if (AAction = ActionDetrend) or (AAction = ActionDetrendAlgebraic) then begin
     (AAction as TAction).Enabled := (Length(FFitAtPoints[FitColumnType.x]) > 0) and not FCalculationInProgress;
   end
   else
@@ -1023,7 +1033,7 @@ begin
   OpenFile(ExpandFileName(FFileNameParamStr));
 end;
 
-procedure TFormMain.Detrend;
+procedure TFormMain.Detrend(AlgebraicOnly: Boolean);
 var
   X, Xprev: Double;
   Xarray, Yarray: TDoubleArray;
@@ -1042,7 +1052,10 @@ begin
       CalcError('Internal error: model data must be sorted');
 
     Xarray[I] := X;
-    Yarray[I] := FFitAtPoints[FitColumnType.yObserved][I] - FFitAtPoints[FitColumnType.yFit][I];
+    if AlgebraicOnly then
+      Yarray[I] := FFitAtPoints[FitColumnType.yObserved][I] - FFitAtPoints[FitColumnType.yFitAlgebraic][I]
+    else
+      Yarray[I] := FFitAtPoints[FitColumnType.yObserved][I] - FFitAtPoints[FitColumnType.yFit][I];
 
     Xprev := X;
   end;
@@ -1545,6 +1558,7 @@ begin
               FModelData[FitColumnType.yErrors],
               FFitAtPoints[FitColumnType.yFit],
               FFitAtPoints[FitColumnType.yErrors],
+              FFitAtPoints[FitColumnType.yFitAlgebraic],
               FFitFormula, FFitInfo);
       for I := 0 to Length(FModelData[FitColumnType.x]) - 1 do begin
         FModelData[FitColumnType.x][I] := FModelData[FitColumnType.x][I] + meanTime;

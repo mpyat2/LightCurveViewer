@@ -10,7 +10,7 @@ uses
   typ, Graphics, contnrs;
 
 type
-  FitColumnType = (x, yFit, yErrors, yObserved);
+  FitColumnType = (x, yFit, yErrors, yFitAlgebraic, yObserved);
 
 //type
 //  TColorArray = array of TColor;

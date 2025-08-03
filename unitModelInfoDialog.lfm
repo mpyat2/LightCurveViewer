@@ -7,9 +7,8 @@ object FormInfo: TFormInfo
   Caption = 'Approximation'
   ClientHeight = 480
   ClientWidth = 840
-  OnCreate = FormCreate
   Position = poMainFormCenter
-  LCLVersion = '3.2.0.0'
+  OnCreate = FormCreate
   object PanelButtons: TPanel
     Left = 0
     Height = 45
@@ -126,13 +125,13 @@ object FormInfo: TFormInfo
     Top = 47
     object ActionCopyTable: TAction
       Caption = '&Copy'
-      OnExecute = ActionCopyTableExecute
       ShortCut = 16451
+      OnExecute = ActionCopyTableExecute
     end
     object ActionSelectAll: TAction
       Caption = 'Select &All'
-      OnExecute = ActionSelectAllExecute
       ShortCut = 16449
+      OnExecute = ActionSelectAllExecute
     end
   end
   object PopupMenu1: TPopupMenu

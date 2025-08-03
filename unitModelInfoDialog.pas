@@ -141,7 +141,7 @@ begin
   DrawGridModelData.ColCount := DrawGridModelData.FixedCols + 3;
   DrawGridModelData.RowCount := DrawGridModelData.FixedRows + Length(FContiniousFit[FitColumnType.x]);
 
-  DrawGridModelPoints.ColCount := DrawGridModelData.FixedCols + 5;
+  DrawGridModelPoints.ColCount := DrawGridModelData.FixedCols + 6;
   DrawGridModelPoints.RowCount := DrawGridModelData.FixedRows + Length(FFitAtPoints[FitColumnType.x]);
 end;
 
@@ -172,7 +172,10 @@ begin
       Result := 'Observed Magnitude'
     else
     if C = Grid.FixedCols + 4 then
-      Result := 'Observed - Calculated';
+      Result := 'Observed - Calculated'
+    else
+    if C = Grid.FixedCols + 5 then
+      Result := 'Calc. Algebraic Trend'
   end
   else begin
     Idx := R - Grid.FixedRows;
@@ -190,7 +193,10 @@ begin
         Result := FloatToStr(DataArray[FitColumnType.yObserved][Idx])
       else
       if (C = Grid.FixedCols + 4) and (DataArray[FitColumnType.yObserved] <> nil) then
-        Result := FloatToStr(DataArray[FitColumnType.yObserved][Idx] - DataArray[FitColumnType.yFit][Idx]);
+        Result := FloatToStr(DataArray[FitColumnType.yObserved][Idx] - DataArray[FitColumnType.yFit][Idx])
+      else
+      if (C = Grid.FixedCols + 5) and (DataArray[FitColumnType.yFitAlgebraic] <> nil) then
+        Result := FloatToStr(DataArray[FitColumnType.yFitAlgebraic][Idx]);
     end;
   end;
 end;
