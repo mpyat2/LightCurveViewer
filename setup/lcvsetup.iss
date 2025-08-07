@@ -43,6 +43,9 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 Source: "..\out\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+#ifdef lcv64
+Source: "..\out\sincosF77.dll"; DestDir: "{app}"; Flags: ignoreversion
+#endif
 Source: "..\testdata\*"; DestDir: "{userdocs}\lcv_testdata"; Flags: ignoreversion
 Source: "..\LICENSE"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\doc\LightCurveViewer.pdf"; DestDir: "{app}\doc"; Flags: ignoreversion

@@ -9,6 +9,10 @@ interface
 uses
   Classes, SysUtils, math, lcvtypes;
 
+{$IFDEF WIN64}
+procedure sincos(var a: Double; var s: Double; var c: Double); cdecl; external 'sincosF77.dll' name 'sincos_';
+{$ENDIF}
+
 type
   //PDCDFTparameters = ^TDCDFTparameters;
   TDCDFTparameters = record
@@ -181,6 +185,7 @@ var
   N, Nrest: Integer;
   NofParameters: Integer;
   angle: Double;
+  a_param: Double;
   //tanAd2, tanAd2squared: Double;
   //TArbFloatArray for compatibility with NumLib
   a: TArbFloatArray;
@@ -250,8 +255,9 @@ begin
           //tanAd2squared := tanAd2 * tanAd2;
           //a[Idx]     := ((1 - tanAd2squared) / (1 + tanAd2squared));
           //a[Idx + 1] := (2.0 * tanAd2 / (1 + tanAd2squared));
-          // V3: math.sincos
-          sincos(III * angle, a[Idx + 1], a[Idx]);
+          // V3: math.sincos or Fortran77 version if DLL is included (Windows 64 only)
+          a_param := III * angle; // all DLL function parameters are 'var'
+          sincos(a_param, a[Idx + 1], a[Idx]);
         end;
       end;
 

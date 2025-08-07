@@ -2,6 +2,8 @@ unit floattextform;
 
 {$mode ObjFPC}{$H+}
 
+{$include lcv.inc}
+
 interface
 
 uses
