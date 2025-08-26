@@ -9,6 +9,7 @@ object FormAbout: TFormAbout
   ClientHeight = 339
   ClientWidth = 640
   Position = poMainFormCenter
+  LCLVersion = '4.0.0.4'
   OnCreate = FormCreate
   object Panel1: TPanel
     Left = 0
@@ -21,7 +22,7 @@ object FormAbout: TFormAbout
     TabOrder = 1
     object Memo1: TMemo
       Left = 1
-      Height = 272
+      Height = 223
       Top = 1
       Width = 638
       Align = alClient
@@ -30,10 +31,11 @@ object FormAbout: TFormAbout
     end
     object LabelVersion: TLabel
       Left = 1
-      Height = 15
-      Top = 273
+      Height = 64
+      Top = 224
       Width = 638
       Align = alBottom
+      AutoSize = False
       Caption = ' Version'
     end
   end

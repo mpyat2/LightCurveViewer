@@ -247,6 +247,9 @@ uses
 { TFormMain }
 
 procedure TFormMain.FormCreate(Sender: TObject);
+var
+  I: Integer;
+  S: string;
 begin
   FFoldedDataColorRegions := TFoldedRegions.Create;
   CloseFile;
@@ -257,9 +260,13 @@ begin
   except
     // nothing
   end;
-  if ParamCount > 0 then begin
-    FFileNameParamStr := ParamStr(1);
-    Application.QueueAsyncCall(@AsyncOpenFile, 0);
+  for I := 1 to ParamCount do begin
+    S := ParamStr(I);
+    if (Length(S) > 0) and (S[1] <> '-') then begin
+      FFileNameParamStr := ParamStr(I);
+      Application.QueueAsyncCall(@AsyncOpenFile, 0);
+      Break;
+    end;
   end;
 end;
 

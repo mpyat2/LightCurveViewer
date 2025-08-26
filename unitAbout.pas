@@ -33,7 +33,11 @@ implementation
 {$R *.lfm}
 
 uses
-  LCLVersion, fileinfo, typ;
+  LCLVersion, fileinfo, typ
+{$IFDEF USE_WINMKL}
+  , fitproc
+{$ENDIF}
+  ;
 
 procedure About;
 var
@@ -68,8 +72,12 @@ begin
   LabelVersion.Caption := '  ' + GetVersionString(ParamStr(0)) +
                           ' | FPC ' + {$I %FPCVERSION%} + ' ' + {$I %FPCTARGETOS%} +
                           ' | LCL ' + LCLVersion +
-                          ' | ' + {$I %DATE%} + ' ' + {$I %TIME%} +
-                          ' | NumLib Float Size = ' + IntToStr(sizeof(typ.ArbFloat));
+                          ' | ' + {$I %DATE%} + ' ' + {$I %TIME%} + ^M^J +
+                          '  NumLib Float Size = ' + IntToStr(sizeof(typ.ArbFloat));
+{$IFDEF USE_WINMKL}
+  LabelVersion.Caption := LabelVersion.Caption + ^M^J +
+                          '  ' + dgels_info;
+{$ENDIF}
   Memo1.Text :=
   ^M^J +
   'Light Curve Viewer by Maksym Yu. Pyatnytskyy'^M^J^M^J +
