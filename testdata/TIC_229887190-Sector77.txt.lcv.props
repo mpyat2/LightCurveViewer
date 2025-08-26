@@ -1,0 +1,27 @@
+[SETTINGS]
+fit.trenddegree=0
+fit.period1=0.487900078064012
+fit.period2=Nan
+fit.period3=Nan
+fit.period4=Nan
+fit.period5=Nan
+fit.trigpolydegree1=20
+fit.trigpolydegree2=0
+fit.trigpolydegree3=0
+fit.trigpolydegree4=0
+fit.trigpolydegree5=0
+periodogram.freqmin=0
+periodogram.freqmax=10
+periodogram.resolution=0.0002
+periodogram.trenddegree=0
+periodogram.trigpolydegree=8
+phaseplot.period=0.487900078064012
+phaseplot.epoch=2460409.52044475
+Yinverted=1
+DataColor=8388736
+ModelColor=65280
+ModelUpLimitColor=255
+ModelDownLimitColor=255
+XTitle=
+YTitle=
+Object=TIC 229887190
