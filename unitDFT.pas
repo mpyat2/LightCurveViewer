@@ -10,7 +10,7 @@ uses
   Classes, SysUtils, math, lcvtypes;
 
 {$IFDEF WIN64}
-procedure sincos(var a: Double; var s: Double; var c: Double); cdecl; external 'sincosF77.dll' name 'sincos_';
+procedure sincos(var a: Double; var s: Double; var c: Double); cdecl; external 'sincos.dll' name 'sincos_';
 {$ENDIF}
 
 type
@@ -268,12 +268,23 @@ begin
         on ex: SleglsException do begin
           case ex.Term of
             2: begin
+                 // there is no unambiguous solution
                  fit_calculated := False;
                end;
             else
               raise;
           end;
         end;
+        on ex: DgelsException do begin
+          if ex.Info > 0 then begin
+            // Parameters are fine but the Least Squares solution could not be calculated.
+            fit_calculated := False;
+          end
+          else // bad parameters
+            raise;
+        end
+        else
+          raise;
       end;
     end;
     if fit_calculated then begin

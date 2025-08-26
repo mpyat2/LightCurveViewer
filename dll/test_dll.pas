@@ -2,7 +2,7 @@
 
 program Test_DLL;
 
-procedure sincos(var a: Double; var s: Double; var c: Double); cdecl; external 'sincosF77.dll' name 'sincos_';
+procedure sincos(var a: Double; var s: Double; var c: Double); cdecl; external 'sincos.dll' name 'sincos_';
 
 var
   a, s, c: Double;

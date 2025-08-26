@@ -21,7 +21,19 @@ type
     property Term: Integer read FTerm;
   end;
 
+  { DgelsException }
+
+  DgelsException = class(Exception)
+  private
+    FInfo: Integer;
+  public
+    constructor Create(const Msg : string; AInfo: Integer);
+    property Info: Integer read FInfo;
+  end;
+
 procedure SleglsError(const Msg: string; Term: Integer);
+
+procedure DgeslError(const Msg: string; Info: Integer);
 
 procedure CalcError(const S: string);
 
@@ -65,16 +77,28 @@ begin
   FTerm := ATerm;
 end;
 
+{ DgelsException }
+
+constructor DgelsException.Create(const Msg: string; AInfo: Integer);
+begin
+  inherited Create(Msg);
+  FInfo := AInfo;
+end;
+
 procedure SleglsError(const Msg: string; Term: Integer);
 begin
   raise SleglsException.Create(Msg, Term);
+end;
+
+procedure DgeslError(const Msg: string; Info: Integer);
+begin
+  raise DgelsException.Create(Msg, Info);
 end;
 
 procedure CalcError(const S: string);
 begin
   raise Exception.Create(S);
 end;
-
 
 function FPUexceptionToString(FPUexception: TFPUException): string;
 begin

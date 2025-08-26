@@ -127,7 +127,7 @@ begin
     SetLength(work, 1);
     dgels(trans, m, n, nrhs, aa[0], lda, solution_vector[0], ldb, work[0], lwork, info);
     if info <> 0 then
-      raise Exception.Create('DGELS workspace query failed, INFO = ' + IntToStr(info));
+      DgeslError('DGELS workspace query failed, INFO = ' + IntToStr(info), info);
 
     lwork := Trunc(work[0]);
     SetLength(work, lwork);
@@ -135,7 +135,7 @@ begin
     // Actual computation
     dgels(trans, m, n, nrhs, aa[0], lda, solution_vector[0], ldb, work[0], lwork, info);
     if info <> 0 then
-      raise Exception.Create('LAPACK/DGELS failed, INFO = ' + IntToStr(info));
+      DgeslError('DGELS failed, INFO = ' + IntToStr(info), info);
 
     // Set the correct length of the solution vector
     SetLength(solution_vector, n);
