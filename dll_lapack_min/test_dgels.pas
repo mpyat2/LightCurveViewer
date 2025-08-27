@@ -8,17 +8,17 @@ type
   PDouble = ^Double;
   PInteger = ^LongInt;
 
-procedure dgels_wrapper(trans: PChar; m, n, nrhs: PInteger;
-                        a: PDouble; lda: PInteger;
-                        b: PDouble; ldb: PInteger;
-                        work: PDouble; lwork, info: PInteger); cdecl;
-                        external 'lapack_min.dll';
+procedure dgels_solve(trans: PChar; 
+                      m, n, nrhs: PInteger;
+                      a: PDouble; lda: PInteger;
+                      b: PDouble; ldb: PInteger;
+                      info: PInteger); cdecl;
+                      external 'lapack_min.dll';
 
 var
-  m, n, nrhs, lda, ldb, lwork, info: LongInt;
+  m, n, nrhs, lda, ldb, info: LongInt;
   a: array[0..5] of Double;   // 3x2 matrix
   b: array[0..2] of Double;   // RHS (3x1)
-  work: array[0..9] of Double; // workspace
   trans: AnsiChar;
   i: Integer;
 
@@ -33,7 +33,6 @@ begin
   nrhs := 1;
   lda := m;
   ldb := m;
-  lwork := 10;
   trans := 'N';
 
   // Column-major storage for A (Fortran-style)
@@ -46,9 +45,7 @@ begin
   b[2] := 2;
 
   info := 0;
-
-  dgels_wrapper(@trans, @m, @n, @nrhs, @a[0], @lda,
-                @b[0], @ldb, @work[0], @lwork, @info);
+  dgels_solve(@trans, @m, @n, @nrhs, @a[0], @lda, @b[0], @ldb, @info);
 
   if info = 0 then
   begin

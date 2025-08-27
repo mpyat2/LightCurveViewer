@@ -67,20 +67,18 @@ end;
 
 {$IFDEF USE_WINMKL}
 type
-  TDGELS = procedure(
+  TDGELS_SOLVE = procedure(
     var trans: AnsiChar;
     var m, n, nrhs: Integer;
     var a: Double;
     var lda: Integer;
     var b: Double;
     var ldb: Integer;
-    var work: Double;
-    var lwork: Integer;
     var info: Integer
 ); cdecl;
 
 var
-  dgels: TDGELS;
+  dgels_solve: TDGELS_SOLVE;
 {$ENDIF}
 
 // The input array (a) must be allocated and initialized.
@@ -90,16 +88,17 @@ procedure PolyFitSolution(const a: TArbFloatArray;              // 'Design matri
                           var solution_vector: TArbFloatArray); // Solution
 var
 {$IFDEF USE_WINMKL}
-  work: TArbFloatArray;
   aa: TArbFloatArray;
-  m, n, nrhs, lda, ldb, info, lwork: LongInt;
+  m, n, nrhs, lda, ldb, info: LongInt;
   trans: AnsiChar;
+  CW8087: WORD;
+  MXCSR: DWORD;
 {$ENDIF}
   ndata: Integer;
   term: Integer;
 begin
 {$IFDEF USE_WINMKL}
-  if Assigned(dgels) then begin
+  if Assigned(dgels_solve) then begin
     // See https://www.netlib.org/lapack/double/dgels.f
     // All DGELS parameters are 'var'; we need a copy of them.
     // Solving A * X = B.
@@ -109,7 +108,7 @@ begin
     n := NofParameters;
     // Must be m >= n
     if (m < 1) or (n < 1) or (n > m) then
-      raise Exception.Create('DGELS: invalid parameters');
+      raise Exception.Create('DGELS_SOLVE: invalid parameters');
     trans := 'N';
     nrhs := 1;
     lda := m;
@@ -122,20 +121,16 @@ begin
     SetLength(solution_vector, m);
     Move(Yarray[0], solution_vector[0], m * SizeOf(Double));
 
-    // Workspace query
-    lwork := -1;
-    SetLength(work, 1);
-    dgels(trans, m, n, nrhs, aa[0], lda, solution_vector[0], ldb, work[0], lwork, info);
-    if info <> 0 then
-      DgeslError('DGELS workspace query failed, INFO = ' + IntToStr(info), info);
-
-    lwork := Trunc(work[0]);
-    SetLength(work, lwork);
-
-    // Actual computation
-    dgels(trans, m, n, nrhs, aa[0], lda, solution_vector[0], ldb, work[0], lwork, info);
-    if info <> 0 then
-      DgeslError('DGELS failed, INFO = ' + IntToStr(info), info);
+    CW8087 := Get8087CW;
+    MXCSR := GetMXCSR;
+    try
+      dgels_solve(trans, m, n, nrhs, aa[0], lda, solution_vector[0], ldb, info);
+      if info <> 0 then
+        DgeslError('DGELS_SOLVE failed, INFO = ' + IntToStr(info), info);
+    finally
+      Set8087CW(CW8087);
+      SetMXCSR(MXCSR);
+    end;
 
     // Set the correct length of the solution vector
     SetLength(solution_vector, n);
@@ -560,8 +555,7 @@ begin
   PolyFitSolutionToFormula(ATrendDegree, ATrigPolyDegrees, AFrequencies, solution_vector, solution_vector_errors, Formula, Info);
 end;
 
-{$IFDEF USE_WINMKL}
-procedure TestDGELS;
+procedure TestLS;
 var
   a, b, x: TArbFloatArray;
   m, n, i, j: Integer;
@@ -569,7 +563,7 @@ var
   sum: ArbFloat;
   Log: TextFile;
 begin
-  AssignFile(Log, '$$$test-dgels.txt');
+  AssignFile(Log, '$$$test-ls.txt');
   Rewrite(Log);
   try
     m := 4;
@@ -662,89 +656,52 @@ begin
   end;
 end;
 
-const
-  //MKL_DLLs: array[0..3] of string = (
-  //  'mkl_rt.2.dll',
-  //  'mkl_core.2.dll',
-  //  'mkl_sequential.2.dll',
-  //  'mkl_def.2.dll'
-  //);
-  MKL_DLLs: array[0..0] of string = (
-    'lapack_min.dll'
-  );
-
-function CheckDLL(const Name: string): Boolean;
-var
-  h: THandle;
-begin
-  h := LoadLibrary(PChar(Name));
-  if h <> 0 then
-    FreeLibrary(h);
-  Result := h <> 0;
-end;
-
-function CheckMKL: Boolean;
-var
-  I: Integer;
-begin
-  Result := False;
-  for I := 0 to Length(MKL_DLLs) - 1 do begin
-    if not CheckDLL(MKL_DLLs[I]) then
-      Exit;
-  end;
-  Result := True;
-end;
-
+{$IFDEF USE_WINMKL}
 function dgels_info: string;
 begin
-  if Assigned(dgels) then
+  if Assigned(dgels_solve) then
     Result := 'Intel oneMKL DGELS routine is active.'
   else
     Result := 'The program was compiled with Intel oneMKL DGELS support, but an initialization error occurred.'
 end;
 
-//const
-//  MKL_THREADING_SEQUENTIAL = 1;
-//
-//type
-//  TMKL_SET_THREADING_LAYER = function(code: Integer): Integer; cdecl;
-//  TMKL_SET_NUM_THREADS = procedure(n: Integer); cdecl;
-//  TMKL_SET_DYNAMIC = procedure(flag: Integer); cdecl;
-
 var
   hMKL: THandle;
-  //MKL_Set_Threading_Layer: TMKL_SET_THREADING_LAYER;
-  //MKL_Set_Num_Threads: TMKL_SET_NUM_THREADS;
-  //MKL_Set_Dynamic: TMKL_SET_DYNAMIC;
-  //CurrentLayer: Integer;
+{$ENDIF}
+
+var
   S: string;
   I: Integer;
 
 initialization
-  dgels := nil;
+{$IFDEF USE_WINMKL}
+  dgels_solve := nil;
   // We use our own threading!
   // Check for all required DLLs
-  if CheckMKL then begin
-    hMKL := LoadLibrary(PChar(MKL_DLLs[0]));
-    if hMKL <> 0 then begin
-      //MKL_Set_Threading_Layer := TMKL_SET_THREADING_LAYER(GetProcAddress(hMKL, 'MKL_Set_Threading_Layer'));
-      //MKL_Set_Num_Threads     := TMKL_SET_NUM_THREADS(GetProcAddress(hMKL, 'MKL_Set_Num_Threads'));
-      //MKL_set_dynamic         := TMKL_SET_DYNAMIC(GetProcAddress(hMKL, 'MKL_Set_Dynamic'));
-      //if Assigned(MKL_Set_Threading_Layer) and Assigned(mkl_set_num_threads) and Assigned(mkl_set_dynamic) then begin
-      //  CurrentLayer := MKL_Set_Threading_Layer(MKL_THREADING_SEQUENTIAL);
-      //  MKL_Set_Num_Threads(1);
-      //  MKL_Set_Dynamic(0);
-      //  dgels := TDGELS(GetProcAddress(hMKL, 'dgels_'));
-      //end;
-      dgels := TDGELS(GetProcAddress(hMKL, 'dgels_wrapper'));
+  hMKL := SafeLoadLibrary('lapack_min.dll');
+  if hMKL <> 0 then begin
+    dgels_solve := TDGELS_SOLVE(GetProcAddress(hMKL, 'dgels_solve'));
+    if not Assigned(dgels_solve) then begin
+      UnloadLibrary(hMKL);
+      hMKL := 0;
     end;
   end;
+{$ENDIF}
 
   for I := 1 to ParamCount do begin
     S := ParamStr(I);
-    if S = '-test-dgels' then begin
-      TestDGELS;
+    if S = '--test-ls' then begin
+      TestLS;
+      Break;
     end;
+  end;
+
+{$IFDEF USE_WINMKL}
+finalization
+  if hMKL <> 0 then begin
+    dgels_solve := nil;
+    UnloadLibrary(hMKL);
+    hMKL := 0;
   end;
 {$ENDIF}
 end.
