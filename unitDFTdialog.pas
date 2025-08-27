@@ -106,28 +106,48 @@ const
 
 procedure PlotDFTresult(const Caption: string; const frequencies, power: TDoubleArray; ApplyPhasePlotParamsProc: TApplyPhasePlotParams);
 var
-  InvalidValuesFound: Boolean;
+  NaNValuesFound: Boolean;
+  NegValuesFound: Boolean;
+  AddFreq: Boolean;
+  Pow: Double;
   F: TFormDFTDialog;
   I: Integer;
+  Msg: string;
 begin
   F := TFormDFTDialog.Create(Application);
   try
     F.Caption := Caption;
-    InvalidValuesFound := False;
+    NaNValuesFound := False;
+    NegValuesFound := False;
     for I := 0 to Length(frequencies) - 1 do begin
       if (I > 0) and (frequencies[I] < frequencies[I - 1]) then
         raise Exception.Create('PlotDFTresult: Internal error: "frequencies" must be sorted.');
-      if (not IsNan(power[I])) and (power[I] >= 0.0) then
-        F.Chart1LineSeries1.AddXY(frequencies[I], power[I])
-      else begin
-        // Indicate invalid values (nan) for the non-zero frequencies only.
-        // Zero-frequency is a special case: this is a common start value and is always ignored.
-        if frequencies[I] <> 0.0 then
-          InvalidValuesFound := True;
+      AddFreq := True;
+      Pow := power[I];
+      if IsNan(Pow) then begin
+        if frequencies[I] = 0.0 then begin
+          // Zero-frequency is a special case: this is a common start value and is always ignored.
+          AddFreq := False;
+        end
+        else begin
+          NaNValuesFound := True;
+        end;
+      end else
+      if Pow < 0.0 then begin
+        NegValuesFound := True;
+        Pow := 0.0;
       end;
+      if AddFreq then
+        F.Chart1LineSeries1.AddXY(frequencies[I], Pow);
     end;
-    if InvalidValuesFound then
-      ShowMessage('The result could not be calculated for some non-zero frequencies');
+    if NaNValuesFound or NegValuesFound then begin
+      Msg := 'The result could not be calculated for some non-zero frequencies';
+      if NaNValuesFound then
+        Msg := Msg + ^M^J + 'NaN values found for non-zero frequencies';
+      if NegValuesFound then
+        Msg := Msg + ^M^J + 'Negative Power values found: replaced by zeros';
+      ShowMessage(Msg);
+    end;
 
     F.InitMaxima;
 
@@ -655,7 +675,7 @@ begin
     Y := Chart1LineSeries1.GetYValue(I);
     Yprev := Chart1LineSeries1.GetYValue(I - 1);
     Ynext := Chart1LineSeries1.GetYValue(I + 1);
-    if (Y > Yprev) and (Y >= Ynext) then begin
+    if (not isNAN(Y)) and (not isNAN(Yprev) and (not isNAN(Ynext))) and (Y > Yprev) and (Y >= Ynext) then begin
       FmaximaX[N] := Chart1LineSeries1.GetXValue(I);
       FmaximaY[N] := Y;
       FmaximaN[N] := I;
