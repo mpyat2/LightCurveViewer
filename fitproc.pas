@@ -456,7 +456,12 @@ begin
 
   SetLength(Errors, Length(beta));
   for Idx := 0 to n - 1 do begin
-    Errors[Idx] := Sqrt(XTXI[Idx * n + Idx]); // Square roots of diagonal elements
+    // Square roots of diagonal elements
+    TempV := XTXI[Idx * n + Idx];
+    if not IsZero(TempV) then
+      Errors[Idx] := Sqrt(XTXI[Idx * n + Idx])
+    else
+      Errors[Idx] := 0.0;
   end;
 end;
 

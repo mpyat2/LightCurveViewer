@@ -184,10 +184,10 @@ var
   temp_mags: TDoubleArray;
   N, Nrest: Integer;
   NofParameters: Integer;
-  angle: Double;
-  a_param: Double;
-  //tanAd2, tanAd2squared: Double;
-  //TArbFloatArray for compatibility with NumLib
+  //angle, a_param: Double;
+  angles: TDoubleArray;
+  sin_theta, cos_theta, sin_prev, cos_prev, sin_curr, cos_curr, sin_next, cos_next: Double;
+  // TArbFloatArray for compatibility with NumLib. Not needed in WIN64
   a: TArbFloatArray;
   magArbFloatArray: TArbFloatArray;
   fit: TArbFloatArray;
@@ -228,6 +228,7 @@ begin
   end;
 
   SetLength(fit, ndata);
+  SetLength(angles, ndata);
 
   Nrest := Fn_freq;
   for I := 0 to Fn_freq - 1 do begin
@@ -236,28 +237,66 @@ begin
       Exit;
     end;
 
+    // Furthes optimization of sincos calculation is possible!
     nu := Flowfreq + Ffreq_step * I;
 
     Fpartial_frequencies[I] := nu;
     fit_calculated := False;
     if nu > 0.0 then begin
       // Trigonometric polinomial
-      for II := 0 to ndata - 1 do begin
-        angle := 2 * Pi * nu * times[II];
-        for III := 1 to FTrigPolyDegree do begin
-          Idx := II * NofParameters + 1 + FTrendDegree + 2 * (III - 1);
 
-          // V0: Sin, Cos
-          //a[Idx]     := Cos(III * angle);
-          //a[Idx + 1] := Sin(III * angle);
-          // V1: Sin, Cos via Tan
-          //tanAd2 := Math.tan(III * angle / 2.0);
-          //tanAd2squared := tanAd2 * tanAd2;
-          //a[Idx]     := ((1 - tanAd2squared) / (1 + tanAd2squared));
-          //a[Idx + 1] := (2.0 * tanAd2 / (1 + tanAd2squared));
-          // V3: math.sincos or Fortran77 version if DLL is included (Windows 64 only)
-          a_param := III * angle; // all DLL function parameters are 'var'
-          sincos(a_param, a[Idx + 1], a[Idx]);
+      // Old algorithm
+      //for II := 0 to ndata - 1 do begin
+      //  angle := 2 * Pi * nu * times[II];
+      //  for III := 1 to FTrigPolyDegree do begin
+      //    Idx := II * NofParameters + 1 + FTrendDegree + 2 * (III - 1);
+      //    a_param := III * angle; // all DLL function parameters are 'var'
+      //    sincos(a_param, a[Idx + 1], a[Idx]);
+      //  end;
+      //end;
+
+      // New algorithm, based on the fact that:
+      // \sin(k\theta) = 2\cos(\theta)\sin((k-1)\theta) - \sin((k-2)\theta)
+      // \cos(k\theta) = 2\cos(\theta)\cos((k-1)\theta) - \cos((k-2)\theta)
+      // (Thanks to Copylot)
+
+      // Calculate angles for all the data points.
+      for II := 0 to ndata - 1 do begin
+        angles[II] := 2 * Pi * nu * times[II];
+      end;
+
+      if FTrigPolyDegree = 1 then begin
+        // Special case to avoid excessive operations
+        for II := 0 to ndata - 1 do begin
+          Idx := II * NofParameters + 1 + FTrendDegree;
+          sincos(angles[II], a[Idx + 1], a[Idx]);
+        end
+      end
+      else begin
+        // Multi-harmonic case
+        for II := 0 to ndata - 1 do begin
+          sincos(angles[II], sin_theta, cos_theta);
+
+          // Initialize recurrence
+          sin_prev := 0.0;
+          sin_curr := sin_theta;
+          cos_prev := 1.0;
+          cos_curr := cos_theta;
+
+          for III := 1 to FTrigPolyDegree do begin
+            Idx := II * NofParameters + 1 + FTrendDegree + 2 * (III - 1);
+            a[Idx]     := cos_curr;
+            a[Idx + 1] := sin_curr;
+
+            // Recurrence step
+            sin_next := 2.0 * cos_theta * sin_curr - sin_prev;
+            cos_next := 2.0 * cos_theta * cos_curr - cos_prev;
+
+            sin_prev := sin_curr;
+            sin_curr := sin_next;
+            cos_prev := cos_curr;
+            cos_curr := cos_next;
+          end;
         end;
       end;
 
@@ -321,7 +360,7 @@ var
   meanTime: Double;
   ndata: Integer;
   I, II, Idx: Integer;
-  // For compatibility with NumLib
+  // For compatibility with NumLib. Not needed in WIN64
   a: TArbFloatArray;
   magArbFloatArray: TArbFloatArray;
   fit: TArbFloatArray;

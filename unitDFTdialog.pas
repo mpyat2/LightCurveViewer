@@ -132,10 +132,13 @@ begin
         else begin
           NaNValuesFound := True;
         end;
-      end else
-      if Pow < 0.0 then begin
-        NegValuesFound := True;
-        Pow := 0.0;
+      end else begin
+        if IsZero(Pow) then
+          Pow := 0.0;
+        if Pow < 0.0 then begin
+          NegValuesFound := True;
+          Pow := 0.0;
+        end;
       end;
       if AddFreq then
         F.Chart1LineSeries1.AddXY(frequencies[I], Pow);
