@@ -44,7 +44,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 [Files]
 Source: "..\out\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
 #ifdef lcv64
-Source: "..\out\sincos.dll"; DestDir: "{app}"; Flags: ignoreversion
+;Source: "..\out\sincos.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\out\lapack_min.dll"; DestDir: "{app}"; Flags: ignoreversion
 #endif
 Source: "..\testdata\*"; DestDir: "{userdocs}\lcv_testdata"; Flags: ignoreversion

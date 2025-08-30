@@ -9,8 +9,13 @@ interface
 uses
   Classes, SysUtils, math, lcvtypes;
 
-{$IFDEF WIN64}
-procedure sincos(var a: Double; var s: Double; var c: Double); cdecl; external 'sincos.dll' name 'sincos_';
+{$IFNDEF FAST_SIN_COS}
+// If FAST_SIN_COS defined, there is no need to use the superfast sincos from
+// the external DLL, because sinuses and cosines are calculated once for the
+// data set
+  {$IFDEF WIN64}
+  procedure sincos(var a: Double; var s: Double; var c: Double); cdecl; external 'sincos.dll' name 'sincos_';
+  {$ENDIF}
 {$ENDIF}
 
 type
@@ -184,9 +189,13 @@ var
   temp_mags: TDoubleArray;
   N, Nrest: Integer;
   NofParameters: Integer;
-  //angle, a_param: Double;
-  angles: TDoubleArray;
+{$IFDEF FAST_SIN_COS}
+  delta_sinuses, delta_cosines: TDoubleArray;
+  current_sinuses, current_cosines: TDoubleArray;
+  curr_sin, curr_cos: Double;
   sin_theta, cos_theta, sin_prev, cos_prev, sin_curr, cos_curr, sin_next, cos_next: Double;
+{$ENDIF}
+  angle: Double;
   // TArbFloatArray for compatibility with NumLib. Not needed in WIN64
   a: TArbFloatArray;
   magArbFloatArray: TArbFloatArray;
@@ -228,7 +237,18 @@ begin
   end;
 
   SetLength(fit, ndata);
-  SetLength(angles, ndata);
+
+{$IFDEF FAST_SIN_COS}
+  SetLength(delta_sinuses, ndata);
+  SetLength(delta_cosines, ndata);
+  current_sinuses := nil;
+  current_cosines := nil;
+
+  for II := 0 to ndata - 1 do begin
+    angle := 2 * Pi * Ffreq_step * times[II];
+    sincos(angle, delta_sinuses[II], delta_cosines[II]);
+  end;
+{$ENDIF}
 
   Nrest := Fn_freq;
   for I := 0 to Fn_freq - 1 do begin
@@ -237,7 +257,6 @@ begin
       Exit;
     end;
 
-    // Furthes optimization of sincos calculation is possible!
     nu := Flowfreq + Ffreq_step * I;
 
     Fpartial_frequencies[I] := nu;
@@ -245,37 +264,47 @@ begin
     if nu > 0.0 then begin
       // Trigonometric polinomial
 
-      // Old algorithm
-      //for II := 0 to ndata - 1 do begin
-      //  angle := 2 * Pi * nu * times[II];
-      //  for III := 1 to FTrigPolyDegree do begin
-      //    Idx := II * NofParameters + 1 + FTrendDegree + 2 * (III - 1);
-      //    a_param := III * angle; // all DLL function parameters are 'var'
-      //    sincos(a_param, a[Idx + 1], a[Idx]);
-      //  end;
-      //end;
+{$IFDEF FAST_SIN_COS}
+      // New algorithm, based on the fact that:
+      // sin(a+b) = sin(a)*cos(b) + cos(a)*sin(b)
+      // cos(a+b) = cos(a)*cos(b) - sin(a)*sin(b)
+
+      if current_sinuses = nil then begin
+        // Calculate sinuses, cosines once at the beginning
+        SetLength(current_sinuses, ndata);
+        SetLength(current_cosines, ndata);
+        for II := 0 to ndata - 1 do begin
+          angle := 2 * Pi * nu * times[II];
+          sincos(angle, current_sinuses[II], current_cosines[II]);
+        end;
+      end else begin
+        // Then use the trigonometric formulas
+        for II := 0 to ndata - 1 do begin
+          curr_sin := current_sinuses[II] * delta_cosines[II] + current_cosines[II] * delta_sinuses[II];
+          curr_cos := current_cosines[II] * delta_cosines[II] - current_sinuses[II] * delta_sinuses[II];
+          current_sinuses[II] := curr_sin;
+          current_cosines[II] := curr_cos;
+        end;
+      end;
 
       // New algorithm, based on the fact that:
       // \sin(k\theta) = 2\cos(\theta)\sin((k-1)\theta) - \sin((k-2)\theta)
       // \cos(k\theta) = 2\cos(\theta)\cos((k-1)\theta) - \cos((k-2)\theta)
       // (Thanks to Copylot)
 
-      // Calculate angles for all the data points.
-      for II := 0 to ndata - 1 do begin
-        angles[II] := 2 * Pi * nu * times[II];
-      end;
-
       if FTrigPolyDegree = 1 then begin
         // Special case to avoid excessive operations
         for II := 0 to ndata - 1 do begin
           Idx := II * NofParameters + 1 + FTrendDegree;
-          sincos(angles[II], a[Idx + 1], a[Idx]);
+          a[Idx + 1] := current_sinuses[II];
+          a[Idx]     := current_cosines[II];
         end
       end
       else begin
         // Multi-harmonic case
         for II := 0 to ndata - 1 do begin
-          sincos(angles[II], sin_theta, cos_theta);
+          sin_theta := current_sinuses[II];
+          cos_theta := current_cosines[II];
 
           // Initialize recurrence
           sin_prev := 0.0;
@@ -299,6 +328,16 @@ begin
           end;
         end;
       end;
+{$ELSE}
+      // Old algorithm
+      for II := 0 to ndata - 1 do begin
+        for III := 1 to FTrigPolyDegree do begin
+          Idx := II * NofParameters + 1 + FTrendDegree + 2 * (III - 1);
+          angle := III * 2 * Pi * nu * times[II];
+          sincos(angle, a[Idx + 1], a[Idx]);
+        end;
+      end;
+{$ENDIF}
 
       try
         PolyFit(a, magArbFloatArray, FTrendDegree, FTrigPolyDegree, fit);
