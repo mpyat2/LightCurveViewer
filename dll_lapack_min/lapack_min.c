@@ -34,3 +34,27 @@ void dgels_solve(const char *trans,
     // Step 4: Cleanup
     free(work);
 }
+
+// Invert an n x n matrix A (row-major) in place using Intel MKL LAPACKE.
+// Returns 0 on success; otherwise returns the LAPACK info code.
+// On singular matrices, returns k>0 where U(k,k)=0 after LU factorization.
+__declspec(dllexport)
+int invert_matrix(double *A, MKL_INT n) {
+    if (!A || n <= 0) return -1;
+
+    MKL_INT info = 0;
+    MKL_INT *ipiv = (MKL_INT *)malloc(sizeof(MKL_INT) * n);
+    if (!ipiv) return -100;
+
+    // 1) LU factorization: A = P * L * U  (overwrites A)
+    info = LAPACKE_dgetrf(LAPACK_ROW_MAJOR, n, n, A, n, ipiv);
+    if (info != 0) {  // info < 0: illegal arg; info > 0: singular matrix
+        free(ipiv);
+        return (int)info;
+    }
+
+    // 2) Compute inverse from LU factors (overwrites A with A^{-1})
+    info = LAPACKE_dgetri(LAPACK_ROW_MAJOR, n, A, n, ipiv);
+    free(ipiv);
+    return (int)info; // 0 on success; >0 if U has zero on diagonal
+}

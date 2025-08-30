@@ -13,14 +13,12 @@ uses
 
 // It this vestion of PolyFit, the input array (a) must be allocated and
 // initialized. fit must be allocated.
-// Input and output arrays here are of the TArbFloatArray type for compatibility
-// with NumLib.
 // This version of PolyFit is used in DFT.
-procedure PolyFit(const a: TArbFloatArray;      // 'Design matrix' (independent variables)
-                  const Yarray: TArbFloatArray; // Observed values
-                  ATrendDegree: Integer;        // Degree of the algebraic polynomial
-                  ATrigPolyDegree: Integer;     // Degree of the (single) trigonometric polynomial
-                  var fit: TArbFloatArray);     // Approximated values of the observations
+procedure PolyFit(const a: TDoubleArray;      // 'Design matrix' (independent variables)
+                  const Yarray: TDoubleArray; // Observed values
+                  ATrendDegree: Integer;      // Degree of the algebraic polynomial
+                  ATrigPolyDegree: Integer;   // Degree of the (single) trigonometric polynomial
+                  var fit: TDoubleArray);     // Approximated values of the observations
 
 procedure PolyFit(const Xarray: TDoubleArray;
                   const Yarray: TDoubleArray;
@@ -39,17 +37,53 @@ procedure PolyFit(const Xarray: TDoubleArray;
 
 function CalcResidualSquared(const Observations, Model: TDoubleArray): Double;
 
-{$IFDEF USE_WINMKL}
-function dgels_info: string;
-{$ENDIF}
-
 implementation
 
 uses
-{$IFDEF USE_WINMKL}
-  Windows,
-{$ENDIF}
-  math, typ, omv, inv, sle, miscutils, formatutils;
+  math, miscutils, formatutils;
+
+procedure dgels_solve(
+  var trans: AnsiChar;
+  var m, n, nrhs: Integer;
+  var a: Double; var lda: Integer;
+  var b: Double; var ldb: Integer;
+  var info: Integer);
+  cdecl; external 'lapack_min.dll';
+
+function invert_matrix(
+  var a: Double;
+  n: Integer): Integer;
+  cdecl; external 'lapack_min.dll';
+
+procedure TransposeMatrix(
+  const A: array of Double;
+  rows, cols: Integer;
+  var B: array of Double);
+var
+  i, j: Integer;
+begin
+  for i := 0 to rows - 1 do
+    for j := 0 to cols - 1 do
+      B[j * rows + i] := A[i * cols + j];
+end;
+
+procedure MultiplyMatrices(
+  const A, B: array of Double;
+  rowsA, colsA, colsB: Integer;
+  var C: array of Double);
+var
+  i, j, k: Integer;
+  sum: Double;
+begin
+  for i := 0 to rowsA - 1 do
+    for j := 0 to colsB - 1 do
+    begin
+      sum := 0.0;
+      for k := 0 to colsA - 1 do
+        sum += A[i * colsA + k] * B[k * colsB + j];
+      C[i * colsB + j] := sum;
+    end;
+end;
 
 function CalcResidualSquared(const Observations, Model: TDoubleArray): Double;
 var
@@ -65,98 +99,62 @@ begin
   end;
 end;
 
-{$IFDEF USE_WINMKL}
-type
-  TDGELS_SOLVE = procedure(
-    var trans: AnsiChar;
-    var m, n, nrhs: Integer;
-    var a: Double;
-    var lda: Integer;
-    var b: Double;
-    var ldb: Integer;
-    var info: Integer
-); cdecl;
-
-var
-  dgels_solve: TDGELS_SOLVE;
-{$ENDIF}
-
 // The input array (a) must be allocated and initialized.
-procedure PolyFitSolution(const a: TArbFloatArray;              // 'Design matrix' (independent variables)
-                          const Yarray: TArbFloatArray;         // Observations
-                          NofParameters: Integer;               // Number of parameters (independent variables)
-                          var solution_vector: TArbFloatArray); // Solution
+procedure PolyFitSolution(const a: TDoubleArray;              // 'Design matrix' (independent variables)
+                          const Yarray: TDoubleArray;         // Observations
+                          NofParameters: Integer;             // Number of parameters (independent variables)
+                          var solution_vector: TDoubleArray); // Solution
 var
-{$IFDEF USE_WINMKL}
-  aa: TArbFloatArray;
+  aa: TDoubleArray;
   m, n, nrhs, lda, ldb, info: LongInt;
   trans: AnsiChar;
-  CW8087: WORD;
-  MXCSR: DWORD;
-{$ENDIF}
   ndata: Integer;
   term: Integer;
+  CW8087: WORD;
+  MXCSR: DWORD;
 begin
-{$IFDEF USE_WINMKL}
-  if Assigned(dgels_solve) then begin
-    // See https://www.netlib.org/lapack/double/dgels.f
-    // All DGELS parameters are 'var'; we need a copy of them.
-    // Solving A * X = B.
-    // We must transpose the matrix because of the difference between Pascal/Fortran array handling.
-    // Transposing the matrix before computation is more effective than using the DGELS 'T' mode.
-    m := Length(Yarray);
-    n := NofParameters;
-    // Must be m >= n
-    if (m < 1) or (n < 1) or (n > m) then
-      raise Exception.Create('DGELS_SOLVE: invalid parameters');
-    trans := 'N';
-    nrhs := 1;
-    lda := m;
-    ldb := m;
-    // The input matrix and vector get overwritten, so copy them.
-    SetLength(aa, Length(a));
-    // Instead of the direct copy, transpose the matrix.
-    omvtrm(a[0], m, n, n, aa[0], m);
-    // solution_vector provides the right hand side vector (B) at the beginning.
-    SetLength(solution_vector, m);
-    Move(Yarray[0], solution_vector[0], m * SizeOf(Double));
+  // See https://www.netlib.org/lapack/double/dgels.f
+  // All DGELS parameters are 'var'; we need a copy of them.
+  // Solving A * X = B.
+  // We must transpose the matrix because of the difference between Pascal/Fortran array handling.
+  // Transposing the matrix before computation is more effective than using the DGELS 'T' mode.
+  m := Length(Yarray);
+  n := NofParameters;
+  // Must be m >= n
+  if (m < 1) or (n < 1) or (n > m) then
+    raise Exception.Create('DGELS_SOLVE: invalid parameters');
+  trans := 'N';
+  nrhs := 1;
+  lda := m;
+  ldb := m;
+  // The input matrix and vector get overwritten, so copy them.
+  SetLength(aa, Length(a));
+  // Instead of the direct copy, transpose the matrix.
+  TransposeMatrix(a, m, n, aa);
+  // solution_vector provides the right hand side vector (B) at the beginning.
+  SetLength(solution_vector, m);
+  Move(Yarray[0], solution_vector[0], m * SizeOf(Double));
 
-    CW8087 := Get8087CW;
-    MXCSR := GetMXCSR;
-    try
-      dgels_solve(trans, m, n, nrhs, aa[0], lda, solution_vector[0], ldb, info);
-      if info <> 0 then
-        DgeslError('DGELS_SOLVE failed, INFO = ' + IntToStr(info), info);
-    finally
-      Set8087CW(CW8087);
-      SetMXCSR(MXCSR);
-    end;
-
-    // Set the correct length of the solution vector
-    SetLength(solution_vector, n);
-  end else begin
-{$ENDIF}
-    ndata := Length(Yarray);
-    SetLength(solution_vector, NofParameters);
-    // solve for overdetermined matrices
-    slegls(a[0], ndata, NofParameters, NofParameters, Yarray[0], solution_vector[0], term);
-    case term of
-      1: ; // successful completion, the solution vector x is valid
-      2: SleglsError('"slegls" error: ' + IntToStr(term) + ': there is no unambiguous solution because the columns of the matrix are linearly dependant.', Term);
-      3: SleglsError('"slegls" error: ' + IntToStr(term) + ': error in input values: n < 1, or n > m.', Term);
-    else
-      SleglsError('"slegls" error: ' + IntToStr(term), Term);
-    end;
-{$IFDEF USE_WINMKL}
+  CW8087 := Get8087CW;
+  MXCSR := GetMXCSR;
+  try
+    dgels_solve(trans, m, n, nrhs, aa[0], lda, solution_vector[0], ldb, info);
+  finally
+    Set8087CW(CW8087);
+    SetMXCSR(MXCSR);
   end;
-{$ENDIF}
+  if info <> 0 then
+    DgeslError('DGELS_SOLVE failed, INFO = ' + IntToStr(info), info);
+
+  // Set the correct length of the solution vector
+  SetLength(solution_vector, n);
 end;
 
 procedure PolyFitSolutionToFormula(ATrendDegree: Integer;
                                    const ATrigPolyDegrees: TInt5Array;
                                    const AFrequencies: TDouble5Array;
-                                   const solution_vector: TArbFloatArray;
-                                   const solution_vector_errors: TArbFloatArray;
+                                   const solution_vector: TDoubleArray;
+                                   const solution_vector_errors: TDoubleArray;
                                    out Formula: string;
                                    out Info: string);
 var
@@ -211,10 +209,10 @@ begin
 end;
 
 // 'fit' array must be allocated
-procedure CalculateFitAtPoints(const a: TArbFloatArray;
-                               const solution_vector: TArbFloatArray;
+procedure CalculateFitAtPoints(const a: TDoubleArray;
+                               const solution_vector: TDoubleArray;
                                ATrendDegree, ATrigPolyDegree: Integer;
-                               var fit: TArbFloatArray);
+                               var fit: TDoubleArray);
 var
   I, II, Idx, Idx2: Integer;
   NofParameters: Integer;
@@ -236,16 +234,15 @@ end;
 
 // It this vestion of PolyFit, the input array (a) must be allocated and
 // initialized. fit must be allocated.
-// Input and output arrays here are of the TArbFloatArray type for compatibility
 // with NumLib.
 // This version of PolyFit is used in DFT.
-procedure PolyFit(const a: TArbFloatArray;      // 'Design matrix' (independent variables)
-                  const Yarray: TArbFloatArray; // Observed values
-                  ATrendDegree: Integer;        // Degree of the algebraic polynomial
-                  ATrigPolyDegree: Integer;     // Degree of the (single) trigonometric polynomial
-                  var fit: TArbFloatArray);     // Approximated values of the observations
+procedure PolyFit(const a: TDoubleArray;      // 'Design matrix' (independent variables)
+                  const Yarray: TDoubleArray; // Observed values
+                  ATrendDegree: Integer;      // Degree of the algebraic polynomial
+                  ATrigPolyDegree: Integer;   // Degree of the (single) trigonometric polynomial
+                  var fit: TDoubleArray);     // Approximated values of the observations
 var
-  solution_vector: TArbFloatArray;
+  solution_vector: TDoubleArray;
   NofParameters: Integer;
 begin
   NofParameters := 1 + ATrendDegree + ATrigPolyDegree * 2;
@@ -253,12 +250,12 @@ begin
   CalculateFitAtPoints(a, solution_vector, ATrendDegree, ATrigPolyDegree, fit);
 end;
 
-procedure CalculateFitAtPointsExt(const a: TArbFloatArray;
-                                  const solution_vector: TArbFloatArray;
+procedure CalculateFitAtPointsExt(const a: TDoubleArray;
+                                  const solution_vector: TDoubleArray;
                                   ATrendDegree: Integer;
                                   const ATrigPolyDegrees: TInt5Array;
-                                  SigmaSq: ArbFloat;
-                                  const XTXI: TArbFloatArray;
+                                  SigmaSq: Double;
+                                  const XTXI: TDoubleArray;
                                   ndata: Integer;
                                   out fit: TDoubleArray;
                                   out fitError: TDoubleArray;
@@ -317,9 +314,9 @@ procedure CalculateFit(fitXmin, fitXmax, fitXstep: Double;
                        ATrendDegree: Integer;
                        const ATrigPolyDegrees: TInt5Array;
                        const AFrequencies: TDouble5Array;
-                       const solution_vector: TArbFloatArray;
-                       SigmaSq: ArbFloat;
-                       const XTXI: TArbFloatArray;
+                       const solution_vector: TDoubleArray;
+                       SigmaSq: Double;
+                       const XTXI: TDoubleArray;
                        out Xfit: TDoubleArray;
                        out Yfit: TDoubleArray;
                        out YfitErrors: TDoubleArray);
@@ -382,52 +379,49 @@ begin
   end;
 end;
 
-procedure CalcCoefficientErrors(const Xmatrix: TArbFloatArray; // design matrix
-                                const Yvector: TArbFloatArray; // dependent variable
-                                const beta: TArbFloatArray;    // solution vector
-                                m: Integer;                    // number of equations  (rows in Xmatrix)
-                                n: Integer;                    // number of parameters (columns in Xmatrix)
-                                out SigmaSq: ArbFloat;         // Variance of residuals
-                                out XTXI: TArbFloatArray;      // Variance-Covariance Matrix of the Coefficients
-                                out Errors: TArbFloatArray);   // errors of the coefficients
+procedure CalcCoefficientErrors(const Xmatrix: TDoubleArray; // design matrix
+                                const Yvector: TDoubleArray; // dependent variable
+                                const beta: TDoubleArray;    // solution vector
+                                m: Integer;                  // number of equations  (rows in Xmatrix)
+                                n: Integer;                  // number of parameters (columns in Xmatrix)
+                                out SigmaSq: Double;         // Variance of residuals
+                                out XTXI: TDoubleArray;      // Variance-Covariance Matrix of the Coefficients
+                                out Errors: TDoubleArray);   // errors of the coefficients
 var
-  XmatrixTrans: TArbFloatArray;
-  YvectorPredicted: TArbFloatArray;
-  RSS, TempV: ArbFloat;
+  XmatrixTrans: TDoubleArray;
+  YvectorPredicted: TDoubleArray;
+  RSS, TempV: Double;
   C, R, Idx: Integer;
-  term: Integer;
+  info: Integer;
+  CW8087: WORD;
+  MXCSR: DWORD;
 begin
-  Assert(n > 0);
-
-  if (Length(Xmatrix) <> m * n) or (Length(Yvector) <> m) or (Length(beta) <> n) then
+  if (n <= 0) or (Length(Xmatrix) <> m * n) or (Length(Yvector) <> m) or (Length(beta) <> n) then
     CalcError('Cannot calculate coefficients'' errors: invalid parameters');
 
   // Calculate XTXI: Variance-Covariance Matrix
 
   SetLength(XmatrixTrans, Length(Xmatrix));
   // XmatrixTrans is the transposed matrix
-  omvtrm(Xmatrix[0], m, n, n, XmatrixTrans[0], m);
+  TransposeMatrix(Xmatrix, m, n, XmatrixTrans);
 
   SetLength(XTXI, n * n);
   // Mult. the transposed mutrix by the original one
-  omvmmm(XmatrixTrans[0], n, m, m, Xmatrix[0], n, n, XTXI[0], n);
-  // Invert the symmetric XTXI matrix
-  //if n > 1 then begin
-    // invgsy causes ACCESS VIOLATION if n = 1 so, we treat n = 1 as a special case. (invgen works normally even in this extreme case)
-    // also, invgsy causes memory leaks.
-    // invgsy(n, n, XTXI[0], term);
-    // use invgen instead (performance penalty)
-    invgen(n, n, XTXI[0], term);
-    case term of
-      1: ; // successful completion, the solution vector x is valid
-      2: CalcError('"invgsy" error: ' + IntToStr(term) + ': the inverse could not be calculated because the input matrix is (almost) singular.');
-      3: CalcError('"invgsy" error: ' + IntToStr(term) + ': incorrect input data, n < 1.');
-    else
-      CalcError('"invgsy" error: ' + IntToStr(term));
-    end;
-  //end
-  //else
-  //  XTXI[0] := 1 / XTXI[0];
+  MultiplyMatrices(XmatrixTrans, Xmatrix, n, m, n, XTXI);
+  // Invert the XTXI matrix
+  CW8087 := Get8087CW;
+  MXCSR := GetMXCSR;
+  try
+    info := invert_matrix(XTXI[0], n);
+  finally
+    Set8087CW(CW8087);
+    SetMXCSR(MXCSR);
+  end;
+  if info > 0 then
+    CalcError('LAPACKE_dgetrf/LAPACKE_dgetri error: ' + IntToStr(info) + ': matrix is singular.')
+  else
+  if info < 0 then
+    CalcError('LAPACKE_dgetrf/LAPACKE_dgetri error: ' + IntToStr(info) + ': illegal arg or malloc error.');
 
   // Calculate the predicted Y vector
   SetLength(YvectorPredicted, Length(Yvector));
@@ -480,13 +474,12 @@ procedure PolyFit(const Xarray: TDoubleArray;
                   out Formula: string;
                   out Info: string);
 var
-  YarrayArbFloat: TArbFloatArray;
-  a: TArbFloatArray;
-  solution_vector: TArbFloatArray;
-  SigmaSq: ArbFloat;
-  XTXI: TArbFloatArray;
-  solution_vector_errors: TArbFloatArray;
-  nu, angle: ArbFloat;
+  a: TDoubleArray;
+  solution_vector: TDoubleArray;
+  SigmaSq: Double;
+  XTXI: TDoubleArray;
+  solution_vector_errors: TDoubleArray;
+  nu, angle: Double;
   I, II, N, Idx, Idx2: Integer;
   NofParameters: Integer;
   ndata: Integer;
@@ -536,22 +529,17 @@ begin
     end;
   end;
 
-  // ArbFloat can be Extended, so we need a temporary array
-  SetLength(YarrayArbFloat, ndata);
-  for I := 0 to ndata - 1 do
-    YarrayArbFloat[I] := Yarray[I];
-
   if NofParameters = 1 then begin
     // The special 'degenerated' case: a constant.
     // We use Mean to avoid a possible error in PolyFitSolution (also there is no need to use a complicated procedure)
     SetLength(solution_vector, NofParameters);
-    solution_vector[0] := Math.Mean(YarrayArbFloat);
+    solution_vector[0] := Math.Mean(Yarray);
   end
   else begin
-    PolyFitSolution(a, YarrayArbFloat, NofParameters, solution_vector);
+    PolyFitSolution(a, Yarray, NofParameters, solution_vector);
   end;
 
-  CalcCoefficientErrors(a, YarrayArbFloat, solution_vector, ndata, NofParameters, SigmaSq, XTXI, solution_vector_errors);
+  CalcCoefficientErrors(a, Yarray, solution_vector, ndata, NofParameters, SigmaSq, XTXI, solution_vector_errors);
 
   CalculateFitAtPointsExt(a, solution_vector, ATrendDegree, ATrigPolyDegrees, SigmaSq, XTXI, ndata, FitAtPoints, FitAtPointsErrors, FitAtPointsAlgebraic);
 
@@ -560,154 +548,5 @@ begin
   PolyFitSolutionToFormula(ATrendDegree, ATrigPolyDegrees, AFrequencies, solution_vector, solution_vector_errors, Formula, Info);
 end;
 
-procedure TestLS;
-var
-  a, b, x: TArbFloatArray;
-  m, n, i, j: Integer;
-  b_test: TArbFloatArray;
-  sum: ArbFloat;
-  Log: TextFile;
-begin
-  AssignFile(Log, '$$$test-ls.txt');
-  Rewrite(Log);
-  try
-    m := 4;
-    n := 3;
-    SetLength(a, m*n);
-    SetLength(b, m);
-    SetLength(b_test, m);
-  //    1, 0, 1,
-  //    1, 1, 1,
-  //    0, 1, 0,
-  //    1, 1, 0
-    a[0] := 1; a[1]  := 0; a[2]  := 1;
-    a[3] := 1; a[4]  := 1; a[5]  := 1;
-    a[6] := 0; a[7]  := 1; a[8]  := 0;
-    a[9] := 1; a[10] := 1; a[11] := 0;
-
-    b[0] := 21;
-    b[1] := 39;
-    b[2] := 21;
-    b[3] := 30;
-
-    WriteLn(Log, 'Solve A x = b with the least-squares method using DGELS');
-    WriteLn(Log);
-
-    // Display input data
-    WriteLn(Log, 'A = ');
-    for i := 0 to m-1 do
-    begin
-      for j := 0 to n-1 do
-        Write(Log, a[i*n + j]:10:0);
-      WriteLn(Log);
-    end;
-    WriteLn(Log);
-    WriteLn(Log, 'b = ');
-    for i := 0 to m-1 do
-      Write(Log, b[i]:10:0);
-    WriteLn(Log);
-
-    PolyFitSolution(a, b, n, x);
-
-    WriteLn(Log);
-    WriteLn(Log, 'Solution x = ');
-    for j:= 0 to n-1 do
-      Write(Log, x[j]:10:0);
-    WriteLn(Log);
-
-    WriteLn(Log);
-    WriteLn(Log, 'b = ');
-    for i := 0 to m-1 do
-      Write(Log, b[i]:10:0);
-    WriteLn(Log);
-
-    // Calculate and display residuals
-    WriteLn(Log);
-    WriteLn(Log, 'Residuals A x - b = ');
-    sum := 0;
-    omvmmv(a[0], m, n, n, x[0], b_test[0]);
-    for i:=0 to m-1 do begin
-      Write(Log, (b_test[i] - b[i]):10:0);
-      sum := sum + sqr(b_test[i] - b[i]);
-    end;
-    WriteLn(Log);
-
-    // Sum of squared residuals
-    WriteLn(Log);
-    WriteLn(Log, 'Sum of squared residuals');
-    WriteLn(Log, sum:10:0);
-
-    WriteLn(Log);
-    WriteLn(Log, '----------------------------------------------------------------------------');
-    WriteLn(Log);
-
-    // Modify solution to show that the sum of squared residuals increases';
-    WriteLn(Log, 'Modified solution x'' (to show that it has a larger sum of squared residuals)');
-    x[0] := x[0] + 1;
-    x[1] := x[1] - 1;
-    WriteLn(Log);
-    for j:=0 to n-1 do
-      Write(Log, x[j]:10:0);
-    omvmmv(a[0], m, n, n, x[0], b_test[0]);
-    sum := 0;
-    for i:=0 to m-1 do
-      sum := sum + sqr(b_test[i] - b[i]);
-    WriteLn(Log);
-    WriteLn(Log);
-    WriteLn(Log, 'Sum of squared residuals');
-    WriteLn(Log, sum:10:0);
-  finally
-    CloseFile(Log);
-  end;
-end;
-
-{$IFDEF USE_WINMKL}
-function dgels_info: string;
-begin
-  if Assigned(dgels_solve) then
-    Result := 'Intel oneMKL DGELS routine is active.'
-  else
-    Result := 'The program was compiled with Intel oneMKL DGELS support, but an initialization error occurred.'
-end;
-
-var
-  hMKL: THandle;
-{$ENDIF}
-
-var
-  S: string;
-  I: Integer;
-
-initialization
-{$IFDEF USE_WINMKL}
-  dgels_solve := nil;
-  // We use our own threading!
-  // Check for all required DLLs
-  hMKL := SafeLoadLibrary('lapack_min.dll');
-  if hMKL <> 0 then begin
-    dgels_solve := TDGELS_SOLVE(GetProcAddress(hMKL, 'dgels_solve'));
-    if not Assigned(dgels_solve) then begin
-      UnloadLibrary(hMKL);
-      hMKL := 0;
-    end;
-  end;
-{$ENDIF}
-
-  for I := 1 to ParamCount do begin
-    S := ParamStr(I);
-    if S = '--test-ls' then begin
-      TestLS;
-      Break;
-    end;
-  end;
-
-{$IFDEF USE_WINMKL}
-finalization
-  if hMKL <> 0 then begin
-    dgels_solve := nil;
-    UnloadLibrary(hMKL);
-    hMKL := 0;
-  end;
-{$ENDIF}
 end.
 

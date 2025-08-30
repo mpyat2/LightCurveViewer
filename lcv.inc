@@ -2,8 +2,4 @@
 //{$R+}
 {$Q+}
 
-{$IFDEF WIN64}
-  {$DEFINE USE_WINMKL}
-{$ENDIF}
-
 {$DEFINE FAST_SIN_COS}

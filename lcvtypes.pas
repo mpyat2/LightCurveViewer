@@ -7,7 +7,7 @@ unit lcvtypes;
 interface
 
 uses
-  typ, Graphics, contnrs;
+  Graphics, contnrs;
 
 type
   FitColumnType = (x, yFit, yErrors, yFitAlgebraic, yObserved);
@@ -16,7 +16,6 @@ type
 //  TColorArray = array of TColor;
 
 type
-  TArbFloatArray = array of ArbFloat; // for compatibility with NumLib
   TDoubleArray = array of Double;
   TIntegerArray = array of Integer;
   TInt5Array = array[0..4] of Integer;

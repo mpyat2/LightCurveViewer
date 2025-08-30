@@ -196,10 +196,8 @@ var
   sin_theta, cos_theta, sin_prev, cos_prev, sin_curr, cos_curr, sin_next, cos_next: Double;
 {$ENDIF}
   angle: Double;
-  // TArbFloatArray for compatibility with NumLib. Not needed in WIN64
-  a: TArbFloatArray;
-  magArbFloatArray: TArbFloatArray;
-  fit: TArbFloatArray;
+  a: TDoubleArray;
+  fit: TDoubleArray;
   fit_calculated: Boolean;
 begin
   if Length(Ft) <> Length(FMag) then
@@ -219,11 +217,9 @@ begin
   ndata := Length(Ft);
   SetLength(times, ndata);
   SetLength(temp_mags, ndata);
-  SetLength(magArbFloatArray, ndata);
   meanTime := Mean(Ft);
   for I := 0 to ndata - 1 do begin
     times[I] := Ft[I] - meanTime;
-    magArbFloatArray[I] := Fmag[I]; // for compatibility with NumLib
   end;
 
   SetLength(a, ndata * NofParameters);
@@ -340,7 +336,7 @@ begin
 {$ENDIF}
 
       try
-        PolyFit(a, magArbFloatArray, FTrendDegree, FTrigPolyDegree, fit);
+        PolyFit(a, Fmag, FTrendDegree, FTrigPolyDegree, fit);
         fit_calculated := True;
       except
         on ex: SleglsException do begin
@@ -367,7 +363,7 @@ begin
     end;
     if fit_calculated then begin
       for II := 0 to ndata - 1 do begin
-        temp_mags[II] := magArbFloatArray[II] - fit[II];
+        temp_mags[II] := Fmag[II] - fit[II];
       end;
       Fpartial_power[I] := PopnVariance(temp_mags); // \sigma^2_{O-C}
     end
@@ -399,10 +395,8 @@ var
   meanTime: Double;
   ndata: Integer;
   I, II, Idx: Integer;
-  // For compatibility with NumLib. Not needed in WIN64
-  a: TArbFloatArray;
-  magArbFloatArray: TArbFloatArray;
-  fit: TArbFloatArray;
+  a: TDoubleArray;
+  fit: TDoubleArray;
   fit0: Double;
 begin
   if TrendDegree < 0 then
@@ -424,25 +418,21 @@ begin
     end;
   end;
 
-  SetLength(magArbFloatArray, ndata);
   SetLength(fit, ndata);
-  for I := 0 to ndata - 1 do begin
-    magArbFloatArray[I] := mag[I]; // for compatibility with NumLib
-  end;
 
   if TrendDegree = 0 then begin
     // Special case: PolyFit may generate error. Also, no need of using the complicated procedure
-    fit0 := Math.Mean(magArbFloatArray);
+    fit0 := Math.Mean(mag);
     for I := 0 to ndata - 1 do begin
       fit[I] := fit0;
     end;
   end
   else begin
-    PolyFit(a, magArbFloatArray, TrendDegree, 0, fit);
+    PolyFit(a, mag, TrendDegree, 0, fit);
   end;
 
   for I := 0 to ndata - 1 do begin
-    temp_mags[I] := magArbFloatArray[I] - fit[I];
+    temp_mags[I] := mag[I] - fit[I];
   end;
 
   Result := PopnVariance(temp_mags);

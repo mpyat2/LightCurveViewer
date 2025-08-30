@@ -5,13 +5,7 @@
 #define MyAppPublisher "Observatory Osokorky"
 #define MyAppURL "https://www.osokorky-observatory.com/"
 #define MyAppName "LCV"
-#ifdef lcv64
-  #define MyAppExeName "lcv64.exe"
-;  #define MyAppName "LCV64"
-#else
-  #define MyAppExeName "lcv32.exe"
-;  #define MyAppName "LCV32"
-#endif
+#define MyAppExeName "lcv64.exe"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
@@ -43,10 +37,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 Source: "..\out\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-#ifdef lcv64
-;Source: "..\out\sincos.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\out\lapack_min.dll"; DestDir: "{app}"; Flags: ignoreversion
-#endif
 Source: "..\testdata\*"; DestDir: "{userdocs}\lcv_testdata"; Flags: ignoreversion
 Source: "..\LICENSE"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\doc\LightCurveViewer.pdf"; DestDir: "{app}\doc"; Flags: ignoreversion
@@ -58,4 +49,3 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; WorkingDi
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{userdocs}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
-
