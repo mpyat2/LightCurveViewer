@@ -7,7 +7,7 @@ unit formatutils;
 interface
 
 uses
-  Classes, SysUtils;
+  Classes, SysUtils, Math;
 
 function StringToFloatLocaleIndependent(const S: string; out V: Double): Boolean;
 
@@ -40,11 +40,11 @@ end;
 
 function FloatToStrMod(V: Double): string;
 begin
-  if Abs(V) > 0.0000001 then
+  if not IsNan(V) and (Abs(V) > 0.0000001) then
     Result := FloatToStrF(V, ffFixed, 0, 15)
   else
     Result := FloatToStr(V);
-  if V >= 0 then
+  if IsNan(V) or (V >= 0) then
     Result := ' ' + Result;
 end;
 

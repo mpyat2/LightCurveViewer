@@ -10,19 +10,6 @@ uses
   Classes, SysUtils, lcvtypes;
 
 type
-
-  { SleglsException }
-
-  SleglsException = class(Exception)
-  private
-    FTerm: Integer;
-  public
-    constructor Create(const Msg : string; ATerm: Integer);
-    property Term: Integer read FTerm;
-  end;
-
-  { DgelsException }
-
   DgelsException = class(Exception)
   private
     FInfo: Integer;
@@ -30,8 +17,6 @@ type
     constructor Create(const Msg : string; AInfo: Integer);
     property Info: Integer read FInfo;
   end;
-
-procedure SleglsError(const Msg: string; Term: Integer);
 
 procedure DgeslError(const Msg: string; Info: Integer);
 
@@ -69,25 +54,12 @@ uses
 {$ENDIF}
   math, sortutils;
 
-{ SleglsException }
-
-constructor SleglsException.Create(const Msg: string; ATerm: Integer);
-begin
-  inherited Create(Msg);
-  FTerm := ATerm;
-end;
-
 { DgelsException }
 
 constructor DgelsException.Create(const Msg: string; AInfo: Integer);
 begin
   inherited Create(Msg);
   FInfo := AInfo;
-end;
-
-procedure SleglsError(const Msg: string; Term: Integer);
-begin
-  raise SleglsException.Create(Msg, Term);
 end;
 
 procedure DgeslError(const Msg: string; Info: Integer);

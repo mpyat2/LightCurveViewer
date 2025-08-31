@@ -108,7 +108,6 @@ procedure PlotDFTresult(const Caption: string; const frequencies, power: TDouble
 var
   NaNValuesFound: Boolean;
   NegValuesFound: Boolean;
-  AddFreq: Boolean;
   Pow: Double;
   F: TFormDFTDialog;
   I: Integer;
@@ -122,26 +121,20 @@ begin
     for I := 0 to Length(frequencies) - 1 do begin
       if (I > 0) and (frequencies[I] < frequencies[I - 1]) then
         raise Exception.Create('PlotDFTresult: Internal error: "frequencies" must be sorted.');
-      AddFreq := True;
-      Pow := power[I];
-      if IsNan(Pow) then begin
-        if frequencies[I] = 0.0 then begin
-          // Zero-frequency is a special case: this is a common start value and is always ignored.
-          AddFreq := False;
+      if frequencies[I] > 0.0 then begin
+        // Zero frequency is always ignored.
+        Pow := power[I];
+        if IsNan(Pow) then begin
+          NaNValuesFound := True;
         end
         else begin
-          NaNValuesFound := True;
+          if Pow < 0.0 then begin
+            NegValuesFound := True;
+            Pow := 0.0;
+          end;
         end;
-      end else begin
-        if IsZero(Pow) then
-          Pow := 0.0;
-        if Pow < 0.0 then begin
-          NegValuesFound := True;
-          Pow := 0.0;
-        end;
-      end;
-      if AddFreq then
         F.Chart1LineSeries1.AddXY(frequencies[I], Pow);
+      end;
     end;
     if NaNValuesFound or NegValuesFound then begin
       Msg := 'The result could not be calculated for some non-zero frequencies';

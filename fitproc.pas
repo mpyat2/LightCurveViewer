@@ -40,50 +40,7 @@ function CalcResidualSquared(const Observations, Model: TDoubleArray): Double;
 implementation
 
 uses
-  math, miscutils, formatutils;
-
-procedure dgels_solve(
-  var trans: AnsiChar;
-  var m, n, nrhs: Integer;
-  var a: Double; var lda: Integer;
-  var b: Double; var ldb: Integer;
-  var info: Integer);
-  cdecl; external 'lapack_min.dll';
-
-function invert_matrix(
-  var a: Double;
-  n: Integer): Integer;
-  cdecl; external 'lapack_min.dll';
-
-procedure TransposeMatrix(
-  const A: array of Double;
-  rows, cols: Integer;
-  var B: array of Double);
-var
-  i, j: Integer;
-begin
-  for i := 0 to rows - 1 do
-    for j := 0 to cols - 1 do
-      B[j * rows + i] := A[i * cols + j];
-end;
-
-procedure MultiplyMatrices(
-  const A, B: array of Double;
-  rowsA, colsA, colsB: Integer;
-  var C: array of Double);
-var
-  i, j, k: Integer;
-  sum: Double;
-begin
-  for i := 0 to rowsA - 1 do
-    for j := 0 to colsB - 1 do
-    begin
-      sum := 0.0;
-      for k := 0 to colsA - 1 do
-        sum += A[i * colsA + k] * B[k * colsB + j];
-      C[i * colsB + j] := sum;
-    end;
-end;
+  math, la, miscutils, formatutils;
 
 function CalcResidualSquared(const Observations, Model: TDoubleArray): Double;
 var
@@ -306,7 +263,10 @@ begin
     fitError[I] := fitError[I] + SigmaSq;
 {$ENDIF}
 
-    fitError[I] := Sqrt(fitError[I]);
+    if fitError[I] >= 0.0 then
+      fitError[I] := Sqrt(fitError[I])
+    else
+      fitError[I] := NaN;
   end;
 end;
 
@@ -375,7 +335,10 @@ begin
     YfitErrors[I] := YfitErrors[I] + SigmaSq;
 {$ENDIF}
 
-    YfitErrors[I] := Sqrt(YfitErrors[I]);
+    if YfitErrors[I] >= 0.0 then
+      YfitErrors[I] := Sqrt(YfitErrors[I])
+    else
+      YfitErrors[I] := NaN;
   end;
 end;
 
@@ -452,10 +415,10 @@ begin
   for Idx := 0 to n - 1 do begin
     // Square roots of diagonal elements
     TempV := XTXI[Idx * n + Idx];
-    if not IsZero(TempV) then
-      Errors[Idx] := Sqrt(XTXI[Idx * n + Idx])
+    if TempV >= 0 then
+      Errors[Idx] := Sqrt(TempV)
     else
-      Errors[Idx] := 0.0;
+      Errors[Idx] := NaN;
   end;
 end;
 

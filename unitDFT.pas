@@ -339,16 +339,6 @@ begin
         PolyFit(a, Fmag, FTrendDegree, FTrigPolyDegree, fit);
         fit_calculated := True;
       except
-        on ex: SleglsException do begin
-          case ex.Term of
-            2: begin
-                 // there is no unambiguous solution
-                 fit_calculated := False;
-               end;
-            else
-              raise;
-          end;
-        end;
         on ex: DgelsException do begin
           if ex.Info > 0 then begin
             // Parameters are fine but the Least Squares solution could not be calculated.

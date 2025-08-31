@@ -2,4 +2,6 @@
 //{$R+}
 {$Q+}
 
+{$DEFINE DYNAMIC_LOAD_LIB}
+
 {$DEFINE FAST_SIN_COS}

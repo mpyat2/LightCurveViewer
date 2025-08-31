@@ -2,9 +2,16 @@
 #include "mkl.h"
 #include <stdlib.h>
 
+// Define EXPORT macro depending on platform/compiler
+#ifdef _WIN32
+  #define EXPORT __declspec(dllexport)
+#else
+  #define EXPORT __attribute__((visibility("default")))
+#endif
+
 // Wrapper: solves least squares via DGELS in one call
 // Arguments identical to DGELS except no 'work'/'lwork'
-__declspec(dllexport)
+EXPORT
 void dgels_solve(const char *trans,
                  const MKL_INT *m, const MKL_INT *n, const MKL_INT *nrhs,
                  double *a, const MKL_INT *lda,
@@ -38,7 +45,7 @@ void dgels_solve(const char *trans,
 // Invert an n x n matrix A (row-major) in place using Intel MKL LAPACKE.
 // Returns 0 on success; otherwise returns the LAPACK info code.
 // On singular matrices, returns k>0 where U(k,k)=0 after LU factorization.
-__declspec(dllexport)
+EXPORT
 int invert_matrix(double *A, MKL_INT n) {
     if (!A || n <= 0) return -1;
 
