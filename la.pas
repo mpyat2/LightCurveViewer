@@ -57,7 +57,7 @@ implementation
 
 {$IFDEF DYNAMIC_LOAD_LIB}
 uses
-  DynLibs, Dialogs;
+  DynLibs{$IFDEF WINDOWS}, Windows{$ENDIF};
 {$ENDIF}
 
 procedure TransposeMatrix(
@@ -94,6 +94,7 @@ end;
 var
   LapackMinLib: TLibHandle;
   LibFullPath: string;
+  Msg: string;
 
 initialization
   dgels_solve := nil;
@@ -111,9 +112,12 @@ initialization
       FreeLibrary(LapackMinLib);
       LapackMinLib := 0;
     end;
-    MessageDlg(ExtractFileName(ParamStr(0)),
-               'The ' + LAPACK_MIN_SHARED_LIB + ' library is invalid or cannot be loaded. Program will be terminated.',
-               mtError, [mbClose], 0);
+    Msg := 'The ' + LAPACK_MIN_SHARED_LIB + ' library is invalid or cannot be loaded. Program will be terminated.';
+    {$IFDEF WINDOWS}
+    MessageBox(0, PChar(Msg), PChar(ExtractFileName(ParamStr(0))), MB_OK or MB_ICONERROR);
+    {$ELSE}
+    Writeln(stderr, Msg);
+    {$ENDIF}
     Halt(1);
   end;
 finalization
