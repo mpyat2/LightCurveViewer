@@ -65,3 +65,14 @@ int invert_matrix(double *A, MKL_INT n) {
     free(ipiv);
     return (int)info; // 0 on success; >0 if U has zero on diagonal
 }
+
+// Transpose a row-major matrix
+// a: input matrix of size rows x cols
+// b: output matrix of size cols x rows (preallocated)
+// rows: number of rows in input
+// cols: number of cols in input
+EXPORT
+void transpose_matrix(const double *a, int rows, int cols, double *b) {
+    // Row-major ordering, transpose, no scaling
+    mkl_domatcopy('R', 'T', rows, cols, 1.0, a, cols, b, rows);
+}

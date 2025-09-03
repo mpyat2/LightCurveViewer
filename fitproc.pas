@@ -84,17 +84,17 @@ begin
   nrhs := 1;
   lda := m;
   ldb := m;
-  // The input matrix and vector get overwritten, so copy them.
-  SetLength(aa, Length(a));
-  // Instead of the direct copy, transpose the matrix.
-  TransposeMatrix(a, m, n, aa);
   // solution_vector provides the right hand side vector (B) at the beginning.
   SetLength(solution_vector, m);
   Move(Yarray[0], solution_vector[0], m * SizeOf(Double));
-
+  // The input matrix and vector get overwritten, so copy them.
+  SetLength(aa, Length(a));
+  // Instead of the direct copy, transpose the matrix.
+  //TransposeMatrix(a, m, n, aa);
   CW8087 := Get8087CW;
   MXCSR := GetMXCSR;
   try
+    transpose_matrix(a[0], m, n, aa[0]); // This version is somewhat faster (not critically)
     dgels_solve(trans, m, n, nrhs, aa[0], lda, solution_vector[0], ldb, info);
   finally
     Set8087CW(CW8087);
@@ -366,8 +366,15 @@ begin
 
   SetLength(XmatrixTrans, Length(Xmatrix));
   // XmatrixTrans is the transposed matrix
-  TransposeMatrix(Xmatrix, m, n, XmatrixTrans);
-
+  //TransposeMatrix(Xmatrix, m, n, XmatrixTrans);
+  CW8087 := Get8087CW;
+  MXCSR := GetMXCSR;
+  try
+    transpose_matrix(Xmatrix[0], m, n, XmatrixTrans[0]);
+  finally
+    Set8087CW(CW8087);
+    SetMXCSR(MXCSR);
+  end;
   SetLength(XTXI, n * n);
   // Mult. the transposed mutrix by the original one
   MultiplyMatrices(XmatrixTrans, Xmatrix, n, m, n, XTXI);

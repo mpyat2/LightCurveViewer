@@ -25,9 +25,15 @@ type
     var a: Double;
     n: Integer): Integer; cdecl;
 
+  Ttranspose_matrix = procedure(
+    var a: Double;
+    rows, cols: Integer;
+    var b: double); cdecl;
+
 var
   dgels_solve: Tdgels_solve;
   invert_matrix: Tinvert_matrix;
+  transpose_matrix: Ttranspose_matrix;
 {$ELSE}
 procedure dgels_solve(
   var trans: AnsiChar;
@@ -41,12 +47,18 @@ function invert_matrix(
   var a: Double;
   n: Integer): Integer;
   cdecl; external LAPACK_MIN_SHARED_LIB;
+
+procedure transpose_matrix(
+  var a: Double;
+  rows, cols: Integer;
+  var b: double);
+  cdecl; external LAPACK_MIN_SHARED_LIB;
 {$ENDIF}
 
-procedure TransposeMatrix(
-  const A: array of Double;
-  rows, cols: Integer;
-  var B: array of Double);
+//procedure TransposeMatrix(
+//  const A: array of Double;
+//  rows, cols: Integer;
+//  var B: array of Double);
 
 procedure MultiplyMatrices(
   const A, B: array of Double;
@@ -60,17 +72,17 @@ uses
   DynLibs{$IFDEF WINDOWS}, Windows{$ENDIF};
 {$ENDIF}
 
-procedure TransposeMatrix(
-  const A: array of Double;
-  rows, cols: Integer;
-  var B: array of Double);
-var
-  i, j: Integer;
-begin
-  for i := 0 to rows - 1 do
-    for j := 0 to cols - 1 do
-      B[j * rows + i] := A[i * cols + j];
-end;
+//procedure TransposeMatrix(
+//  const A: array of Double;
+//  rows, cols: Integer;
+//  var B: array of Double);
+//var
+//  i, j: Integer;
+//begin
+//  for i := 0 to rows - 1 do
+//    for j := 0 to cols - 1 do
+//      B[j * rows + i] := A[i * cols + j];
+//end;
 
 procedure MultiplyMatrices(
   const A, B: array of Double;
@@ -96,21 +108,29 @@ var
   LibFullPath: string;
   Msg: string;
 
+procedure FreeLapackMinLib;
+begin
+  dgels_solve := nil;
+  invert_matrix := nil;
+  transpose_matrix := nil;
+  FreeLibrary(LapackMinLib);
+  LapackMinLib := 0;
+end;
+
 initialization
   dgels_solve := nil;
   invert_matrix := nil;
+  transpose_matrix := nil;
   LibFullPath := ExtractFilePath(ParamStr(0)) + LAPACK_MIN_SHARED_LIB;
   LapackMinLib := SafeLoadLibrary(LibFullPath);
   if LapackMinLib <> 0 then begin
     dgels_solve := Tdgels_solve(GetProcedureAddress(LapackMinLib, 'dgels_solve'));
     invert_matrix := Tinvert_matrix(GetProcedureAddress(LapackMinLib, 'invert_matrix'));
+    transpose_matrix := Ttranspose_matrix(GetProcedureAddress(LapackMinLib, 'transpose_matrix'));
   end;
   if (not Assigned(dgels_solve)) or (not Assigned(invert_matrix)) then begin
     if LapackMinLib <> 0 then begin
-      dgels_solve := nil;
-      invert_matrix := nil;
-      FreeLibrary(LapackMinLib);
-      LapackMinLib := 0;
+      FreeLapackMinLib;
     end;
     Msg := 'The ' + LAPACK_MIN_SHARED_LIB + ' library is invalid or cannot be loaded. Program will be terminated.';
     {$IFDEF WINDOWS}
@@ -122,10 +142,7 @@ initialization
   end;
 finalization
   if LapackMinLib <> 0 then begin
-    dgels_solve := nil;
-    invert_matrix := nil;
-    FreeLibrary(LapackMinLib);
-    LapackMinLib := 0;
+    FreeLapackMinLib;
   end;
 {$ENDIF}
 end.

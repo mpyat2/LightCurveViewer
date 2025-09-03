@@ -86,14 +86,13 @@
       <Unit>
         <Filename Value="fitproc.pas"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="238"/>
-        <CursorPos X="26" Y="266"/>
+        <TopLine Value="74"/>
+        <CursorPos X="6" Y="85"/>
         <UsageCount Value="200"/>
         <Bookmarks Count="2">
-          <Item0 X="9" Y="98" Left="1" Top="73" ID="1"/>
-          <Item1 X="31" Y="378" Left="1" Top="358" ID="2"/>
+          <Item0 X="17" Y="93" Left="1" Top="77" ID="1"/>
+          <Item1 X="5" Y="373" Left="1" Top="340" ID="2"/>
         </Bookmarks>
         <Loaded Value="True"/>
       </Unit>
@@ -173,8 +172,6 @@
         <Filename Value="formatutils.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="16"/>
-        <CursorPos X="18" Y="47"/>
         <UsageCount Value="211"/>
         <Loaded Value="True"/>
       </Unit>
@@ -257,7 +254,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="41"/>
         <CursorPos X="87" Y="64"/>
-        <UsageCount Value="196"/>
+        <UsageCount Value="199"/>
       </Unit>
       <Unit>
         <Filename Value="edithelper.pas"/>
@@ -265,7 +262,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="52"/>
         <CursorPos X="30" Y="76"/>
-        <UsageCount Value="178"/>
+        <UsageCount Value="181"/>
       </Unit>
       <Unit>
         <Filename Value="unitMagShiftDialog.pas"/>
@@ -275,7 +272,7 @@
         <ResourceBaseClass Value="Form"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="19" Y="5"/>
-        <UsageCount Value="154"/>
+        <UsageCount Value="157"/>
       </Unit>
       <Unit>
         <Filename Value="unitFormStat.pas"/>
@@ -285,7 +282,7 @@
         <ResourceBaseClass Value="Form"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="12" Y="47"/>
-        <UsageCount Value="151"/>
+        <UsageCount Value="154"/>
         <Bookmarks Count="1">
           <Item0 X="5" Y="111" Left="1" Top="89" ID="1"/>
         </Bookmarks>
@@ -293,7 +290,10 @@
       <Unit>
         <Filename Value="la.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="28"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="111"/>
+        <CursorPos X="97" Y="129"/>
+        <UsageCount Value="31"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -306,9 +306,9 @@
       <Unit>
         <Filename Value="C:\lazarus64\fpc\3.2.2\source\packages\numlib\src\typ.pas"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="48"/>
-        <CursorPos X="6" Y="66"/>
-        <UsageCount Value="9"/>
+        <TopLine Value="197"/>
+        <CursorPos Y="203"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="C:\lazarus64\fpc\3.2.2\source\rtl\objpas\sysutils\sysutilh.inc"/>
@@ -423,8 +423,7 @@
       <Unit>
         <Filename Value="C:\lazarus64\fpc\3.2.2\source\packages\numlib\src\omv.pas"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="15"/>
-        <CursorPos X="11" Y="33"/>
+        <CursorPos Y="23"/>
         <UsageCount Value="27"/>
       </Unit>
       <Unit>
@@ -536,103 +535,123 @@
         <UsageCount Value="10"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="24">
+    <JumpHistory HistoryIndex="29">
       <Position>
-        <Filename Value="la.pas"/>
-        <Caret Line="101" Column="3" TopLine="91"/>
-      </Position>
-      <Position>
-        <Filename Value="la.pas"/>
+        <Filename Value="fitproc.pas"/>
+        <Caret Line="90" Column="5" TopLine="59"/>
       </Position>
       <Position>
         <Filename Value="la.pas"/>
-        <Caret Line="86" Column="17" TopLine="56"/>
+        <Caret Line="77" TopLine="55"/>
       </Position>
       <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="130" Column="28" TopLine="114"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="122" Column="16" TopLine="93"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="124" Column="28" TopLine="95"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="152" Column="37" TopLine="124"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="157" Column="30" TopLine="129"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="266" Column="73" TopLine="237"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="304" Column="73" TopLine="275"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="401" Column="19" TopLine="372"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="550" Column="18" TopLine="521"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="597" Column="18" TopLine="568"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="652" Column="25" TopLine="623"/>
+        <Filename Value="la.pas"/>
+        <Caret Line="46" TopLine="37"/>
       </Position>
       <Position>
         <Filename Value="fitproc.pas"/>
-        <Caret Line="45" TopLine="31"/>
+        <Caret Line="90" Column="3" TopLine="74"/>
+      </Position>
+      <Position>
+        <Filename Value="la.pas"/>
+        <Caret Line="65" TopLine="29"/>
+      </Position>
+      <Position>
+        <Filename Value="la.pas"/>
+        <Caret Line="18" Column="25" TopLine="18"/>
+      </Position>
+      <Position>
+        <Filename Value="la.pas"/>
+        <Caret Line="14" Column="3" TopLine="14"/>
       </Position>
       <Position>
         <Filename Value="fitproc.pas"/>
-        <Caret Line="103" Column="15" TopLine="74"/>
+        <Caret Line="44" Column="15" TopLine="19"/>
       </Position>
       <Position>
         <Filename Value="fitproc.pas"/>
-        <Caret Line="133" Column="13" TopLine="103"/>
+        <Caret Line="76" Column="21" TopLine="46"/>
       </Position>
       <Position>
         <Filename Value="fitproc.pas"/>
-        <Caret Line="144" Column="31" TopLine="115"/>
+        <Caret Line="77" Column="13" TopLine="47"/>
       </Position>
       <Position>
         <Filename Value="fitproc.pas"/>
-        <Caret Line="245" Column="33" TopLine="216"/>
+        <Caret Line="91" Column="31" TopLine="73"/>
+      </Position>
+      <Position>
+        <Filename Value="la.pas"/>
+        <Caret Line="48" Column="13" TopLine="27"/>
       </Position>
       <Position>
         <Filename Value="fitproc.pas"/>
-        <Caret Line="313" Column="33" TopLine="284"/>
+        <Caret Line="90" Column="3" TopLine="73"/>
+      </Position>
+      <Position>
+        <Filename Value="la.pas"/>
+        <Caret Line="57" TopLine="49"/>
+      </Position>
+      <Position>
+        <Filename Value="la.pas"/>
+        <Caret Line="28" Column="3" TopLine="13"/>
+      </Position>
+      <Position>
+        <Filename Value="la.pas"/>
+        <Caret Line="128" Column="16" TopLine="114"/>
       </Position>
       <Position>
         <Filename Value="fitproc.pas"/>
-        <Caret Line="383" Column="14" TopLine="354"/>
+        <Caret Line="91" Column="19" TopLine="73"/>
+      </Position>
+      <Position>
+        <Filename Value="la.pas"/>
+        <Caret Line="106" TopLine="94"/>
+      </Position>
+      <Position>
+        <Filename Value="la.pas"/>
+        <Caret Line="129" Column="97" TopLine="111"/>
       </Position>
       <Position>
         <Filename Value="fitproc.pas"/>
-        <Caret Line="481" Column="31" TopLine="452"/>
+        <Caret Line="370" Column="18" TopLine="353"/>
       </Position>
       <Position>
         <Filename Value="fitproc.pas"/>
       </Position>
       <Position>
         <Filename Value="fitproc.pas"/>
-        <Caret Line="157" Column="54" TopLine="128"/>
+        <Caret Line="90" Column="20" TopLine="60"/>
+      </Position>
+      <Position>
+        <Filename Value="fitproc.pas"/>
+        <Caret Line="371" Column="19" TopLine="340"/>
+      </Position>
+      <Position>
+        <Filename Value="fitproc.pas"/>
+      </Position>
+      <Position>
+        <Filename Value="fitproc.pas"/>
+        <Caret Line="97" Column="21" TopLine="74"/>
+      </Position>
+      <Position>
+        <Filename Value="fitproc.pas"/>
+        <Caret Line="373" Column="5" TopLine="340"/>
+      </Position>
+      <Position>
+        <Filename Value="fitproc.pas"/>
+        <Caret Line="103" TopLine="76"/>
+      </Position>
+      <Position>
+        <Filename Value="fitproc.pas"/>
+        <Caret Line="93" Column="17" TopLine="76"/>
+      </Position>
+      <Position>
+        <Filename Value="fitproc.pas"/>
+        <Caret Line="373" Column="21" TopLine="358"/>
+      </Position>
+      <Position>
+        <Filename Value="fitproc.pas"/>
       </Position>
     </JumpHistory>
     <RunParams>
