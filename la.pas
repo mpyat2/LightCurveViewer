@@ -128,7 +128,7 @@ initialization
     invert_matrix := Tinvert_matrix(GetProcedureAddress(LapackMinLib, 'invert_matrix'));
     transpose_matrix := Ttranspose_matrix(GetProcedureAddress(LapackMinLib, 'transpose_matrix'));
   end;
-  if (not Assigned(dgels_solve)) or (not Assigned(invert_matrix)) then begin
+  if (not Assigned(dgels_solve)) or (not Assigned(invert_matrix)) or (not Assigned(transpose_matrix)) then begin
     if LapackMinLib <> 0 then begin
       FreeLapackMinLib;
     end;
