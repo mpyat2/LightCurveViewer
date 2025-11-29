@@ -32,6 +32,7 @@ procedure PolyFit(const Xarray: TDoubleArray;
                   out FitAtPoints: TDoubleArray;
                   out FitAtPointsErrors: TDoubleArray;
                   out FitAtPointsAlgebraic: TDoubleArray;
+                  X_scale: Double;             // X-scale factor: Xarray is divided by it
                   out Formula: string;
                   out Info: string);
 
@@ -112,24 +113,33 @@ procedure PolyFitSolutionToFormula(ATrendDegree: Integer;
                                    const AFrequencies: TDouble5Array;
                                    const solution_vector: TDoubleArray;
                                    const solution_vector_errors: TDoubleArray;
+                                   const XTXI: TDoubleArray;
+                                   X_scale: Double;
                                    out Formula: string;
                                    out Info: string);
 var
   I, N, Idx, Idx2: Integer;
   Sign: string;
   S, S2: string;
-  Amplitudes: array of array[0..1] of Double;
+  Amplitudes: array of array[0..2] of Double;
+  C1, C2, A, var1, var2, cov12, Avar: Double;
+  NofParameters: Integer;
 begin
   Formula := '';
   Info := ' Coefficients'^M^J;
+
+  NofParameters := 1 + ATrendDegree;
+  for I := 0 to Length(ATrigPolyDegrees) - 1 do
+    NofParameters := NofParameters + ATrigPolyDegrees[I] * 2;
+
   // Trend
   for I := 0 to ATrendDegree do begin
     if solution_vector[I] < 0 then
       Sign := ' - '
     else
       Sign := ' + ';
-    Formula := Formula + Sign + FloatToStrLocaleIndependent(Abs(solution_vector[I]));
-    Info := Info + FloatToStrMod(solution_vector[I]) + ^I'[+-' + Trim(FloatToStrMod(solution_vector_errors[I])) + ']';
+    Formula := Formula + Sign + FloatToStrLocaleIndependent(Abs(solution_vector[I] / Power(X_scale, I)));
+    Info := Info + FloatToStrMod(solution_vector[I] / Power(X_scale, I)) + ^I'±'^I + Trim(FloatToStrMod(solution_vector_errors[I] / Power(X_scale, I)));
     if I > 0 then begin
       Formula := Formula + ' * (t-timeZeroPoint)**' + IntToStr(I);
       Info := Info + ^I' * (t-timeZeroPoint)^' + IntToStr(I);
@@ -144,24 +154,37 @@ begin
     if ATrigPolyDegrees[N] > 0 then begin
       for I := 1 to ATrigPolyDegrees[N] do begin
         Idx := Idx2 + 2 * (I - 1);
-        S := '2*math.pi*' + FloatToStrLocaleIndependent(I * AFrequencies[N]) + '*(t-timeZeroPoint)';
-        S2 := '2*Pi*' + FloatToStrMod(I * AFrequencies[N]) + '*(t-timeZeroPoint)';
+        S := '2*math.pi*' + FloatToStrLocaleIndependent(I * AFrequencies[N] / X_scale) + '*(t-timeZeroPoint)';
+        S2 := '2*π*' + Trim(FloatToStrMod(I * AFrequencies[N] / X_scale)) + '*(t-timeZeroPoint)';
         if solution_vector[Idx] < 0 then Sign := ' - ' else Sign := ' + ';
         Formula := Formula + Sign + FloatToStrLocaleIndependent(Abs(solution_vector[Idx]))     + ' * math.cos(' + S + ')';
-        Info := Info + FloatToStrMod(solution_vector[Idx]) + ^I'[+-' + Trim(FloatToStrMod(solution_vector_errors[Idx])) + ']'^I' * cos(' + S2 + ')' + ^M^J;
+        Info := Info + FloatToStrMod(solution_vector[Idx]) + ^I'±'^I + Trim(FloatToStrMod(solution_vector_errors[Idx])) + ^I' * cos(' + S2 + ')' + ^M^J;
         if solution_vector[Idx + 1] < 0 then Sign := ' - ' else Sign := ' + ';
         Formula := Formula + Sign + FloatToStrLocaleIndependent(Abs(solution_vector[Idx + 1])) + ' * math.sin(' + S + ') \' + ^M^J;
-        Info := Info + FloatToStrMod(solution_vector[Idx + 1]) + ^I'[+-' + Trim(FloatToStrMod(solution_vector_errors[Idx + 1])) + ']'^I' * sin(' + S2 + ')' + ^M^J;
+        Info := Info + FloatToStrMod(solution_vector[Idx + 1]) + ^I'±'^I + Trim(FloatToStrMod(solution_vector_errors[Idx + 1])) + ^I' * sin(' + S2 + ')' + ^M^J;
         SetLength(Amplitudes, Length(Amplitudes) + 1);
-        Amplitudes[Length(Amplitudes) - 1][0] := I * AFrequencies[N];
+        Amplitudes[Length(Amplitudes) - 1][0] := I * AFrequencies[N] / X_scale;
         Amplitudes[Length(Amplitudes) - 1][1] := Sqrt(solution_vector[Idx] * solution_vector[Idx] + solution_vector[Idx + 1] * solution_vector[Idx + 1]);
+
+        // Amplitude error
+        var1 := XTXI[Idx * NofParameters + Idx];
+        var2 := XTXI[(Idx + 1) * NofParameters + Idx + 1];
+        cov12:= XTXI[Idx * NofParameters + Idx + 1];
+        C1 := solution_vector[Idx];
+        C2 := solution_vector[Idx + 1];
+        A := Amplitudes[Length(Amplitudes) - 1][1];
+        Avar := (C1 * C1 * var1 + C2 * C2 * var2 + 2 * C1 * C2 * cov12) / (A * A);
+        if Avar >= 0 then
+          Amplitudes[Length(Amplitudes) - 1][2] := Sqrt(Avar)
+        else
+          Amplitudes[Length(Amplitudes) - 1][2] := NaN;
       end;
       Idx2 := Idx2 + 2 * ATrigPolyDegrees[N];
     end;
   end;
   Info := Info + ^M^J;
   for N := 0 to Length(Amplitudes) - 1 do begin
-    Info := Info + 'Period = '^I + FloatToStrMod(1.0 / Amplitudes[N][0]) + ^I + ' Amplitude = ' + FloatToStrMod(Amplitudes[N][1]) + ^M^J;
+    Info := Info + 'Period = '^I + FloatToStrMod(1.0 / Amplitudes[N][0]) + ^I + ' Amplitude = '^I + FloatToStrMod(Amplitudes[N][1]) + ^I'±'^I + Trim(FloatToStrMod(Amplitudes[N][2])) + ^M^J;
   end;
 end;
 
@@ -441,6 +464,7 @@ procedure PolyFit(const Xarray: TDoubleArray;
                   out FitAtPoints: TDoubleArray;
                   out FitAtPointsErrors: TDoubleArray;
                   out FitAtPointsAlgebraic: TDoubleArray;
+                  X_scale: Double;             // X-scale factor: Xarray is divided by it
                   out Formula: string;
                   out Info: string);
 var
@@ -515,7 +539,7 @@ begin
 
   CalculateFit(fitXmin, fitXmax, fitXstep, ATrendDegree, ATRigPolyDegrees, AFrequencies, solution_vector, SigmaSq, XTXI, Xfit, Yfit, YfitErrors);
 
-  PolyFitSolutionToFormula(ATrendDegree, ATrigPolyDegrees, AFrequencies, solution_vector, solution_vector_errors, Formula, Info);
+  PolyFitSolutionToFormula(ATrendDegree, ATrigPolyDegrees, AFrequencies, solution_vector, solution_vector_errors, XTXI, X_scale, Formula, Info);
 end;
 
 end.

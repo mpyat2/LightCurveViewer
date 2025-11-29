@@ -13,9 +13,9 @@ uses
 // If FAST_SIN_COS defined, there is no need to use the superfast sincos from
 // the external DLL, because sinuses and cosines are calculated once for the
 // data set
-  {$IFDEF WIN64}
-  procedure sincos(var a: Double; var s: Double; var c: Double); cdecl; external 'sincos.dll' name 'sincos_';
-  {$ENDIF}
+  //{$IFDEF WIN64}
+  //procedure sincos(var a: Double; var s: Double; var c: Double); cdecl; external 'sincos.dll' name 'sincos_';
+  //{$ENDIF}
 {$ENDIF}
 
 type
@@ -35,7 +35,7 @@ type
   end;
 
 procedure dcdft_proc(
-          const t, mag: TDoubleArray;
+          const time, mag: TDoubleArray;
           lowfreq, hifreq: Double;
           freq_step: Double;
           TrendDegree: Integer;
@@ -184,8 +184,6 @@ var
   ndata: Integer;
   nu: Double;
   I, II, III, Idx: Integer;
-  meanTime: Double;
-  times: TDoubleArray;
   temp_mags: TDoubleArray;
   N, Nrest: Integer;
   NofParameters: Integer;
@@ -215,12 +213,7 @@ begin
     CalcError('Too many parameters. Please reduce trend or trigonometric polynomial degree');
 
   ndata := Length(Ft);
-  SetLength(times, ndata);
   SetLength(temp_mags, ndata);
-  meanTime := Mean(Ft);
-  for I := 0 to ndata - 1 do begin
-    times[I] := Ft[I] - meanTime;
-  end;
 
   SetLength(a, ndata * NofParameters);
 
@@ -228,7 +221,7 @@ begin
   for I := 0 to ndata - 1 do begin
     for II := 0 to FTrendDegree do begin
       Idx := I * NofParameters + II;
-      a[Idx] := math.Power(times[I], II);
+      a[Idx] := math.Power(Ft[I], II);
     end;
   end;
 
@@ -241,7 +234,7 @@ begin
   current_cosines := nil;
 
   for II := 0 to ndata - 1 do begin
-    angle := 2 * Pi * Ffreq_step * times[II];
+    angle := 2 * Pi * Ffreq_step * Ft[II];
     sincos(angle, delta_sinuses[II], delta_cosines[II]);
   end;
 {$ENDIF}
@@ -270,7 +263,7 @@ begin
         SetLength(current_sinuses, ndata);
         SetLength(current_cosines, ndata);
         for II := 0 to ndata - 1 do begin
-          angle := 2 * Pi * nu * times[II];
+          angle := 2 * Pi * nu * Ft[II];
           sincos(angle, current_sinuses[II], current_cosines[II]);
         end;
       end else begin
@@ -329,7 +322,7 @@ begin
       for II := 0 to ndata - 1 do begin
         for III := 1 to FTrigPolyDegree do begin
           Idx := II * NofParameters + 1 + FTrendDegree + 2 * (III - 1);
-          angle := III * 2 * Pi * nu * times[II];
+          angle := III * 2 * Pi * nu * Ft[II];
           sincos(angle, a[Idx + 1], a[Idx]);
         end;
       end;
@@ -380,9 +373,7 @@ end;
 function CalcSigmaSquaredO(const t, mag: TDoubleArray;
                            TrendDegree: Integer): Double;
 var
-  times: TDoubleArray;
   temp_mags: TDoubleArray;
-  meanTime: Double;
   ndata: Integer;
   I, II, Idx: Integer;
   a: TDoubleArray;
@@ -394,17 +385,12 @@ begin
 
   // Trend
   ndata := Length(mag);
-  SetLength(times, ndata);
   SetLength(temp_mags, ndata);
-  meanTime := Mean(t);
-  for I := 0 to ndata - 1 do begin
-    times[I] := t[I] - meanTime;
-  end;
   SetLength(a, ndata * (1 + TrendDegree));
   for I := 0 to ndata - 1 do begin
     for II := 0 to TrendDegree do begin
       Idx := I * (1 + TrendDegree) + II;
-      a[Idx] := math.Power(times[I], II);
+      a[Idx] := math.Power(t[I], II);
     end;
   end;
 
@@ -429,7 +415,7 @@ begin
 end;
 
 procedure dcdft_proc(
-          const t, mag: TDoubleArray;
+          const time, mag: TDoubleArray;
           lowfreq, hifreq: Double;
           freq_step: Double;
           TrendDegree: Integer;
@@ -438,7 +424,9 @@ procedure dcdft_proc(
           ProgressCaptionProc: TProgressCaptionProc;
           out frequencies, power: TDoubleArray);
 var
-  n_freq: Integer;
+  t: TDoubleArray;
+  n_freq, n_points: Integer;
+  t_min, t_max, meanTime, t_scale: Double;
   sigmaSquaredO: Double;
   startfreq: Double;
   NumberOfThreads, StepsPerThread, Remainder, StepsToDo: integer;
@@ -446,6 +434,20 @@ var
   Threads: array of TCalcThread;
 begin
   n_freq := GetNofFrequencies(lowfreq, hifreq, freq_step);
+  n_points := Length(time);
+
+  // Centering and scaling time
+  SetLength(t, n_points);
+  meanTime := Mean(time);
+  for I := 0 to n_points - 1 do begin
+    t[I] := time[I] - meanTime;
+  end;
+  t_min := MinValue(t);
+  t_max := MaxValue(t);
+  t_scale := Max(Abs(t_min), Abs(t_max));
+  for I := 0 to n_points - 1 do begin
+    t[I] := t[I] / t_scale;
+  end;
 
   SetLength(frequencies, n_freq);
   SetLength(power, n_freq);
@@ -474,7 +476,7 @@ begin
         if I = NumberOfThreads - 1 then
           StepsToDo := StepsToDo + Remainder;
         //OutputDebugString(PChar('Thread ' + IntToStr(I) + '; steps: ' + IntToStr(StepsToDo)));
-        Threads[I] := TCalcThread.Create(I, t, mag, startfreq, freq_step, StepsToDo, TrendDegree, TrigPolyDegree, n_freq, ProgressCaptionProc);
+        Threads[I] := TCalcThread.Create(I, t, mag, startfreq * t_scale, freq_step * t_scale, StepsToDo, TrendDegree, TrigPolyDegree, n_freq, ProgressCaptionProc);
         // check for exception while creation (see FPC docs)
         if Assigned(Threads[I].FatalException) then begin
           if Assigned(Threads[I].FatalException) then begin
@@ -514,7 +516,7 @@ begin
         StepsToDo := Threads[I].An_freq;
         for II := 0 to StepsToDo - 1 do begin
            Idx := StepsPerThread * I + II;
-           frequencies[Idx] := Threads[I].Freq[II];
+           frequencies[Idx] := Threads[I].Freq[II] / t_scale;
            power[Idx] := Threads[I].Power[II];
         end;
       end;

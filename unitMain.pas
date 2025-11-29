@@ -1503,7 +1503,8 @@ var
   n_points: Integer;
   OCsquared: Double;
   meanTime: Double;
-  fitXmin, fitXmax, fitXstep: Double;
+  fitXmin, fitXmax, fitXstep, t_scale: Double;
+  tempFrequencies: TDouble5Array;
   nfit: Integer;
   Item: PChartDataItem;
   I: Integer;
@@ -1543,13 +1544,28 @@ begin
     try
       meanTime := Mean(X);
       n_points := Length(X);
+
+      SetLength(FFitAtPoints[FitColumnType.x], n_points);
+      for I := 0 to n_points - 1 do begin
+        FFitAtPoints[FitColumnType.x][I] := X[I];
+      end;
+
+      // Centering and scaling time
       for I := 0 to n_points - 1 do begin
         X[I] := X[I] - meanTime;
+      end;
+      t_scale := Max(Abs(MinValue(X)), Abs(MaxValue(X)));
+      for I := 0 to n_points - 1 do begin
+        X[I] := X[I] / t_scale;
+      end;
+      // We also need to scale the input frequencies
+      for I := 0 to Length(Frequencies) - 1 do begin
+        tempFrequencies[I] := Frequencies[I] * t_scale;
       end;
 
       fitXmin := MinValue(X);
       fitXmax := MaxValue(X);
-      fitXstep := FitStepFromFrequencies(Frequencies);
+      fitXstep := FitStepFromFrequencies(tempFrequencies);
       if IsNan(fitXstep) then
         fitXstep := (fitXmax - fitXmin) / (Length(X) * 3);
       nfit := Ceil((fitXmax - fitXmin) / fitXstep);
@@ -1558,7 +1574,7 @@ begin
         nfit := 100000;
         fitXstep := (fitXmax - fitXmin) / nfit;
       end;
-      PolyFit(X, Y, TrendDegree, TrigPolyDegrees, Frequencies,
+      PolyFit(X, Y, TrendDegree, TrigPolyDegrees, tempFrequencies,
               fitXmin, fitXmax, fitXstep,
               FModelData[FitColumnType.x],
               FModelData[FitColumnType.yFit],
@@ -1566,9 +1582,10 @@ begin
               FFitAtPoints[FitColumnType.yFit],
               FFitAtPoints[FitColumnType.yErrors],
               FFitAtPoints[FitColumnType.yFitAlgebraic],
+              t_scale,
               FFitFormula, FFitInfo);
       for I := 0 to Length(FModelData[FitColumnType.x]) - 1 do begin
-        FModelData[FitColumnType.x][I] := FModelData[FitColumnType.x][I] + meanTime;
+        FModelData[FitColumnType.x][I] := FModelData[FitColumnType.x][I] * t_scale + meanTime;
       end;
     finally
       SetExceptionMask(FPUExceptionMask);
@@ -1578,10 +1595,6 @@ begin
       ShowMessage('Error: '^M^J + '[' + E.ClassName + '] ' + E.Message);
       Exit;
     end;
-  end;
-  SetLength(FFitAtPoints[FitColumnType.x], n_points);
-  for I := 0 to n_points - 1 do begin
-    FFitAtPoints[FitColumnType.x][I] := X[I] + meanTime;
   end;
   SetLength(FFitAtPoints[FitColumnType.yObserved], n_points);
   for I := 0 to n_points - 1 do begin
@@ -1602,8 +1615,8 @@ begin
                  ' timeZeroPoint = ' + FloatToStrLocaleIndependent(meanTime) + ^M^J +
                  ' return \' + ^M^J +
                  FFitFormula + ^M^J^M^J +
-                 't_min = ' + FloatToStrLocaleIndependent(meanTime + fitXmin) + ^M^J +
-                 't_max = ' + FloatToStrLocaleIndependent(meanTime + fitXmin + nfit * fitXstep) + ^M^J +
+                 't_min = ' + FloatToStrLocaleIndependent(meanTime + fitXmin * t_scale) + ^M^J +
+                 't_max = ' + FloatToStrLocaleIndependent(meanTime + fitXmin * t_scale + nfit * fitXstep * t_scale) + ^M^J +
                  'n = ' + IntToStr(nfit + 1) + ^M^J +
                  't = np.linspace(t_min, t_max, n)' + ^M^J +
                  'v = np.array(list(map(f, t)))' + ^M^J^M^J +
@@ -1614,11 +1627,14 @@ begin
                  'ax.plot(t, v)' + ^M^J^M^J +
                  'plt.show()' + ^M^J;
 
-  FFitInfo := FFitInfo + ^M^J + 'timeZeroPoint = ' + Trim(FloatToStrMod(meanTime)) + ^M^J^M^J;
-  FFitInfo := FFitInfo + 'Sum((O-C)^2) = ' + Trim(FloatToStrMod(OCsquared)) + ^M^J^M^J;
+  FFitInfo := FFitInfo + ^M^J;
+  FFitInfo := FFitInfo + 'timeZeroPoint = ' + Trim(FloatToStrMod(meanTime)) + ^M^J^M^J;
+
   FFitInfo := FFitInfo + 'Number of data points = ' + IntToStr(n_points) + ^M^J;
   FFitInfo := FFitInfo + 'Number of parameters = ' + IntToStr(NofParameters) + ^M^J;
-  FFitInfo := FFitInfo + 'sigma[x_c] = ' + Trim(FloatToStrMod(Power(OCsquared * Double(NofParameters) / Double(n_points) / Double(n_points - NofParameters), 0.5))) + ^M^J;
+  FFitInfo := FFitInfo + 'Σ(O-C)² = ' + Trim(FloatToStrMod(OCsquared)) + ^M^J;
+  FFitInfo := FFitInfo + 'σ = ' + Trim(FloatToStrMod(Sqrt(OCsquared / (n_points - NofParameters)))) + ^M^J;
+  FFitInfo := FFitInfo + 'R.M.S. accuracy of the fit σ[x_c] = ' + Trim(FloatToStrMod(Power(OCsquared * Double(NofParameters) / Double(n_points) / Double(n_points - NofParameters), 0.5))) + ^M^J;
 
   UDFSrcModel.PointsNumber := Length(FModelData[FitColumnType.x]);
   UDFSrcModel.Reset;
