@@ -184,6 +184,7 @@ type
     FModelFolded: TFitColumnArray;
     FFoldedDataColorRegions: TFoldedRegions;
     function GetLCSrcDataCount: Integer;
+    procedure ShowDataPoint(Tool: TDatapointClickTool; AddToFloatTextForm: Boolean);
     procedure UpdateTitle;
     procedure ChartSeriesModelToNil;
     procedure ChartSeriesModelToModel;
@@ -227,7 +228,7 @@ type
     property LCSrcDataCount: Integer read GetLCSrcDataCount;
     property CalculationInProgress: Boolean read FCalculationInProgress;
     procedure SaveDataSettings;
-    procedure DoPolyFitProc(TrendDegree: Integer; const TrigPolyDegrees: TInt5Array; const Frequencies: TDouble5Array);
+    procedure DoPolyFitProc(TrendDegree: Integer; const TrigPolyDegrees: THarmonicIntArray; const Frequencies: THarmonicDblArray);
   end;
 
 var
@@ -329,35 +330,21 @@ begin
 end;
 
 procedure TFormMain.ChartToolsetDataPointClickTool1PointClick(ATool: TChartTool; APoint: TPoint);
-var
-  Tool: TDatapointClickTool;
-  Series: TLineSeries;
-  S, S1: String;
-  X, Y, Error: Double;
 begin
-  Tool := ATool as TDatapointClickTool;
-  if Tool.Series = ChartSeriesData then begin
-    Series := Tool.Series as TLineSeries;
-    X := Series.GetXValue(Tool.PointIndex);
-    Y := Series.GetYValue(Tool.PointIndex);
-    Error := Series.GetYValues(Tool.PointIndex, 1);
-    S1 := Format('x = %g'#13#10'y = %g'#13#10'error = %g', [X, Y, Error]);
-    S := Series.ListSource.Item[Tool.PointIndex]^.Text;
-    if S = S1 then
-      Series.ListSource.SetText(Tool.PointIndex, '')
-    else
-      Series.ListSource.SetText(Tool.PointIndex, S1);
-  end;
+  ShowDataPoint(ATool as TDatapointClickTool, False);
 end;
 
 procedure TFormMain.ChartToolsetDataPointClickTool2PointClick(ATool: TChartTool; APoint: TPoint);
+begin
+  ShowDataPoint(ATool as TDatapointClickTool, True);
+end;
+
+procedure TFormMain.ShowDataPoint(Tool: TDatapointClickTool; AddToFloatTextForm: Boolean);
 var
-  Tool: TDatapointClickTool;
   Series: TLineSeries;
   S1: String;
   X, X0, Y, Error: Double;
 begin
-  Tool := ATool as TDatapointClickTool;
   if Tool.Series = ChartSeriesData then begin
     Series := Tool.Series as TLineSeries;
     X := Series.GetXValue(Tool.PointIndex);
@@ -372,16 +359,23 @@ begin
       X0 := Series.GetXValues(Tool.PointIndex, 1);
       S1 := Format('Phase = %g'#13#10'x = %g'#13#10'y = %g'#13#10'error = %g', [X, X0, Y, Error]);
     end;
-    Series.ListSource.SetText(Tool.PointIndex, S1);
-    if Series.Source = LCSrcData then begin
-      S1 := Format('n = '^I'%d'^I'x = '^I'%g'^I'y = '^I'%g'^I'error = '^I'%g', [Tool.PointIndex + 1, X, Y, Error]);
-    end
-    else
-    if Series.Source = LCSrcFoldedData then begin
-      X0 := Series.GetXValues(Tool.PointIndex, 1);
-      S1 := Format('Phase = '^I'%g'^I'x = '^I'%g'^I'y = '^I'%g'^I'error = '^I'%g', [X, X0, Y, Error]);
+    if not AddToFloatTextForm then begin
+      if Series.ListSource.Item[Tool.PointIndex]^.Text = S1 then
+        Series.ListSource.SetText(Tool.PointIndex, '')
+      else
+        Series.ListSource.SetText(Tool.PointIndex, S1);
+    end else begin
+      Series.ListSource.SetText(Tool.PointIndex, S1);
+      if Series.Source = LCSrcData then begin
+        S1 := Format('n = '^I'%d'^I'x = '^I'%g'^I'y = '^I'%g'^I'error = '^I'%g', [Tool.PointIndex + 1, X, Y, Error]);
+      end
+      else
+      if Series.Source = LCSrcFoldedData then begin
+        X0 := Series.GetXValues(Tool.PointIndex, 1);
+        S1 := Format('Phase = '^I'%g'^I'x = '^I'%g'^I'y = '^I'%g'^I'error = '^I'%g', [X, X0, Y, Error]);
+      end;
+      floattextform.AddText(S1);
     end;
-    floattextform.AddText(S1);
   end;
 end;
 
@@ -940,8 +934,8 @@ end;
 
 procedure TFormMain.CloseFile;
 var
-  tempDArray: TDouble5Array = (NaN, NaN, NaN, NaN, NaN);
-  tempIArray: TInt5Array = (0, 0, 0, 0, 0);
+  tempDArray: THarmonicDblArray = (NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN);
+  tempIArray: THarmonicIntArray = (0, 0, 0, 0, 0, 0, 0, 0, 0);
 begin
   FFileName := '';
   FObjectName := '';
@@ -1468,8 +1462,8 @@ end;
 procedure TFormMain.DoPolyFit;
 var
   TrendDegree: Integer;
-  TrigPolyDegrees: TInt5Array;
-  Frequencies: TDouble5Array;
+  TrigPolyDegrees: THarmonicIntArray;
+  Frequencies: THarmonicDblArray;
 begin
   if LCSrcData.Count > 0 then begin
     if not GetFitParams(TrendDegree, TrigPolyDegrees, Frequencies, False) then
@@ -1479,9 +1473,9 @@ begin
   end;
 end;
 
-procedure TFormMain.DoPolyFitProc(TrendDegree: Integer; const TrigPolyDegrees: TInt5Array; const Frequencies: TDouble5Array);
+procedure TFormMain.DoPolyFitProc(TrendDegree: Integer; const TrigPolyDegrees: THarmonicIntArray; const Frequencies: THarmonicDblArray);
 
-  function FitStepFromFrequencies(Freq: TDouble5Array): Double;
+  function FitStepFromFrequencies(Freq: THarmonicDblArray): Double;
   var
     I: Integer;
     F: Double;
@@ -1504,7 +1498,7 @@ var
   OCsquared: Double;
   meanTime: Double;
   fitXmin, fitXmax, fitXstep, t_scale: Double;
-  tempFrequencies: TDouble5Array;
+  tempFrequencies: THarmonicDblArray;
   nfit: Integer;
   Item: PChartDataItem;
   I: Integer;

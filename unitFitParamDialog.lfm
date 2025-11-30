@@ -1,16 +1,15 @@
 object FormFitparams: TFormFitparams
   Left = 446
-  Height = 318
+  Height = 436
   Top = 215
   Width = 308
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Parameters'
-  ClientHeight = 318
+  ClientHeight = 436
   ClientWidth = 308
-  OnCreate = FormCreate
   Position = poMainFormCenter
-  LCLVersion = '3.8.0.0'
+  OnCreate = FormCreate
   object EditPeriod1: TEdit
     Left = 72
     Height = 23
@@ -21,22 +20,22 @@ object FormFitparams: TFormFitparams
   object ButtonOk: TButton
     Left = 72
     Height = 25
-    Top = 272
+    Top = 392
     Width = 75
     Caption = 'OK'
     Default = True
-    TabOrder = 11
+    TabOrder = 19
     OnClick = ButtonOkClick
   end
   object ButtonCancel: TButton
     Left = 192
     Height = 25
-    Top = 272
+    Top = 392
     Width = 75
     Cancel = True
     Caption = 'Cancel'
     ModalResult = 2
-    TabOrder = 12
+    TabOrder = 20
   end
   object LabelTrigPoly: TLabel
     Left = 16
@@ -191,5 +190,117 @@ object FormFitparams: TFormFitparams
     Top = 219
     Width = 46
     Caption = 'Degree 5'
+  end
+  object EditPeriod6: TEdit
+    Left = 72
+    Height = 23
+    Top = 248
+    Width = 112
+    TabOrder = 11
+  end
+  object EditTrigDeg6: TEdit
+    Left = 248
+    Height = 23
+    Top = 248
+    Width = 40
+    TabOrder = 12
+  end
+  object LabelPeriod6: TLabel
+    Left = 16
+    Height = 15
+    Top = 251
+    Width = 43
+    Caption = 'Period 6'
+  end
+  object LabelTrigDeg6: TLabel
+    Left = 196
+    Height = 15
+    Top = 251
+    Width = 46
+    Caption = 'Degree 6'
+  end
+  object EditPeriod7: TEdit
+    Left = 72
+    Height = 23
+    Top = 280
+    Width = 112
+    TabOrder = 13
+  end
+  object EditTrigDeg7: TEdit
+    Left = 248
+    Height = 23
+    Top = 280
+    Width = 40
+    TabOrder = 14
+  end
+  object LabelPeriod7: TLabel
+    Left = 16
+    Height = 15
+    Top = 283
+    Width = 43
+    Caption = 'Period 7'
+  end
+  object LabelTrigDeg7: TLabel
+    Left = 196
+    Height = 15
+    Top = 283
+    Width = 46
+    Caption = 'Degree 7'
+  end
+  object EditPeriod8: TEdit
+    Left = 72
+    Height = 23
+    Top = 312
+    Width = 112
+    TabOrder = 15
+  end
+  object EditTrigDeg8: TEdit
+    Left = 248
+    Height = 23
+    Top = 312
+    Width = 40
+    TabOrder = 16
+  end
+  object LabelPeriod8: TLabel
+    Left = 16
+    Height = 15
+    Top = 315
+    Width = 43
+    Caption = 'Period 8'
+  end
+  object LabelTrigDeg8: TLabel
+    Left = 196
+    Height = 15
+    Top = 315
+    Width = 46
+    Caption = 'Degree 8'
+  end
+  object EditPeriod9: TEdit
+    Left = 72
+    Height = 23
+    Top = 344
+    Width = 112
+    TabOrder = 17
+  end
+  object EditTrigDeg9: TEdit
+    Left = 248
+    Height = 23
+    Top = 339
+    Width = 40
+    TabOrder = 18
+  end
+  object LabelPeriod9: TLabel
+    Left = 16
+    Height = 15
+    Top = 347
+    Width = 43
+    Caption = 'Period 9'
+  end
+  object LabelTrigDeg9: TLabel
+    Left = 196
+    Height = 15
+    Top = 347
+    Width = 46
+    Caption = 'Degree 9'
   end
 end

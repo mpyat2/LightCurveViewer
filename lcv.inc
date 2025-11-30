@@ -1,6 +1,7 @@
 
 //{$R+}
 {$Q+}
+{$ASSERTIONS ON}
 
 {$DEFINE DYNAMIC_LOAD_LIB}
 

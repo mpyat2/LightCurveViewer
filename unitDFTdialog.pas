@@ -75,7 +75,7 @@ type
     FSelectCellEventActive: Boolean;
     FSelectedPointIndex: Integer;
     FTrendDegreeForModel: Integer;
-    FTrigPolyDegreesForModel: TInt5Array;
+    FTrigPolyDegreesForModel: THarmonicIntArray;
     FApplyPhasePlotParamsProc: TApplyPhasePlotParams;
     FmaximaX: TDoubleArray;
     FmaximaY: TDoubleArray;
@@ -268,7 +268,7 @@ end;
 
 procedure TFormDFTDialog.ButtonModelClick(Sender: TObject);
 var
-  Frequencies: TDouble5Array;
+  Frequencies: THarmonicDblArray;
   SelectedArray: TBooleanArray;
   I, N: Integer;
 begin

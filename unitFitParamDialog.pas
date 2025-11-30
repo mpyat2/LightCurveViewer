@@ -17,52 +17,68 @@ type
   TFormFitparams = class(TForm)
     ButtonOk: TButton;
     ButtonCancel: TButton;
-    EditPeriod4: TEdit;
-    EditPeriod5: TEdit;
-    EditTrigDeg4: TEdit;
-    EditTrigDeg5: TEdit;
-    LabelPeriod4: TLabel;
-    LabelPeriod5: TLabel;
     LabelTrendDegree: TLabel;
-    LabelTrigDeg4: TLabel;
-    LabelTrigDeg5: TLabel;
     LabelTrigPoly: TLabel;
     LabelPeriod1: TLabel;
     LabelPeriod2: TLabel;
     LabelPeriod3: TLabel;
+    LabelPeriod4: TLabel;
+    LabelPeriod5: TLabel;
+    LabelPeriod6: TLabel;
+    LabelPeriod7: TLabel;
+    LabelPeriod8: TLabel;
+    LabelPeriod9: TLabel;
     LabelTrigDeg1: TLabel;
     LabelTrigDeg2: TLabel;
     LabelTrigDeg3: TLabel;
+    LabelTrigDeg4: TLabel;
+    LabelTrigDeg5: TLabel;
+    LabelTrigDeg6: TLabel;
+    LabelTrigDeg7: TLabel;
+    LabelTrigDeg8: TLabel;
+    LabelTrigDeg9: TLabel;
     EditTrendDegree: TEdit;
     EditPeriod1: TEdit;
     EditPeriod2: TEdit;
     EditPeriod3: TEdit;
+    EditPeriod4: TEdit;
+    EditPeriod5: TEdit;
+    EditPeriod6: TEdit;
+    EditPeriod7: TEdit;
+    EditPeriod8: TEdit;
+    EditPeriod9: TEdit;
     EditTrigDeg1: TEdit;
     EditTrigDeg2: TEdit;
     EditTrigDeg3: TEdit;
+    EditTrigDeg4: TEdit;
+    EditTrigDeg5: TEdit;
+    EditTrigDeg6: TEdit;
+    EditTrigDeg7: TEdit;
+    EditTrigDeg8: TEdit;
+    EditTrigDeg9: TEdit;
     procedure ButtonOkClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
     FTrendDegree: Integer;
-    FPeriods: TDouble5Array;
-    FTrigPolyDegrees: TInt5Array;
+    FPeriods: THarmonicDblArray;
+    FTrigPolyDegrees: THarmonicIntArray;
   public
 
   end;
 
 procedure SetCurrentTrendDegree(AValue: Integer);
 
-procedure SetCurrentPeriods(const AValue: TDouble5Array);
+procedure SetCurrentPeriods(const AValue: THarmonicDblArray);
 
-procedure SetCurrentTrigPolyDegrees(const AValue: TInt5Array);
+procedure SetCurrentTrigPolyDegrees(const AValue: THarmonicIntArray);
 
 procedure SaveParameters(const Ini: TCustomIniFile; const Section: string);
 
 procedure LoadParameters(const Ini: TCustomIniFile; const Section: string);
 
 function GetFitParams(var ATrendDegree: Integer;
-                      var ATrigPolyDegrees: TInt5Array;
-                      var AFrequencies: TDouble5Array;
+                      var ATrigPolyDegrees: THarmonicIntArray;
+                      var AFrequencies: THarmonicDblArray;
                       UseInitialValues: Boolean): Boolean;
 
 implementation
@@ -74,20 +90,20 @@ uses
 
 var
   CurrentTrendDegree: Integer = 1;
-  CurrentPeriods: TDouble5Array = (NaN, NaN, NaN, NaN, NaN);
-  CurrentTrigPolyDegrees: TInt5Array = (0, 0, 0, 0, 0);
+  CurrentPeriods: THarmonicDblArray = (NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN);
+  CurrentTrigPolyDegrees: THarmonicIntArray = (0, 0, 0, 0, 0, 0, 0, 0, 0);
 
 procedure SetCurrentTrendDegree(AValue: Integer);
 begin
   CurrentTrendDegree := AValue;
 end;
 
-procedure SetCurrentPeriods(const AValue: TDouble5Array);
+procedure SetCurrentPeriods(const AValue: THarmonicDblArray);
 begin
   CurrentPeriods := AValue;
 end;
 
-procedure SetCurrentTrigPolyDegrees(const AValue: TInt5Array);
+procedure SetCurrentTrigPolyDegrees(const AValue: THarmonicIntArray);
 begin
   CurrentTrigPolyDegrees := AValue;
 end;
@@ -115,8 +131,8 @@ begin
 end;
 
 function GetFitParams(var ATrendDegree: Integer;
-                      var ATrigPolyDegrees: TInt5Array;
-                      var AFrequencies: TDouble5Array;
+                      var ATrigPolyDegrees: THarmonicIntArray;
+                      var AFrequencies: THarmonicDblArray;
                       UseInitialValues: Boolean): Boolean;
 var
   Edit: TEdit;
@@ -185,8 +201,8 @@ procedure TFormFitparams.ButtonOkClick(Sender: TObject);
 var
   Edit: TEdit;
   Lab: TLabel;
-  Periods: TDouble5Array;
-  TrigPolyDegrees: TInt5Array;
+  Periods: THarmonicDblArray;
+  TrigPolyDegrees: THarmonicIntArray;
   TrendDegree: Integer;
   I: Integer;
 begin
