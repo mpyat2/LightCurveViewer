@@ -18,6 +18,7 @@ type
 type
   TDoubleArray = array of Double;
   TIntegerArray = array of Integer;
+  TBooleanArray = array of Boolean;
   TInt5Array = array[0..4] of Integer;
   TDouble5Array = array[0..4] of Double;
   TFitColumnArray = array[FitColumnType] of TDoubleArray;

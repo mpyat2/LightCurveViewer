@@ -20,8 +20,9 @@ type
     ActionGridSelectAll: TAction;
     ActionGridCopy: TAction;
     ActionList: TActionList;
+    ButtonClearChecked: TButton;
     ButtonClose: TButton;
-    ButtonModelFromMaxima: TButton;
+    ButtonModel: TButton;
     ButtonPhasePlot: TButton;
     Chart1: TChart;
     Chart1LineSeries1: TLineSeries;
@@ -53,12 +54,17 @@ type
     procedure ActionGridCopyExecute(Sender: TObject);
     procedure ActionGridSelectAllExecute(Sender: TObject);
     procedure ActionListUpdate(AAction: TBasicAction; var Handled: Boolean);
+    procedure ButtonClearCheckedClick(Sender: TObject);
     procedure ButtonCloseClick(Sender: TObject);
     procedure ButtonModelClick(Sender: TObject);
     procedure ButtonPhasePlotClick(Sender: TObject);
     procedure ChartToolset1DataPointClickTool1BeforeMouseUp(ATool: TChartTool; APoint: TPoint);
     procedure ChartToolset1DataPointClickTool1PointClick(ATool: TChartTool; APoint: TPoint);
+    procedure DrawGridFrequenciesCheckboxToggled(Sender: TObject; aCol, aRow: Integer; aState: TCheckboxState);
+    procedure DrawGridFrequenciesGetCheckboxState(Sender: TObject; ACol, ARow: Integer; var Value: TCheckboxState);
     procedure DrawGridFrequenciesSelectCell(Sender: TObject; aCol, aRow: Integer; var CanSelect: Boolean);
+    procedure DrawGridMaximaCheckboxToggled(Sender: TObject; aCol, aRow: Integer; aState: TCheckboxState);
+    procedure DrawGridMaximaGetCheckboxState(Sender: TObject; ACol, ARow: Integer; var Value: TCheckboxState);
     procedure DrawGridMaximaSelectCell(Sender: TObject; aCol, aRow: Integer; var CanSelect: Boolean);
     procedure GridDrawCell(Sender: TObject; aCol, aRow: Integer; aRect: TRect; aState: TGridDrawState);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -74,14 +80,14 @@ type
     FmaximaX: TDoubleArray;
     FmaximaY: TDoubleArray;
     FmaximaN: TIntegerArray;
-    function GetGrid1Frequency(R: Integer): Double;
-    function GetGrid2Frequency(R: Integer): Double;
-    function GetGridFrequency(Grid: TDrawGrid; R: Integer): Double;
+    FMaximumChecked: TBooleanArray;
+    FFrequencyChecked: TBooleanArray;
     function GetGrid1Cell(C, R: Integer): string;
     function GetGrid2Cell(C, R: Integer): string;
     function GetGridCell(Grid: TDrawGrid; C, R: Integer): string;
     function GetSelectedRowsAsString(Grid: TDrawGrid): string;
     procedure InitMaxima;
+    procedure InitFrequency;
     procedure UnSelectChartPoint;
     procedure SelectChartPoint(Series: TChartSeries; PointIndex: Integer);
     procedure SelectGrid1Row(PointIndex: Integer);
@@ -146,22 +152,8 @@ begin
     end;
 
     F.InitMaxima;
-
-    F.DrawGridFrequencies.ColCount := 3 + F.DrawGridFrequencies.FixedCols;
-    F.DrawGridFrequencies.RowCount := F.DrawGridFrequencies.FixedRows + 1;
-    if F.Chart1LineSeries1.Count > 0 then
-      F.DrawGridFrequencies.RowCount := F.Chart1LineSeries1.Count + F.DrawGridFrequencies.FixedRows;
-
-    F.DrawGridMaxima.ColCount := 3 + F.DrawGridMaxima.FixedCols;
-    F.DrawGridMaxima.RowCount := F.DrawGridMaxima.FixedRows + 1;
-    if Length(F.FMaximaX) > 0 then
-      F.DrawGridMaxima.RowCount := Length(F.FMaximaX) + F.DrawGridMaxima.FixedRows;
-
-    F.DrawGridFrequencies.SelectedColor := UnsincSelectColor;
-    F.DrawGridMaxima.SelectedColor := UnsincSelectColor;
-
+    F.InitFrequency;
     F.FSelectedPointIndex := -1;
-
     F.FApplyPhasePlotParamsProc := ApplyPhasePlotParamsProc;
   except
     F.Release;
@@ -214,7 +206,7 @@ begin
     Exit;
   Selection.Top := Grid.FixedRows;
   Selection.Bottom := Grid.RowCount - 1;
-  Selection.Left := Grid.FixedCols;
+  Selection.Left := 1; // 1st column (Col = 0): checkboxes!
   Selection.Right := Grid.ColCount - 1;
   Grid.Selection := Selection;
 end;
@@ -257,37 +249,65 @@ begin
   Close;
 end;
 
+procedure TFormDFTDialog.ButtonClearCheckedClick(Sender: TObject);
+var
+  I: Integer;
+begin
+  if PageControl1.ActivePage = TabSheetFrequencies then begin
+    for I := 0 to Length(FMaximumChecked) - 1 do
+      FMaximumChecked[I] := False;
+    DrawGridMaxima.Repaint;
+  end
+  else
+  if PageControl1.ActivePage = TabSheetTable then begin
+    for I := 0 to Length(FFrequencyChecked) - 1 do
+      FFrequencyChecked[I] := False;
+    DrawGridFrequencies.Repaint;
+  end;
+end;
+
 procedure TFormDFTDialog.ButtonModelClick(Sender: TObject);
 var
   Frequencies: TDouble5Array;
-  Grid: TDrawGrid;
-  R, N: Integer;
+  SelectedArray: TBooleanArray;
+  I, N: Integer;
 begin
   if not FormMain.CalculationInProgress and (FormMain.LCSrcDataCount > 0) then begin
     if PageControl1.ActivePage = TabSheetFrequencies then begin
-      Grid := DrawGridMaxima;
+      SelectedArray := FMaximumChecked;
     end
     else
     if PageControl1.ActivePage = TabSheetTable then begin
-      Grid := DrawGridFrequencies;
+      SelectedArray := FFrequencyChecked;
     end
     else
       Exit;
 
-    for R := 0 to Length(Frequencies) - 1 do
-      Frequencies[R] := NaN;
+    for I := 0 to Length(Frequencies) - 1 do
+      Frequencies[I] := NaN;
 
     N := 0;
-    for R := Grid.FixedRows to Grid.RowCount - 1 do begin
-      if Grid.IsCellSelected[Grid.FixedCols, R] then begin
+    for I := 0 to Length(SelectedArray) - 1 do begin
+      if SelectedArray[I] then begin
         if N > Length(Frequencies) - 1 then begin
           ShowMessage('In the current implementation, no more than ' + IntToStr(Length(Frequencies)) + ' independent frequencies are allowed.' + ^M^J +
                       'Please select fewer frequencies');
           Exit;
         end;
-        Frequencies[N] := GetGridFrequency(Grid, R);
+        if SelectedArray = FFrequencyChecked then
+          Frequencies[N] := Chart1LineSeries1.GetXValue(I)
+        else
+        if SelectedArray = FMaximumChecked then
+          Frequencies[N] := FmaximaX[I]
+        else
+          Frequencies[N] := NaN;
         Inc(N);
       end;
+    end;
+
+    if N = 0 then begin
+      ShowMessage('No frequencies selected');
+      Exit;
     end;
 
     if not GetFitParams(FTrendDegreeForModel, FTrigPolyDegreesForModel, Frequencies, True) then
@@ -343,6 +363,30 @@ begin
   SelectGrid2Row(PointIndex);
 end;
 
+procedure TFormDFTDialog.DrawGridFrequenciesCheckboxToggled(Sender: TObject; aCol, aRow: Integer; aState: TCheckboxState);
+var
+  Index: Integer;
+begin
+  Index := aRow - DrawGridFrequencies.FixedRows;
+  if (Index >= 0) and (Index < Length(FFrequencyChecked)) then
+     FFrequencyChecked[Index] := not FFrequencyChecked[Index];
+end;
+
+procedure TFormDFTDialog.DrawGridFrequenciesGetCheckboxState(Sender: TObject; ACol, ARow: Integer; var Value: TCheckboxState);
+var
+  Index: Integer;
+begin
+  Index := aRow - DrawGridFrequencies.FixedRows;
+  if (Index >= 0) and (Index < Length(FFrequencyChecked)) then begin
+    if FFrequencyChecked[Index] then
+       Value := cbChecked
+     else
+       Value := cbUnchecked;
+    end
+  else
+    Value := cbGrayed;
+end;
+
 procedure TFormDFTDialog.DrawGridFrequenciesSelectCell(Sender: TObject; aCol, aRow: Integer; var CanSelect: Boolean);
 var
   PointIndex: Integer;
@@ -360,6 +404,30 @@ begin
       SelectGrid2Row(PointIndex);
     end;
   end;
+end;
+
+procedure TFormDFTDialog.DrawGridMaximaCheckboxToggled(Sender: TObject; aCol, aRow: Integer; aState: TCheckboxState);
+var
+  Index: Integer;
+begin
+  Index := aRow - DrawGridMaxima.FixedRows;
+  if (Index >= 0) and (Index < Length(FMaximumChecked)) then
+     FMaximumChecked[Index] := not FMaximumChecked[Index];
+end;
+
+procedure TFormDFTDialog.DrawGridMaximaGetCheckboxState(Sender: TObject; ACol, ARow: Integer; var Value: TCheckboxState);
+var
+  Index: Integer;
+begin
+  Index := aRow - DrawGridMaxima.FixedRows;
+  if (Index >= 0) and (Index < Length(FMaximumChecked)) then begin
+     if FMaximumChecked[Index] then
+       Value := cbChecked
+     else
+       Value := cbUnchecked;
+  end
+  else
+    Value := cbGrayed;
 end;
 
 procedure TFormDFTDialog.DrawGridMaximaSelectCell(Sender: TObject; aCol, aRow: Integer; var CanSelect: Boolean);
@@ -425,7 +493,7 @@ begin
     DrawGridFrequencies.SelectedColor := UnsincSelectColor;
     if PointIndex < 0 then
       Exit;
-    GridSelection.Left := DrawGridFrequencies.FixedCols;
+    GridSelection.Left := 0;
     GridSelection.Right := DrawGridFrequencies.ColCount - 1;
     GridSelection.Top := DrawGridFrequencies.FixedRows + PointIndex;
     GridSelection.Bottom := GridSelection.Top;
@@ -476,7 +544,7 @@ begin
     end;
     if (N < 0) and (Napprox < 0) then
       Exit;
-    GridSelection.Left := DrawGridMaxima.FixedCols;
+    GridSelection.Left := 0;
     GridSelection.Right := DrawGridMaxima.ColCount - 1;
     if N >= 0 then
       GridSelection.Top := DrawGridMaxima.FixedRows + N
@@ -502,80 +570,32 @@ begin
   GridCanvas.TextRect(aRect, aRect.Left + 2, aRect.Top + 2, GetGridCell(Grid, aCol, aRow));
 end;
 
-function TFormDFTDialog.GetGrid1Frequency(R: Integer): Double;
-begin
-  Result := NaN;
-  if R < DrawGridFrequencies.FixedRows + Chart1LineSeries1.Count then begin
-    if R >= DrawGridFrequencies.FixedRows then begin
-      Result := Chart1LineSeries1.XValue[R - DrawGridFrequencies.FixedRows];
-    end;
-  end;
-end;
-
-function TFormDFTDialog.GetGrid2Frequency(R: Integer): Double;
-begin
-  Result := NaN;
-  if R < DrawGridMaxima.FixedRows + Length(FmaximaX) then begin
-    if R >= DrawGridMaxima.FixedRows then begin
-      Result := FmaximaX[R - DrawGridMaxima.FixedRows];
-    end;
-  end;
-end;
-
-function TFormDFTDialog.GetGridFrequency(Grid: TDrawGrid; R: Integer): Double;
-begin
-  Result := NaN;
-  if Grid = DrawGridFrequencies then
-    Result := GetGrid1Frequency(R)
-  else
-  if Grid = DrawGridMaxima then
-    Result := GetGrid2Frequency(R);
-end;
-
 function TFormDFTDialog.GetGrid1Cell(C, R: Integer): string;
 var
   V: Double;
 begin
   Result := '';
-  if R < DrawGridFrequencies.FixedRows + Chart1LineSeries1.Count then begin
-    if R >= DrawGridFrequencies.FixedRows then begin
-      if C = DrawGridFrequencies.FixedCols then
-        V := Chart1LineSeries1.XValue[R - DrawGridFrequencies.FixedRows]
-      else
-      if C = DrawGridFrequencies.FixedCols + 1 then
-        V := Chart1LineSeries1.YValue[R - DrawGridFrequencies.FixedRows]
-      else
-      if C = DrawGridFrequencies.FixedCols + 2 then begin
-        V := Chart1LineSeries1.XValue[R - DrawGridFrequencies.FixedRows];
-        if V <> 0 then begin
-          try
-            V := 1.0 / V
-          except
-            Result := '*ERROR*';
-            Exit;
-          end;
-        end
-        else begin
-          Result := '';
-          Exit;
-        end;
-      end
-      else
-        Exit;
-      Result := FloatToStr(V);
-    end
-    else begin
-      if C = DrawGridFrequencies.FixedCols then
-        Result := 'Frequency'
-      else
-      if C = DrawGridFrequencies.FixedCols + 1 then
-        Result := 'Power'
-      else
-      if C = DrawGridFrequencies.FixedCols + 2 then
-        Result := 'Period'
-      else
-        Exit;
+  if (R >= DrawGridFrequencies.FixedRows) and (R < DrawGridFrequencies.FixedRows + Chart1LineSeries1.Count) then begin
+    case C of
+      1: V := Chart1LineSeries1.XValue[R - DrawGridFrequencies.FixedRows];
+      2: V := Chart1LineSeries1.YValue[R - DrawGridFrequencies.FixedRows];
+      3: begin
+           V := Chart1LineSeries1.XValue[R - DrawGridFrequencies.FixedRows];
+           if V <> 0 then begin
+             try
+               V := 1.0 / V
+             except
+               Result := '*ERROR*';
+               Exit;
+             end;
+           end
+           else
+             Exit;
+         end
+         else
+           Exit;
     end;
+    Result := FloatToStr(V);
   end;
 end;
 
@@ -584,45 +604,27 @@ var
   V: Double;
 begin
   Result := '';
-  if R < DrawGridMaxima.FixedRows + Length(FmaximaX) then begin
-    if R >= DrawGridMaxima.FixedRows then begin
-      if C = DrawGridMaxima.FixedCols then
-        V := FmaximaX[R - DrawGridMaxima.FixedRows]
-      else
-      if C = DrawGridMaxima.FixedCols + 1 then
-        V := FMaximaY[R - DrawGridMaxima.FixedRows]
-      else
-      if C = DrawGridFrequencies.FixedCols + 2 then begin
-        V := FmaximaX[R - DrawGridMaxima.FixedRows];
-        if V <> 0 then begin
-          try
-            V := 1.0 / V
-          except
-            Result := '*ERROR*';
-            Exit;
-          end;
-        end
-        else begin
-          Result := '';
-          Exit;
-        end;
-      end
-      else
-        Exit;
-      Result := FloatToStr(V);
-    end
-    else begin
-      if C = DrawGridMaxima.FixedCols then
-        Result := 'Frequency (Maxima)'
-      else
-      if C = DrawGridMaxima.FixedCols + 1 then
-        Result := 'Power'
-      else
-      if C = DrawGridFrequencies.FixedCols + 2 then
-        Result := 'Period'
+  if (R >= DrawGridMaxima.FixedRows) and (R < DrawGridMaxima.FixedRows + Length(FmaximaX)) then begin
+    case C of
+      1: V := FmaximaX[R - DrawGridMaxima.FixedRows];
+      2: V := FMaximaY[R - DrawGridMaxima.FixedRows];
+      3: begin
+           V := FmaximaX[R - DrawGridMaxima.FixedRows];
+           if V <> 0 then begin
+             try
+                V := 1.0 / V
+              except
+                Result := '*ERROR*';
+                Exit;
+              end;
+           end
+           else
+             Exit;
+         end;
       else
         Exit;
     end;
+    Result := FloatToStr(V);
   end;
 end;
 
@@ -642,13 +644,13 @@ var
   R, C: Integer;
 begin
   // Multiselection: full rows only!
+  // 1st column: checkboxes (Col = 0)!
   Result := '';
   for R := Grid.FixedRows to Grid.RowCount - 1 do begin
     S2 := '';
-    if Grid.IsCellSelected[Grid.FixedCols, R] then begin
-      for C := Grid.FixedCols to Grid.ColCount - 1 do begin
+    if Grid.IsCellSelected[1, R] then begin
+      for C := 1 to Grid.ColCount - 1 do
         S2 := S2 + GetGridCell(Grid, C, R) + ^I;
-      end;
       if (Length(S2) > 0) and (S2[Length(S2)] = ^I) then
         Delete(S2, Length(S2), 1);
       Result := Result + S2 + ^M^J;
@@ -682,6 +684,21 @@ begin
   SetLength(FmaximaY, N);
   SetLength(FmaximaN, N);
   SortDataNPointsYDesc(FmaximaX, FmaximaY, FmaximaN);
+  SetLength(FMaximumChecked, N); // All elements initialized to False
+
+  DrawGridMaxima.RowCount := DrawGridMaxima.FixedRows + 1;
+  if Length(FMaximaX) > 0 then
+    DrawGridMaxima.RowCount := Length(FMaximaX) + DrawGridMaxima.FixedRows;
+  DrawGridMaxima.SelectedColor := UnsincSelectColor;
+end;
+
+procedure TFormDFTDialog.InitFrequency;
+begin
+  SetLength(FFrequencyChecked, Chart1LineSeries1.Count); // All elements initialized to False
+
+  DrawGridFrequencies.RowCount := DrawGridFrequencies.FixedRows + 1;
+  if Chart1LineSeries1.Count > 0 then
+    DrawGridFrequencies.RowCount := Chart1LineSeries1.Count + DrawGridFrequencies.FixedRows;
 end;
 
 end.

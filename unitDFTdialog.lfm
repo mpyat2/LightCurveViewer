@@ -10,7 +10,6 @@ object FormDFTDialog: TFormDFTDialog
   FormStyle = fsStayOnTop
   Position = poMainFormCenter
   ShowInTaskBar = stNever
-  LCLVersion = '4.0.0.4'
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -96,17 +95,37 @@ object FormDFTDialog: TFormDFTDialog
         Top = 400
         Width = 710
         Align = alBottom
-        ColCount = 2
+        ColCount = 4
+        Columns = <        
+          item
+            ButtonStyle = cbsCheckboxColumn
+            Title.Caption = 'Model'
+            Width = 40
+          end        
+          item
+            ReadOnly = True
+            Title.Caption = 'Frequency (Maxima)'
+          end        
+          item
+            ReadOnly = True
+            Title.Caption = 'Power'
+          end        
+          item
+            ReadOnly = True
+            Title.Caption = 'Period'
+          end>
         DefaultColWidth = 200
         ExtendedSelect = False
         FixedCols = 0
-        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect, goSmoothScroll]
+        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goEditing, goRowSelect, goSmoothScroll]
         PopupMenu = PopupMenuGrid
         RangeSelectMode = rsmMulti
         RowCount = 10
         TabOrder = 2
         UseXORFeatures = True
+        OnCheckboxToggled = DrawGridMaximaCheckboxToggled
         OnDrawCell = GridDrawCell
+        OnGetCheckboxState = DrawGridMaximaGetCheckboxState
         OnSelectCell = DrawGridMaximaSelectCell
       end
       object PanelPhasePlot: TPanel
@@ -186,16 +205,36 @@ object FormDFTDialog: TFormDFTDialog
         Top = 0
         Width = 710
         Align = alClient
-        ColCount = 2
+        ColCount = 4
+        Columns = <        
+          item
+            ButtonStyle = cbsCheckboxColumn
+            Title.Caption = 'Model'
+            Width = 40
+          end        
+          item
+            ReadOnly = True
+            Title.Caption = 'Frequency'
+          end        
+          item
+            ReadOnly = True
+            Title.Caption = 'Power'
+          end        
+          item
+            ReadOnly = True
+            Title.Caption = 'Period'
+          end>
         DefaultColWidth = 200
         ExtendedSelect = False
         FixedCols = 0
-        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect, goSmoothScroll]
+        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goEditing, goRowSelect, goSmoothScroll]
         PopupMenu = PopupMenuGrid
         RangeSelectMode = rsmMulti
         TabOrder = 0
         UseXORFeatures = True
+        OnCheckboxToggled = DrawGridFrequenciesCheckboxToggled
         OnDrawCell = GridDrawCell
+        OnGetCheckboxState = DrawGridFrequenciesGetCheckboxState
         OnSelectCell = DrawGridFrequenciesSelectCell
       end
     end
@@ -209,7 +248,7 @@ object FormDFTDialog: TFormDFTDialog
     ClientHeight = 32
     ClientWidth = 718
     TabOrder = 1
-    object ButtonModelFromMaxima: TButton
+    object ButtonModel: TButton
       Left = 8
       Height = 25
       Top = 0
@@ -227,6 +266,15 @@ object FormDFTDialog: TFormDFTDialog
       Caption = 'Close'
       TabOrder = 1
       OnClick = ButtonCloseClick
+    end
+    object ButtonClearChecked: TButton
+      Left = 96
+      Height = 25
+      Top = 0
+      Width = 75
+      Caption = 'Uncheck All'
+      TabOrder = 2
+      OnClick = ButtonClearCheckedClick
     end
   end
   object PopupMenuGrid: TPopupMenu
