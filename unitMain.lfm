@@ -8,7 +8,7 @@ object FormMain: TFormMain
   ClientWidth = 800
   Menu = MainMenu
   Position = poDefaultPosOnly
-  LCLVersion = '4.0.0.4'
+  LCLVersion = '4.4.0.0'
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
@@ -128,7 +128,7 @@ object FormMain: TFormMain
     end
     object ToolButtonDiv1: TToolButton
       Left = 24
-      Height = 5
+      Height = 22
       Top = 2
       Caption = 'ToolButtonDiv1'
       Style = tbsDivider
@@ -145,7 +145,7 @@ object FormMain: TFormMain
     end
     object ToolButtonDiv2: TToolButton
       Left = 75
-      Height = 5
+      Height = 22
       Top = 2
       Caption = 'ToolButtonDiv2'
       Style = tbsDivider
@@ -167,7 +167,7 @@ object FormMain: TFormMain
     end
     object ToolButtonDiv3: TToolButton
       Left = 149
-      Height = 5
+      Height = 22
       Top = 2
       Caption = 'ToolButtonDiv3'
       Style = tbsDivider
@@ -368,12 +368,14 @@ object FormMain: TFormMain
     object ActionPeriodogram: TAction
       Category = 'Analyses'
       Caption = '&Periodogram...'
+      Hint = 'Periodogram'
       ImageIndex = 5
       OnExecute = ActionPeriodogramExecute
     end
     object ActionPolyFit: TAction
       Category = 'Analyses'
       Caption = 'Polynomial &Approximation...'
+      Hint = 'Polynomial fit'
       ImageIndex = 6
       OnExecute = ActionPolyFitExecute
     end
