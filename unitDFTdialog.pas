@@ -206,7 +206,7 @@ begin
     Exit;
   Selection.Top := Grid.FixedRows;
   Selection.Bottom := Grid.RowCount - 1;
-  Selection.Left := 1; // 1st column (Col = 0): checkboxes!
+  Selection.Left := 0; // Assuming there is no fixed columns!
   Selection.Right := Grid.ColCount - 1;
   Grid.Selection := Selection;
 end;
@@ -644,7 +644,7 @@ var
   R, C: Integer;
 begin
   // Multiselection: full rows only!
-  // 1st column: checkboxes (Col = 0)!
+  // 1st column: checkboxes (Col = 0)! Ignore it!
   Result := '';
   for R := Grid.FixedRows to Grid.RowCount - 1 do begin
     S2 := '';

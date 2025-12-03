@@ -10,7 +10,7 @@ object FormDFTDialog: TFormDFTDialog
   FormStyle = fsStayOnTop
   Position = poMainFormCenter
   ShowInTaskBar = stNever
-  LCLVersion = '4.0.0.4'
+  LCLVersion = '4.4.0.0'
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
