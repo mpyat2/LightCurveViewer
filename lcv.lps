@@ -80,7 +80,7 @@
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="5"/>
         <TopLine Value="377"/>
-        <CursorPos X="12" Y="409"/>
+        <CursorPos Y="409"/>
         <UsageCount Value="218"/>
         <Loaded Value="True"/>
       </Unit>
@@ -558,7 +558,7 @@
         <Loaded Value="True"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="29">
+    <JumpHistory HistoryIndex="28">
       <Position>
         <Filename Value="unitMain.pas"/>
         <Caret Line="1472" Column="28" TopLine="1453"/>
@@ -662,10 +662,6 @@
       </Position>
       <Position>
         <Filename Value="unitDFTdialog.pas"/>
-        <Caret Line="195" Column="45" TopLine="235"/>
-      </Position>
-      <Position>
-        <Filename Value="unitDFTdialog.pas"/>
       </Position>
       <Position>
         <Filename Value="unitDFTdialog.pas"/>
@@ -699,7 +695,6 @@
         <Item7 Value="..\testdata\FI_SGE_Sector54.tsv -test-dgesl"/>
         <Item8 Value="testdata\FI_SGE_Sector54.tsv"/>
       </List>
-      <List Name="WorkingDirectory" Type="File" Count="1"/>
     </HistoryLists>
   </ProjectSession>
   <Debugging>
