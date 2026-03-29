@@ -9,3 +9,9 @@ Andronov, I. L., Advanced Time Series Analysis of Generally Irregularly Spaced S
 
 ![Screenshot1](screenshots/Screenshot1.png)
 ![Screenshot2](screenshots/Screenshot2.png)
+
+---
+
+The software uses the Intel OneMKL library
+
+---
