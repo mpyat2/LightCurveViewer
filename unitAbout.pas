@@ -78,7 +78,9 @@ begin
   'Andronov, I. L., Advanced Time Series Analysis of Generally Irregularly Spaced Signals: ' +
   'Beyond the Oversimplified Methods, ' +
   'Knowledge Discovery in Big Data from Astronomy and Earth Observation, 1st Edition. ' +
-  'Edited by Petr Skoda and Fathalrahman Adam. ISBN: 978-0-128-19154-5. Elsevier, 2020, p.191-224 [2020kdbd.book..191A]';
+  'Edited by Petr Skoda and Fathalrahman Adam. ISBN: 978-0-128-19154-5. Elsevier, 2020, p.191-224 [2020kdbd.book..191A]'^M^J^M^J +
+  'This program uses the Intel OneMKL library'^M^J +
+  'https://www.intel.com/content/www/us/en/developer/tools/oneapi/onemkl.html';
 end;
 
 end.

@@ -70,24 +70,20 @@ object FormDFTDialog: TFormDFTDialog
           LinePen.Color = clRed
           LineType = ltNone
           Pointer.Brush.Style = bsClear
-          Pointer.HorizSize = 6
           Pointer.Pen.Color = clRed
           Pointer.Pen.Width = 2
           Pointer.Style = psCircle
-          Pointer.VertSize = 6
           Pointer.Visible = True
           ShowPoints = True
         end
         object Chart1LineSeries1: TLineSeries
           LinePen.Color = clBlue
-          LineType = ltNone
+          LinePen.Width = 2
           Pointer.Brush.Color = clBlue
           Pointer.HorizSize = 2
           Pointer.Pen.Color = clBlue
           Pointer.Style = psCircle
           Pointer.VertSize = 2
-          Pointer.Visible = True
-          ShowPoints = True
         end
       end
       object DrawGridMaxima: TDrawGrid
