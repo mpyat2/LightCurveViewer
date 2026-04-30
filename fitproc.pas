@@ -493,7 +493,7 @@ begin
   for I := 0 to Length(ATrigPolyDegrees) - 1 do
     NofParameters := NofParameters + ATrigPolyDegrees[I] * 2;
 
-  if NofParameters > 101 then
+  if NofParameters > 201 then
     CalcError('Too many parameters. Please reduce trend or trigonometric polynomial degree');
 
   ndata := Length(Xarray);

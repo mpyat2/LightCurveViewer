@@ -53,9 +53,8 @@
         <ComponentName Value="FormDFTDialog"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="666"/>
+        <TopLine Value="667"/>
         <CursorPos X="19" Y="683"/>
         <UsageCount Value="200"/>
         <Bookmarks Count="1">
@@ -95,9 +94,10 @@
       <Unit>
         <Filename Value="fitproc.pas"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="440"/>
-        <CursorPos X="51" Y="459"/>
+        <TopLine Value="469"/>
+        <CursorPos X="23" Y="496"/>
         <UsageCount Value="200"/>
         <Bookmarks Count="1">
           <Item0 X="5" Y="396" Left="1" Top="363" ID="2"/>
@@ -566,18 +566,6 @@
     <JumpHistory HistoryIndex="29">
       <Position>
         <Filename Value="unitMain.pas"/>
-        <Caret Line="359" TopLine="331"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="393" TopLine="357"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="187" Column="15" TopLine="164"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
         <Caret Line="339" TopLine="325"/>
       </Position>
       <Position>
@@ -679,6 +667,17 @@
       <Position>
         <Filename Value="unitAbout.pas"/>
         <Caret Line="73" Column="7" TopLine="50"/>
+      </Position>
+      <Position>
+        <Filename Value="fitproc.pas"/>
+        <Caret Line="459" Column="51" TopLine="440"/>
+      </Position>
+      <Position>
+        <Filename Value="fitproc.pas"/>
+        <Caret Line="14" Column="45"/>
+      </Position>
+      <Position>
+        <Filename Value="fitproc.pas"/>
       </Position>
     </JumpHistory>
     <RunParams>
