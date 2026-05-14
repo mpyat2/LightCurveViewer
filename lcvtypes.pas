@@ -55,20 +55,27 @@ type
   end;
 
 type
-  TSimpleRegion = class
+  TBaseRegion = class
     FX1, FX2: Double;
     FColor: TColor;
     constructor Create(X1, X2: Double; Color: TColor);
   end;
 
 type
+  TSimpleRegion = class(TBaseRegion)
+    FIntervalName: string;
+    constructor Create(X1, X2: Double; Color: TColor; const IntervalName: string);
+  end;
+
+type
   TSimpleRegions = class(TObjectList)
-    procedure AddRegion(X1, X2: Double; Color: TColor);
+    FInfo: string;
+    procedure AddRegion(X1, X2: Double; Color: TColor; const IntervalName: string);
     function Get(Index: Integer): TSimpleRegion;
   end;
 
 type
-  TFoldedRegion = class(TSimpleRegion)
+  TFoldedRegion = class(TBaseRegion)
     FCycleN: Integer;
     FCylce0: Double;
     FPeriod: Double;
@@ -124,20 +131,28 @@ begin
   Self.D := V;
 end;
 
-{ TSimpleRegion }
+{ TBaseRegion }
 
-constructor TSimpleRegion.Create(X1, X2: Double; Color: TColor);
+constructor TBaseRegion.Create(X1, X2: Double; Color: TColor);
 begin
   FX1 := X1;
   FX2 := X2;
   FColor := Color;
 end;
 
+{ TSimpleRegion }
+
+constructor TSimpleRegion.Create(X1, X2: Double; Color: TColor; const IntervalName: string);
+begin
+  inherited Create(X1, X2, Color);
+  FIntervalName := IntervalName;
+end;
+
 { TSimpleRegions }
 
-procedure TSimpleRegions.AddRegion(X1, X2: Double; Color: TColor);
+procedure TSimpleRegions.AddRegion(X1, X2: Double; Color: TColor; const IntervalName: string);
 begin
-  Self.Add(TSimpleRegion.Create(X1, X2, Color));
+  Self.Add(TSimpleRegion.Create(X1, X2, Color, IntervalName));
 end;
 
 function TSimpleRegions.Get(Index: Integer): TSimpleRegion;

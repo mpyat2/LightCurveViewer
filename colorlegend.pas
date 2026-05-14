@@ -175,7 +175,7 @@ begin
   if FRegions is TSimpleRegions then begin
     if aRow = 0 then begin
       case aCol of
-        0: Result := 'Interval';
+        0: Result := TSimpleRegions(FRegions).FInfo;
         1: Result := 'Data X min';
         2: Result := 'Data X max';
       end;
@@ -184,7 +184,7 @@ begin
     if (aRow > 0) and (FRegions <> nil) and (aRow <= FRegions.Count) then begin
       Rsimple := TSimpleRegions(FRegions).Get(aRow - 1);
       case aCol of
-        0: Result := '';
+        0: Result := Rsimple.FIntervalName;
         1: Result := FloatToStr(Rsimple.FX1);
         2: Result := FloatToStr(Rsimple.FX2);
       end;

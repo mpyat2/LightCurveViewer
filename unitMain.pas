@@ -221,7 +221,7 @@ type
     procedure SetPhaseColor(Data: TListChartSource); overload;
     procedure SetPhaseColor; overload;
     procedure SetSeasonalColor(Mode: Boolean);
-    procedure ShowColorLegend;
+    procedure ShowColorLegend(CycleColors: Boolean);
     procedure HideColorLegend;
     procedure CalculateModelPhasePlot;
     procedure CalcFoldedData(Period, Epoch: Double);
@@ -563,7 +563,7 @@ begin
     FChartColorMode := TChartColorMode.Phase;
     SetPhaseColor;
     ChartSeriesData.ColorEach := cePoint;
-    ShowColorLegend;
+    ShowColorLegend(True);
   end;
   ActionList.UpdateAction(Sender as TAction); // Ubuntu bug (check state not always updated)? (GNOME)
 end;
@@ -584,6 +584,7 @@ begin
     FChartColorMode := TChartColorMode.Day;
     SetSeasonalColor(False);
     ChartSeriesData.ColorEach := cePoint;
+    ShowColorLegend(False);
   end;
   ActionList.UpdateAction(Sender as TAction); // Ubuntu bug (check state not always updated)? (GNOME)
 end;
@@ -604,6 +605,7 @@ begin
     FChartColorMode := TChartColorMode.Year;
     SetSeasonalColor(True); // to-do: this is incorrect! Make right calc
     ChartSeriesData.ColorEach := cePoint;
+    ShowColorLegend(False);
   end;
   ActionList.UpdateAction(Sender as TAction); // Ubuntu bug (check state not always updated)? (GNOME)
 end;
@@ -1332,8 +1334,8 @@ begin
   StatusBar.Panels[1].Text := ' P= ' + FloatToStr(unitPhaseDialog.GetCurrentPeriod) + ^I' E= ' + FloatToStr(unitPhaseDialog.GetCurrentEpoch) + ' ';
   FChartSubtitle := 'Period ' + FloatToStr(unitPhaseDialog.GetCurrentPeriod) + ', Epoch ' + FloatToStr(unitPhaseDialog.GetCurrentEpoch) + ' ';
   UpdateTitle;
-  if FChartColorMode = TChartColorMode.Phase then
-    ShowColorLegend;
+  if FChartColorMode <> TChartColorMode.None then
+    ShowColorLegend(FChartColorMode = TChartColorMode.Phase);
 end;
 
 procedure TFormMain.MagShift;
@@ -1392,22 +1394,29 @@ end;
 
 procedure TFormMain.SetSeasonalColor(Mode: Boolean);
 var
-  Item: PChartDataItem;
+  Item, PrevItem: PChartDataItem;
   IntervalN, PrevIntervalN, ColorIndex, OriginalIndex, I, L: Integer;
   XTime: TDateTime;
   Year, Month, Day: Word;
+  X1: Double;
 begin
-  FSimpleColorRegions.Clear; // to-do: Implement legend!
+  // We assume that X is Julian Day.
+
+  FSimpleColorRegions.Clear;
 
   L := LCSrcData.Count;
 
   if L < 1 then
     Exit;
 
+  if Mode then
+     FSimpleColorRegions.FInfo := 'Year'
+  else
+     FSimpleColorRegions.FInfo := 'JD';
+
   ColorIndex := 0;
   PrevIntervalN := 0;
-
-  // We assume that X is Julian Day.
+  X1 := LCSrcData.Item[0]^.X;
   for I := 0 to L - 1 do begin
     Item := LCSrcData.Item[I];
     if Mode then begin
@@ -1421,8 +1430,13 @@ begin
       IntervalN := Floor(Item^.X);
     end;
     if I > 0 then begin
+      PrevItem := LCSrcData.Item[I - 1];
+      if (PrevItem^.X > Item^.X) then
+        CalcError('Internal error: data must be sorted');
       if IntervalN <> PrevIntervalN then begin
-        ColorIndex := ColorIndex + 1;
+        FSimpleColorRegions.AddRegion(X1, PrevItem^.X, CycleByCycleColors[ColorIndex], IntToStr(PrevIntervalN));
+        X1 := Item^.X;
+        Inc(ColorIndex);
         if ColorIndex > Length(CycleByCycleColors) - 1 then
           ColorIndex := 0;
       end;
@@ -1430,6 +1444,7 @@ begin
     Item^.Color := CycleByCycleColors[ColorIndex];
     PrevIntervalN := IntervalN;
   end;
+  FSimpleColorRegions.AddRegion(X1, LCSrcData.Item[L - 1]^.X, CycleByCycleColors[ColorIndex], IntToStr(PrevIntervalN));
 
   L := LCSrcFoldedData.Count;
 
@@ -1444,10 +1459,13 @@ begin
   end;
 end;
 
-procedure TFormMain.ShowColorLegend;
+procedure TFormMain.ShowColorLegend(CycleColors: Boolean);
 begin
-  colorLegend.ShowColorLegend(FFoldedDataColorRegions,
-    'Period ' + FloatToStr(unitPhaseDialog.GetCurrentPeriod) + ', Epoch ' + FloatToStr(unitPhaseDialog.GetCurrentEpoch));
+  if CycleColors then
+     colorLegend.ShowColorLegend(FFoldedDataColorRegions,
+     'Period ' + FloatToStr(unitPhaseDialog.GetCurrentPeriod) + ', Epoch ' + FloatToStr(unitPhaseDialog.GetCurrentEpoch))
+  else
+     colorLegend.ShowColorLegend(FSimpleColorRegions, 'Legend');
 end;
 
 procedure TFormMain.HideColorLegend;
