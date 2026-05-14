@@ -615,7 +615,7 @@
         <UsageCount Value="10"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="17">
+    <JumpHistory HistoryIndex="16">
       <Position>
         <Filename Value="unitMain.pas"/>
         <Caret Line="1430" Column="40" TopLine="1402"/>
@@ -683,10 +683,6 @@
       <Position>
         <Filename Value="unitMain.pas"/>
         <Caret Line="1569" TopLine="1537"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="1417" Column="3" TopLine="1446"/>
       </Position>
       <Position>
         <Filename Value="colorlegend.pas"/>
