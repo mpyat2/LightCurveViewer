@@ -17,6 +17,8 @@ type
   { TFormMain }
 
   TFormMain = class(TForm)
+    ActionYearByYearColor: TAction;
+    ActionDayByDayColor: TAction;
     ActionDetrendAlgebraic: TAction;
     ActionStatistics: TAction;
     ActionMagShift: TAction;
@@ -62,6 +64,8 @@ type
     LCSrcData: TListChartSource;
     MainMenu: TMainMenu;
     MenuFile: TMenuItem;
+    MenuItemDayByDayColor: TMenuItem;
+    MenuItemYearByYearColor: TMenuItem;
     MenuItemDetrendAlgebraic: TMenuItem;
     MenuItemStatistics: TMenuItem;
     MenuItemMagShift: TMenuItem;
@@ -71,7 +75,7 @@ type
     MenuItemShowErrors: TMenuItem;
     MenuItemPhasePlotNew: TMenuItem;
     MenuItemModelInfo: TMenuItem;
-    MenuItemDayByDayColor: TMenuItem;
+    MenuItemCycleByCycleColor: TMenuItem;
     MenuItemShowModel: TMenuItem;
     MenuItemShowData: TMenuItem;
     MenuItemChartExtent: TMenuItem;
@@ -102,6 +106,7 @@ type
     OpenDialog: TOpenDialog;
     Separator10: TMenuItem;
     Separator11: TMenuItem;
+    Separator12: TMenuItem;
     Separator2: TMenuItem;
     Separator3: TMenuItem;
     Separator4: TMenuItem;
@@ -131,6 +136,8 @@ type
     procedure ActionChartPropertiesExecute(Sender: TObject);
     procedure ActionCopyChartImageExecute(Sender: TObject);
     procedure ActionCycleByCycleColorExecute(Sender: TObject);
+    procedure ActionDayByDayColorExecute(Sender: TObject);
+    procedure ActionYearByYearColorExecute(Sender: TObject);
     procedure ActionDetrendAlgebraicExecute(Sender: TObject);
     procedure ActionDetrendExecute(Sender: TObject);
     procedure ActionListUpdate(AAction: TBasicAction; var Handled: Boolean);
@@ -183,6 +190,8 @@ type
     FModelData: TFitColumnArray;
     FModelFolded: TFitColumnArray;
     FFoldedDataColorRegions: TFoldedRegions;
+    FSimpleColorRegions: TSimpleRegions;
+    FChartColorMode: TChartColorMode;
     function GetLCSrcDataCount: Integer;
     procedure ShowDataPoint(Tool: TDatapointClickTool; AddToFloatTextForm: Boolean);
     procedure UpdateTitle;
@@ -209,6 +218,9 @@ type
     procedure PlotFoldedProc;
     procedure MagShift;
     procedure MagShiftProc;
+    procedure SetPhaseColor(Data: TListChartSource); overload;
+    procedure SetPhaseColor; overload;
+    procedure SetSeasonalColor(Mode: Boolean);
     procedure ShowColorLegend;
     procedure HideColorLegend;
     procedure CalculateModelPhasePlot;
@@ -239,7 +251,7 @@ implementation
 {$R *.lfm}
 
 uses
-  lclintf, math, guiutils, unitPhaseDialog, unitMagShiftDialog,
+  lclintf, math, DateUtils, guiutils, unitPhaseDialog, unitMagShiftDialog,
   unitFitParamDialog, unitDFTparamDialog, unitDFTdialog, unitTableDialog,
   unitModelInfoDialog, colorLegend, floattextform, unitFormChartprops,
   unitGetExtent, unitOptionsDialog, unitFormStat, unitAbout, dftThread, dataio,
@@ -253,6 +265,7 @@ var
   S: string;
 begin
   FFoldedDataColorRegions := TFoldedRegions.Create;
+  FSimpleColorRegions := TSimpleRegions.Create;
   CloseFile;
   try
     LoadFormPosition(Self);
@@ -274,6 +287,7 @@ end;
 procedure TFormMain.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(FFoldedDataColorRegions);
+  FreeAndNil(FSimpleColorRegions);
 end;
 
 procedure TFormMain.FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -534,14 +548,62 @@ begin
 end;
 
 procedure TFormMain.ActionCycleByCycleColorExecute(Sender: TObject);
+var
+  CurrentChartColorMode: TChartColorMode;
 begin
-  if ChartSeriesData.ColorEach = ceNone then begin
+  CurrentChartColorMode := FChartColorMode;
+  // Reset other actions
+  FChartColorMode := TChartColorMode.None;
+  ChartSeriesData.ColorEach := ceNone;
+  HideColorLegend;
+  ActionList.UpdateAction(ActionDayByDayColor); // Ubuntu bug (check state not always updated)? (GNOME)
+  ActionList.UpdateAction(ActionYearByYearColor); // Ubuntu bug (check state not always updated)? (GNOME)
+  if CurrentChartColorMode <> TChartColorMode.Phase then begin
+    // Colorize both LCSrcData and LCSrcFoldedData
+    FChartColorMode := TChartColorMode.Phase;
+    SetPhaseColor;
     ChartSeriesData.ColorEach := cePoint;
     ShowColorLegend;
-  end
-  else begin
-    ChartSeriesData.ColorEach := ceNone;
-    HideColorLegend;
+  end;
+  ActionList.UpdateAction(Sender as TAction); // Ubuntu bug (check state not always updated)? (GNOME)
+end;
+
+procedure TFormMain.ActionDayByDayColorExecute(Sender: TObject);
+var
+  CurrentChartColorMode: TChartColorMode;
+begin
+  CurrentChartColorMode := FChartColorMode;
+  // Reset other actions
+  FChartColorMode := TChartColorMode.None;
+  ChartSeriesData.ColorEach := ceNone;
+  HideColorLegend;
+  ActionList.UpdateAction(ActionCycleByCycleColor); // Ubuntu bug (check state not always updated)? (GNOME)
+  ActionList.UpdateAction(ActionYearByYearColor); // Ubuntu bug (check state not always updated)? (GNOME)
+  if CurrentChartColorMode <> TChartColorMode.Day then begin
+    // Set colors to both LCSrcData and LCSrcFoldedData
+    FChartColorMode := TChartColorMode.Day;
+    SetSeasonalColor(False);
+    ChartSeriesData.ColorEach := cePoint;
+  end;
+  ActionList.UpdateAction(Sender as TAction); // Ubuntu bug (check state not always updated)? (GNOME)
+end;
+
+procedure TFormMain.ActionYearByYearColorExecute(Sender: TObject);
+var
+  CurrentChartColorMode: TChartColorMode;
+begin
+  CurrentChartColorMode := FChartColorMode;
+  // Reset other actions
+  FChartColorMode := TChartColorMode.None;
+  ChartSeriesData.ColorEach := ceNone;
+  HideColorLegend;
+  ActionList.UpdateAction(ActionCycleByCycleColor); // Ubuntu bug (check state not always updated)? (GNOME)
+  ActionList.UpdateAction(ActionDayByDayColor); // Ubuntu bug (check state not always updated)? (GNOME)
+  if CurrentChartColorMode <> TChartColorMode.Year then begin
+    // Set colors to both LCSrcData and LCSrcFoldedData
+    FChartColorMode := TChartColorMode.Year;
+    SetSeasonalColor(True); // to-do: this is incorrect! Make right calc
+    ChartSeriesData.ColorEach := cePoint;
   end;
   ActionList.UpdateAction(Sender as TAction); // Ubuntu bug (check state not always updated)? (GNOME)
 end;
@@ -682,7 +744,17 @@ begin
   else
   if AAction = ActionCycleByCycleColor then begin
     (AAction as TAction).Enabled := (LCSrcFoldedData.Count > 0) and not FCalculationInProgress;
-    (AAction as TAction).Checked := ChartSeriesData.ColorEach <> ceNone;
+    (AAction as TAction).Checked := FChartColorMode = TChartColorMode.Phase;
+  end
+  else
+  if AAction = ActionDayByDayColor then begin
+    (AAction as TAction).Enabled := (LCSrcData.Count > 0) and not FCalculationInProgress;
+    (AAction as TAction).Checked := FChartColorMode = TChartColorMode.Day;
+  end
+  else
+  if AAction = ActionYearByYearColor then begin
+    (AAction as TAction).Enabled := (LCSrcData.Count > 0) and not FCalculationInProgress;
+    (AAction as TAction).Checked := FChartColorMode = TChartColorMode.Year;
   end
   else
   if AAction = ActionLogicalExtent then begin
@@ -951,6 +1023,7 @@ begin
   LCSrcData.Clear;
   LCSrcFoldedData.Clear;
   FFoldedDataColorRegions.Clear;
+  FSimpleColorRegions.Clear;
   // Model (virtual sources)
   ChartSeriesModelToNil;
   ClearUDFSrcModel;
@@ -962,7 +1035,10 @@ begin
   //
   ChartSeriesData.ColorEach := ceNone;
   HideColorLegend;
+  FChartColorMode := TChartColorMode.None;
   ActionList.UpdateAction(ActionCycleByCycleColor); // Ubuntu bug (check state not always updated)? (GNOME)
+  ActionList.UpdateAction(ActionDayByDayColor); // Ubuntu bug (check state not always updated)? (GNOME)
+  ActionList.UpdateAction(ActionYearByYearColor); // Ubuntu bug (check state not always updated)? (GNOME)
   ChartSeriesData.Active := True;
   ActionList.UpdateAction(ActionShowData); // Ubuntu bug (check state not always updated)? (GNOME)
   ChartSeriesData.YErrorBars.Visible := False;
@@ -996,6 +1072,7 @@ var
   Item: PChartDataItem;
 begin
   try
+    // Data sorted by X after read
     ReadData(AFileName, X, Y, Errors, TempObjectName);
   except
     on E: Exception do begin
@@ -1022,6 +1099,8 @@ begin
     ItemIndex := LCSrcData.Add(X[I], Y[I]); // Currently, ItemIndex = I
     Item := LCSrcData.Item[ItemIndex];
     Item^.YList[0] := Errors[I];
+    Item^.Color := clTAColor;
+    Item^.XList[0] := Item^.Color; // To be used as 'Phase Colors'
   end;
 
   LoadDataSettings;
@@ -1172,7 +1251,10 @@ begin
   ActionList.UpdateAction(ActionInvertedY); // Ubuntu bug (check state not always updated)? (GNOME)
   ChartSeriesData.ColorEach := ceNone;
   HideColorLegend;
+  FChartColorMode := TChartColorMode.None;
   ActionList.UpdateAction(ActionCycleByCycleColor); // Ubuntu bug (check state not always updated)? (GNOME)
+  ActionList.UpdateAction(ActionDayByDayColor); // Ubuntu bug (check state not always updated)? (GNOME)
+  ActionList.UpdateAction(ActionYearByYearColor); // Ubuntu bug (check state not always updated)? (GNOME)
   ChartSeriesData.Pointer.Brush.Color := TColor(Ini.ReadInteger('SETTINGS', 'DataColor', clPurple));
   ChartSeriesData.Pointer.Pen.Color := ChartSeriesData.Pointer.Brush.Color;
   ChartSeriesModel.LinePen.Color := TColor(Ini.ReadInteger('SETTINGS', 'ModelColor', clLime));
@@ -1192,9 +1274,6 @@ begin
     StatusBar.Panels[1].Text := '';
     FChartSubtitle := '';
     ChartSeriesData.Source := nil;
-    //ChartSeriesData.ColorEach := ceNone;
-    //HideColorLegend;
-    //ActionList.UpdateAction(ActionCycleByCycleColor); // Ubuntu bug (check state not always updated)? (GNOME)
     ChartSeriesModelToNil;
     UpdateTitle;
     SourceExtent := LCSrcData.Extent;
@@ -1253,7 +1332,7 @@ begin
   StatusBar.Panels[1].Text := ' P= ' + FloatToStr(unitPhaseDialog.GetCurrentPeriod) + ^I' E= ' + FloatToStr(unitPhaseDialog.GetCurrentEpoch) + ' ';
   FChartSubtitle := 'Period ' + FloatToStr(unitPhaseDialog.GetCurrentPeriod) + ', Epoch ' + FloatToStr(unitPhaseDialog.GetCurrentEpoch) + ' ';
   UpdateTitle;
-  if ChartSeriesData.ColorEach = cePoint then
+  if FChartColorMode = TChartColorMode.Phase then
     ShowColorLegend;
 end;
 
@@ -1290,6 +1369,79 @@ begin
   Shift := unitMagShiftDialog.GetCurrentMagShift;
   UpdateChartSource(LCSrcData, Shift);
   UpdateChartSource(LCSrcFoldedData, Shift);
+end;
+
+procedure TFormMain.SetPhaseColor(Data: TListChartSource); overload;
+var
+  Item: PChartDataItem;
+  I, L: Integer;
+begin
+  L := Data.Count;
+  for I := 0 to L - 1 do begin
+    // Phase colors are stored in the last member of XList
+    Item := Data.Item[I];
+    Item^.Color := TColor(Trunc(Item^.XList[Length(Item^.XList) - 1]));
+  end;
+end;
+
+procedure TFormMain.SetPhaseColor; overload;
+begin
+  SetPhaseColor(LCSrcData);
+  SetPhaseColor(LCSrcFoldedData);
+end;
+
+procedure TFormMain.SetSeasonalColor(Mode: Boolean);
+var
+  Item: PChartDataItem;
+  IntervalN, PrevIntervalN, ColorIndex, OriginalIndex, I, L: Integer;
+  XTime: TDateTime;
+  Year, Month, Day: Word;
+begin
+  FSimpleColorRegions.Clear; // to-do: Implement legend!
+
+  L := LCSrcData.Count;
+
+  if L < 1 then
+    Exit;
+
+  ColorIndex := 0;
+  PrevIntervalN := 0;
+
+  // We assume that X is Julian Day.
+  for I := 0 to L - 1 do begin
+    Item := LCSrcData.Item[I];
+    if Mode then begin
+      // Years
+      XTime := JulianDateToDateTime(Item^.X);
+      DecodeDate(XTime, Year, Month, Day); // Works for A.D. only! Otherwise, returns 0
+      IntervalN := Year;
+    end
+    else begin
+      // Days
+      IntervalN := Floor(Item^.X);
+    end;
+    if I > 0 then begin
+      if IntervalN <> PrevIntervalN then begin
+        ColorIndex := ColorIndex + 1;
+        if ColorIndex > Length(CycleByCycleColors) - 1 then
+          ColorIndex := 0;
+      end;
+    end;
+    Item^.Color := CycleByCycleColors[ColorIndex];
+    PrevIntervalN := IntervalN;
+  end;
+
+  L := LCSrcFoldedData.Count;
+
+  if L > 0 then begin
+    for I := 0 to L - 1 do begin
+      Item := LCSrcFoldedData.Item[I];
+      OriginalIndex := Trunc(Item^.XList[1]);
+      if (OriginalIndex < 0) or (OriginalIndex > LCSrcData.Count - 1) then
+        CalcError('Invalid folded data');
+      Item^.Color := LCSrcData.Item[OriginalIndex]^.Color;
+    end;
+  end;
 end;
 
 procedure TFormMain.ShowColorLegend;
@@ -1353,12 +1505,13 @@ var
   Cycle, PrevCycle: Int64;
   X1: Double;
 begin
+  FFoldedDataColorRegions.Clear;
+
   L := LCSrcData.Count;
 
   if L < 1 then
     Exit;
 
-  FFoldedDataColorRegions.Clear;
   N := 0;
   PrevCycle := 0;
   X1 := LCSrcData.Item[0]^.X;
@@ -1380,13 +1533,19 @@ begin
       end;
     end;
 
-    ItemIndex := LCSrcFoldedData.Add(Phase      , Item^.Y, '', CycleByCycleColors[N]);
+    ItemIndex := LCSrcFoldedData.Add(Phase      , Item^.Y, '');
     LCSrcFoldedData.Item[ItemIndex]^.YList[0] := Item^.YList[0];
     LCSrcFoldedData.Item[ItemIndex]^.XList[0] := Item^.X; // original value
-    ItemIndex := LCSrcFoldedData.Add(Phase - 1.0, Item^.Y, '', CycleByCycleColors[N]);
+    LCSrcFoldedData.Item[ItemIndex]^.XList[1] := I; // index of this value in the original data
+    LCSrcFoldedData.Item[ItemIndex]^.XList[2] := CycleByCycleColors[N]; // color -- the last value in the array
+
+    ItemIndex := LCSrcFoldedData.Add(Phase - 1.0, Item^.Y, '');
     LCSrcFoldedData.Item[ItemIndex]^.YList[0] := Item^.YList[0];
     LCSrcFoldedData.Item[ItemIndex]^.XList[0] := Item^.X; // original value
-    Item^.Color := CycleByCycleColors[N]; // set color to original data too!
+    LCSrcFoldedData.Item[ItemIndex]^.XList[1] := I; // index of this value in the original data
+    LCSrcFoldedData.Item[ItemIndex]^.XList[2] := CycleByCycleColors[N]; // color -- the last value in the array
+
+    Item^.XList[0] := CycleByCycleColors[N]; // set color to original data too!
 
     PrevCycle := Cycle;
   end;
@@ -1406,6 +1565,7 @@ begin
   if (LCSrcData.Count > 0) then begin
     Period := unitPhaseDialog.GetCurrentPeriod;
     Epoch := unitPhaseDialog.GetCurrentEpoch;
+    // Folded data will be recteated
     LCSrcFoldedData.Clear;
     FFoldedDataColorRegions.Clear;
     // Model (virtual sources)
@@ -1413,10 +1573,19 @@ begin
     // Reset data colors
     for I := 0 to LCSrcData.Count - 1 do begin
       LCSrcData.Item[I]^.Color := clTAColor;
+      LCSrcData.Item[I]^.XList[0] := clTAColor;
     end;
     //
     CalcFoldedData(Period, Epoch);
-    //
+    // Set point colors for both LCSrcData and LCSrcFoldedData
+    if FChartColorMode = TChartColorMode.Phase then
+      SetPhaseColor
+    else
+    if FChartColorMode = TChartColorMode.Day then
+      SetSeasonalColor(False)
+    else
+    if FChartColorMode = TChartColorMode.Year then
+      SetSeasonalColor(True);
     CalculateModelPhasePlot;
     PlotFoldedProc;
   end;

@@ -12,6 +12,9 @@ uses
 type
   FitColumnType = (x, yFit, yErrors, yFitAlgebraic, yObserved);
 
+type
+  TChartColorMode = (None, Phase, Day, Year);
+
 //type
 //  TColorArray = array of TColor;
 
@@ -52,9 +55,20 @@ type
   end;
 
 type
-  TFoldedRegion = class
+  TSimpleRegion = class
     FX1, FX2: Double;
     FColor: TColor;
+    constructor Create(X1, X2: Double; Color: TColor);
+  end;
+
+type
+  TSimpleRegions = class(TObjectList)
+    procedure AddRegion(X1, X2: Double; Color: TColor);
+    function Get(Index: Integer): TSimpleRegion;
+  end;
+
+type
+  TFoldedRegion = class(TSimpleRegion)
     FCycleN: Integer;
     FCylce0: Double;
     FPeriod: Double;
@@ -63,7 +77,6 @@ type
 
 type
   TFoldedRegions = class(TObjectList)
-    constructor Create;
     procedure AddRegion(X1, X2: Double; Color: TColor; CycleN: Integer; Cylce0, Period: Double);
     function Get(Index: Integer): TFoldedRegion;
   end;
@@ -111,24 +124,38 @@ begin
   Self.D := V;
 end;
 
-{ TFoldedRegion }
+{ TSimpleRegion }
 
-constructor TFoldedRegion.Create(X1, X2: Double; Color: TColor; CycleN: Integer; Cylce0, Period: Double);
+constructor TSimpleRegion.Create(X1, X2: Double; Color: TColor);
 begin
   FX1 := X1;
   FX2 := X2;
   FColor := Color;
+end;
+
+{ TSimpleRegions }
+
+procedure TSimpleRegions.AddRegion(X1, X2: Double; Color: TColor);
+begin
+  Self.Add(TSimpleRegion.Create(X1, X2, Color));
+end;
+
+function TSimpleRegions.Get(Index: Integer): TSimpleRegion;
+begin
+  Result := Self[Index] as TSimpleRegion;
+end;
+
+{ TFoldedRegion }
+
+constructor TFoldedRegion.Create(X1, X2: Double; Color: TColor; CycleN: Integer; Cylce0, Period: Double);
+begin
+  inherited Create(X1, X2, Color);
   FCycleN := CycleN;
   FCylce0 := Cylce0;
   FPeriod := Period;
 end;
 
 { TFoldedRegions }
-
-constructor TFoldedRegions.Create;
-begin
-  inherited Create;
-end;
 
 procedure TFoldedRegions.AddRegion(X1, X2: Double; Color: TColor; CycleN: Integer; Cylce0, Period: Double);
 begin

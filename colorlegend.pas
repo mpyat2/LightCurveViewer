@@ -8,7 +8,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Grids, Menus, ActnList,
-  lcvtypes, Types;
+  lcvtypes, Types, Contnrs;
 
 type
 
@@ -29,13 +29,13 @@ type
     procedure ActionSelectAllExecute(Sender: TObject);
     procedure DrawGrid1DrawCell(Sender: TObject; aCol, aRow: Integer; aRect: TRect; aState: TGridDrawState);
   private
-    FRegions: TFoldedRegions;
+    FRegions: TObjectList;
     function GetGridCell(Grid: TDrawGrid; aCol, aRow: Integer): string;
   public
     procedure UpdateGrid;
   end;
 
-procedure ShowColorLegend(Regions: TFoldedRegions; const Title: string);
+procedure ShowColorLegend(Regions: TObjectList; const Title: string);
 
 procedure HideColorLegend;
 
@@ -49,7 +49,7 @@ uses
 var
   FormColorLegend: TFormColorLegend = nil;
 
-procedure ShowColorLegend(Regions: TFoldedRegions; const Title: string);
+procedure ShowColorLegend(Regions: TObjectList; const Title: string);
 begin
   if FormColorLegend = nil then begin
     FormColorLegend := TFormColorLegend.Create(Application);
@@ -60,6 +60,8 @@ begin
   FormColorLegend.Hide;
   FormColorLegend.Caption := Title;
   FormColorLegend.FRegions := Regions;
+  if Regions is TSimpleRegions then
+    FormColorLegend.DrawGrid1.ColCount := 3;
   FormColorLegend.UpdateGrid;
   FormColorLegend.Show;
 end;
@@ -86,7 +88,11 @@ begin
     end
     else
     if (aRow > 0) and (FRegions <> nil) and (aRow <= FRegions.Count) then begin
-      GridCanvas.Brush.Color := FRegions.Get(aRow - 1).FColor;
+      if FRegions is TFoldedRegions then
+        GridCanvas.Brush.Color := TFoldedRegions(FRegions).Get(aRow - 1).FColor
+      else
+      if FRegions is TSimpleRegions then
+        GridCanvas.Brush.Color := TSimpleRegions(FRegions).Get(aRow - 1).FColor;
       GridCanvas.Rectangle(aRect);
       GridCanvas.Font.Color := clWhite - GridCanvas.Brush.Color;
       GridCanvas.TextRect(aRect, aRect.Left + 2, aRect.Top + 2, GetGridCell(DrawGrid1, aCol, aRow));
@@ -137,29 +143,51 @@ end;
 
 function TFormColorLegend.GetGridCell(Grid: TDrawGrid; aCol, aRow: Integer): string;
 var
-  R: TFoldedRegion;
+  Rfolded: TFoldedRegion;
+  Rsimple: TSimpleRegion;
 begin
   Result := '';
-  if aRow = 0 then begin
-    case aCol of
-      0: Result := 'Cycle φ ± 0.5';
-      1: Result := 'Data X min';
-      2: Result := 'Data X max';
-      3: Result := 'φ = 0';
-      4: Result := 'φ = -0.5';
-      5: Result := 'φ = +0.5';
+  if FRegions is TFoldedRegions then begin
+    if aRow = 0 then begin
+      case aCol of
+        0: Result := 'Cycle φ ± 0.5';
+        1: Result := 'Data X min';
+        2: Result := 'Data X max';
+        3: Result := 'φ = 0';
+        4: Result := 'φ = -0.5';
+        5: Result := 'φ = +0.5';
+      end;
+    end
+    else
+    if (aRow > 0) and (FRegions <> nil) and (aRow <= FRegions.Count) then begin
+      Rfolded := TFoldedRegions(FRegions).Get(aRow - 1);
+      case aCol of
+        0: Result := 'Cycle ' + IntToStr(Rfolded.FCycleN);
+        1: Result := FloatToStr(Rfolded.FX1);
+        2: Result := FloatToStr(Rfolded.FX2);
+        3: Result := FloatToStr(Rfolded.FCylce0);
+        4: Result := FloatToStr(Rfolded.FCylce0 - Rfolded.FPeriod / 2.0);
+        5: Result := FloatToStr(Rfolded.FCylce0 + Rfolded.FPeriod / 2.0);
+      end;
     end;
   end
   else
-  if (aRow > 0) and (FRegions <> nil) and (aRow <= FRegions.Count) then begin
-    R := FRegions.Get(aRow - 1);
-    case aCol of
-      0: Result := 'Cycle ' + IntToStr(R.FCycleN);
-      1: Result := FloatToStr(R.FX1);
-      2: Result := FloatToStr(R.FX2);
-      3: Result := FloatToStr(R.FCylce0);
-      4: Result := FloatToStr(R.FCylce0 - R.FPeriod / 2.0);
-      5: Result := FloatToStr(R.FCylce0 + R.FPeriod / 2.0);
+  if FRegions is TSimpleRegions then begin
+    if aRow = 0 then begin
+      case aCol of
+        0: Result := 'Interval';
+        1: Result := 'Data X min';
+        2: Result := 'Data X max';
+      end;
+    end
+    else
+    if (aRow > 0) and (FRegions <> nil) and (aRow <= FRegions.Count) then begin
+      Rsimple := TSimpleRegions(FRegions).Get(aRow - 1);
+      case aCol of
+        0: Result := '';
+        1: Result := FloatToStr(Rsimple.FX1);
+        2: Result := FloatToStr(Rsimple.FX2);
+      end;
     end;
   end;
 end;
