@@ -68,24 +68,27 @@ type
   end;
 
 type
-  TSimpleRegions = class(TObjectList)
-    FInfo: string;
-    procedure AddRegion(X1, X2: Double; Color: TColor; const IntervalName: string);
-    function Get(Index: Integer): TSimpleRegion;
-  end;
-
-type
   TFoldedRegion = class(TBaseRegion)
     FCycleN: Integer;
-    FCylce0: Double;
+    FCycle0: Double;
     FPeriod: Double;
-    constructor Create(X1, X2: Double; Color: TColor; CycleN: Integer; Cylce0, Period: Double);
+    constructor Create(X1, X2: Double; Color: TColor; CycleN: Integer; Cycle0, Period: Double);
   end;
 
 type
-  TFoldedRegions = class(TObjectList)
-    procedure AddRegion(X1, X2: Double; Color: TColor; CycleN: Integer; Cylce0, Period: Double);
-    function Get(Index: Integer): TFoldedRegion;
+  TBaseRegions = class(TObjectList)
+    FInfo: string;
+    function Get(Index: Integer): TBaseRegion;
+  end;
+
+type
+  TSimpleRegions = class(TBaseRegions)
+    procedure AddRegion(X1, X2: Double; Color: TColor; const IntervalName: string);
+  end;
+
+type
+  TFoldedRegions = class(TBaseRegions)
+    procedure AddRegion(X1, X2: Double; Color: TColor; CycleN: Integer; Cycle0, Period: Double);
   end;
 
 type
@@ -148,6 +151,23 @@ begin
   FIntervalName := IntervalName;
 end;
 
+{ TFoldedRegion }
+
+constructor TFoldedRegion.Create(X1, X2: Double; Color: TColor; CycleN: Integer; Cycle0, Period: Double);
+begin
+  inherited Create(X1, X2, Color);
+  FCycleN := CycleN;
+  FCycle0 := Cycle0;
+  FPeriod := Period;
+end;
+
+{ TBaseRegions }
+
+function TBaseRegions.Get(Index: Integer): TBaseRegion;
+begin
+  Result := Self[Index] as TBaseRegion;
+end;
+
 { TSimpleRegions }
 
 procedure TSimpleRegions.AddRegion(X1, X2: Double; Color: TColor; const IntervalName: string);
@@ -155,31 +175,11 @@ begin
   Self.Add(TSimpleRegion.Create(X1, X2, Color, IntervalName));
 end;
 
-function TSimpleRegions.Get(Index: Integer): TSimpleRegion;
-begin
-  Result := Self[Index] as TSimpleRegion;
-end;
-
-{ TFoldedRegion }
-
-constructor TFoldedRegion.Create(X1, X2: Double; Color: TColor; CycleN: Integer; Cylce0, Period: Double);
-begin
-  inherited Create(X1, X2, Color);
-  FCycleN := CycleN;
-  FCylce0 := Cylce0;
-  FPeriod := Period;
-end;
-
 { TFoldedRegions }
 
-procedure TFoldedRegions.AddRegion(X1, X2: Double; Color: TColor; CycleN: Integer; Cylce0, Period: Double);
+procedure TFoldedRegions.AddRegion(X1, X2: Double; Color: TColor; CycleN: Integer; Cycle0, Period: Double);
 begin
-  Self.Add(TFoldedRegion.Create(X1, X2, Color, CycleN, Cylce0, Period));
-end;
-
-function TFoldedRegions.Get(Index: Integer): TFoldedRegion;
-begin
-  Result := Self[Index] as TFoldedRegion;
+  Self.Add(TFoldedRegion.Create(X1, X2, Color, CycleN, Cycle0, Period));
 end;
 
 end.
