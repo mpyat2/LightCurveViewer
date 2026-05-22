@@ -13,7 +13,7 @@ type
   FitColumnType = (x, yFit, yErrors, yFitAlgebraic, yObserved);
 
 type
-  TChartColorMode = (None, Phase, Day, Year);
+  TChartColorMode = (None, Phase, Day, Year, Custom);
 
 //type
 //  TColorArray = array of TColor;

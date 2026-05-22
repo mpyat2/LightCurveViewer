@@ -22,6 +22,8 @@ procedure DgeslError(const Msg: string; Info: Integer);
 
 procedure CalcError(const S: string);
 
+function ValInRange(V: Double; Range1, Range2: Double): Boolean;
+
 function GetFPUexceptionAsString: string;
 
 // WARNING!! The input array is changed.
@@ -70,6 +72,11 @@ end;
 procedure CalcError(const S: string);
 begin
   raise Exception.Create(S);
+end;
+
+function ValInRange(V: Double; Range1, Range2: Double): Boolean;
+begin
+  Result := (V >= Min(Range1, Range2)) and (V <= Max(Range1, Range2));
 end;
 
 function FPUexceptionToString(FPUexception: TFPUException): string;

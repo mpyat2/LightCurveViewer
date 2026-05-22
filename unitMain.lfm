@@ -128,7 +128,7 @@ object FormMain: TFormMain
     end
     object ToolButtonDiv1: TToolButton
       Left = 24
-      Height = 5
+      Height = 22
       Top = 2
       Caption = 'ToolButtonDiv1'
       Style = tbsDivider
@@ -145,7 +145,7 @@ object FormMain: TFormMain
     end
     object ToolButtonDiv2: TToolButton
       Left = 75
-      Height = 5
+      Height = 22
       Top = 2
       Caption = 'ToolButtonDiv2'
       Style = tbsDivider
@@ -167,7 +167,7 @@ object FormMain: TFormMain
     end
     object ToolButtonDiv3: TToolButton
       Left = 149
-      Height = 5
+      Height = 22
       Top = 2
       Caption = 'ToolButtonDiv3'
       Style = tbsDivider
@@ -232,6 +232,9 @@ object FormMain: TFormMain
       end
       object MenuItemYearByYearColor: TMenuItem
         Action = ActionYearByYearColor
+      end
+      object MenuItemCustomHColor: TMenuItem
+        Action = ActionCustomHColor
       end
       object Separator12: TMenuItem
         Caption = '-'
@@ -500,6 +503,11 @@ object FormMain: TFormMain
       Category = 'View'
       Caption = 'Year-by-Year Color'
       OnExecute = ActionYearByYearColorExecute
+    end
+    object ActionCustomHColor: TAction
+      Category = 'View'
+      Caption = 'Highlight Visible Points'
+      OnExecute = ActionCustomHColorExecute
     end
   end
   object OpenDialog: TOpenDialog
