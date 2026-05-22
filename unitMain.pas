@@ -193,6 +193,7 @@ type
     FSimpleColorRegions: TSimpleRegions;
     FChartColorMode: TChartColorMode;
     function GetLCSrcDataCount: Integer;
+    function GetLCSrcDataItem(N: Integer): PChartDataItem;
     procedure ShowDataPoint(Tool: TDatapointClickTool; AddToFloatTextForm: Boolean);
     procedure UpdateTitle;
     procedure ChartSeriesModelToNil;
@@ -256,6 +257,10 @@ uses
   unitModelInfoDialog, colorLegend, floattextform, unitFormChartprops,
   unitGetExtent, unitOptionsDialog, unitFormStat, unitAbout, dftThread, dataio,
   sortutils, formatutils, miscutils, fitproc, settings;
+
+const
+  XLIST_COLOR = 0; // index of color values in chart source XList
+  XLIST_PTIDX = 1; // index of the original point index in the folded chart source
 
 { TFormMain }
 
@@ -354,24 +359,42 @@ begin
 end;
 
 procedure TFormMain.ShowDataPoint(Tool: TDatapointClickTool; AddToFloatTextForm: Boolean);
+
+  function FormatPointInfo(X, Y, Error, Phase: Double; Sep: string): string;
+  begin
+    if IsNaN(Phase) then
+      Result := Format('X = %g%sY = %g%sError = %g',             [X, Sep, Y, Sep, Error])
+    else
+      Result := Format('X = %g%sY = %g%sError = %g%sPhase = %g', [X, Sep, Y, Sep, Error, Sep, Phase]);
+  end;
+
 var
   Series: TLineSeries;
+  Source: TListChartSource;
+  Item, OriginalItem: PChartDataItem;
   S1: String;
   X, X0, Y, Error: Double;
 begin
   if Tool.Series = ChartSeriesData then begin
     Series := Tool.Series as TLineSeries;
-    X := Series.GetXValue(Tool.PointIndex);
-    Y := Series.GetYValue(Tool.PointIndex);
-    Error := Series.GetYValues(Tool.PointIndex, 1);
+    if not (Series.Source is TListChartSource) then
+      raise Exception.Create('Invalid chart source');
+    Source := Series.Source as TListChartSource;
+    Item := Source.Item[Tool.PointIndex];
+    X := Item^.X;
+    Y := Item^.Y;
+    Error := Item^.YList[0];
     S1 := 'Unknown series';
     if Series.Source = LCSrcData then begin
-      S1 := Format('x = %g'#13#10'y = %g'#13#10'error = %g', [X, Y, Error]);
+      S1 := FormatPointInfo(X, Y, Error, NaN, ^M^J);
     end
     else
     if Series.Source = LCSrcFoldedData then begin
-      X0 := Series.GetXValues(Tool.PointIndex, 1);
-      S1 := Format('Phase = %g'#13#10'x = %g'#13#10'y = %g'#13#10'error = %g', [X, X0, Y, Error]);
+      OriginalItem := GetLCSrcDataItem(Trunc(Item^.XList[XLIST_PTIDX]));
+      if OriginalItem = nil then
+        raise Exception.Create('Folded/Original data mismatch');
+      X0 := OriginalItem^.X;
+      S1 := FormatPointInfo(X0, Y, Error, X, ^M^J);
     end;
     if not AddToFloatTextForm then begin
       if Series.ListSource.Item[Tool.PointIndex]^.Text = S1 then
@@ -380,15 +403,7 @@ begin
         Series.ListSource.SetText(Tool.PointIndex, S1);
     end else begin
       Series.ListSource.SetText(Tool.PointIndex, S1);
-      if Series.Source = LCSrcData then begin
-        S1 := Format('n = '^I'%d'^I'x = '^I'%g'^I'y = '^I'%g'^I'error = '^I'%g', [Tool.PointIndex + 1, X, Y, Error]);
-      end
-      else
-      if Series.Source = LCSrcFoldedData then begin
-        X0 := Series.GetXValues(Tool.PointIndex, 1);
-        S1 := Format('Phase = '^I'%g'^I'x = '^I'%g'^I'y = '^I'%g'^I'error = '^I'%g', [X, X0, Y, Error]);
-      end;
-      floattextform.AddText(S1);
+      floattextform.AddText(StringReplace(S1, ^M^J, ^I, [rfReplaceAll]));
     end;
   end;
 end;
@@ -844,6 +859,14 @@ begin
   Result := LCSrcData.Count;
 end;
 
+function TFormMain.GetLCSrcDataItem(N: Integer): PChartDataItem;
+begin
+  if (N < 0) or (N > LCSrcData.Count - 1) then
+    Result := nil
+  else
+    Result := LCSrcData.Item[N];
+end;
+
 procedure TFormMain.UpdateTitle;
 const
   defCaption = 'LCV';
@@ -1102,7 +1125,7 @@ begin
     Item := LCSrcData.Item[ItemIndex];
     Item^.YList[0] := Errors[I];
     Item^.Color := clTAColor;
-    Item^.XList[0] := Item^.Color; // To be used as 'Phase Colors'
+    Item^.XList[XLIST_COLOR] := Item^.Color; // To be used as 'Phase Colors'
   end;
 
   LoadDataSettings;
@@ -1380,9 +1403,8 @@ var
 begin
   L := Data.Count;
   for I := 0 to L - 1 do begin
-    // Phase colors are stored in the last member of XList
     Item := Data.Item[I];
-    Item^.Color := TColor(Trunc(Item^.XList[Length(Item^.XList) - 1]));
+    Item^.Color := TColor(Trunc(Item^.XList[XLIST_COLOR]));
   end;
 end;
 
@@ -1394,8 +1416,8 @@ end;
 
 procedure TFormMain.SetSeasonalColor(Mode: Boolean);
 var
-  Item, PrevItem: PChartDataItem;
-  IntervalN, PrevIntervalN, ColorIndex, OriginalIndex, I, L: Integer;
+  Item, PrevItem, OriginalItem: PChartDataItem;
+  IntervalN, PrevIntervalN, ColorIndex, I, L: Integer;
   XTime: TDateTime;
   Year, Month, Day: Word;
   X1: Double;
@@ -1451,10 +1473,10 @@ begin
   if L > 0 then begin
     for I := 0 to L - 1 do begin
       Item := LCSrcFoldedData.Item[I];
-      OriginalIndex := Trunc(Item^.XList[1]);
-      if (OriginalIndex < 0) or (OriginalIndex > LCSrcData.Count - 1) then
-        CalcError('Invalid folded data');
-      Item^.Color := LCSrcData.Item[OriginalIndex]^.Color;
+      OriginalItem := GetLCSrcDataItem(Trunc(Item^.XList[XLIST_PTIDX]));
+      if OriginalItem = nil then
+        CalcError('Folded/Original data mismatch');
+      Item^.Color := OriginalItem^.Color;
     end;
   end;
 end;
@@ -1517,7 +1539,7 @@ end;
 
 procedure TFormMain.CalcFoldedData(Period, Epoch: Double);
 var
-  Item, PrevItem: PChartDataItem;
+  Item, PrevItem, FoldedItem: PChartDataItem;
   Phase: Double;
   L, N, I, ItemIndex: Integer;
   Cycle, PrevCycle: Int64;
@@ -1552,18 +1574,18 @@ begin
     end;
 
     ItemIndex := LCSrcFoldedData.Add(Phase      , Item^.Y, '');
-    LCSrcFoldedData.Item[ItemIndex]^.YList[0] := Item^.YList[0];
-    LCSrcFoldedData.Item[ItemIndex]^.XList[0] := Item^.X; // original value
-    LCSrcFoldedData.Item[ItemIndex]^.XList[1] := I; // index of this value in the original data
-    LCSrcFoldedData.Item[ItemIndex]^.XList[2] := CycleByCycleColors[N]; // color -- the last value in the array
+    FoldedItem := LCSrcFoldedData.Item[ItemIndex];
+    FoldedItem^.YList[0] := Item^.YList[0];
+    FoldedItem^.XList[XLIST_COLOR] := CycleByCycleColors[N]; // color
+    FoldedItem^.XList[XLIST_PTIDX] := I; // index of this value in the original data
 
     ItemIndex := LCSrcFoldedData.Add(Phase - 1.0, Item^.Y, '');
-    LCSrcFoldedData.Item[ItemIndex]^.YList[0] := Item^.YList[0];
-    LCSrcFoldedData.Item[ItemIndex]^.XList[0] := Item^.X; // original value
-    LCSrcFoldedData.Item[ItemIndex]^.XList[1] := I; // index of this value in the original data
-    LCSrcFoldedData.Item[ItemIndex]^.XList[2] := CycleByCycleColors[N]; // color -- the last value in the array
+    FoldedItem := LCSrcFoldedData.Item[ItemIndex];
+    FoldedItem^.YList[0] := Item^.YList[0];
+    FoldedItem^.XList[XLIST_COLOR] := CycleByCycleColors[N]; // color
+    FoldedItem^.XList[XLIST_PTIDX] := I; // index of this value in the original data
 
-    Item^.XList[0] := CycleByCycleColors[N]; // set color to original data too!
+    Item^.XList[XLIST_COLOR] := CycleByCycleColors[N]; // set color to original data too!
 
     PrevCycle := Cycle;
   end;
@@ -1591,7 +1613,7 @@ begin
     // Reset data colors
     for I := 0 to LCSrcData.Count - 1 do begin
       LCSrcData.Item[I]^.Color := clTAColor;
-      LCSrcData.Item[I]^.XList[0] := clTAColor;
+      LCSrcData.Item[I]^.XList[XLIST_COLOR] := clTAColor;
     end;
     //
     CalcFoldedData(Period, Epoch);
