@@ -2,19 +2,19 @@ object FormTable: TFormTable
   Left = 735
   Height = 464
   Top = 286
-  Width = 640
+  Width = 800
   BorderIcons = [biSystemMenu, biMaximize]
   Caption = 'Table'
   ClientHeight = 464
-  ClientWidth = 640
-  OnCreate = FormCreate
+  ClientWidth = 800
   Position = poMainFormCenter
-  LCLVersion = '3.8.0.0'
+  LCLVersion = '4.4.0.0'
+  OnCreate = FormCreate
   object DrawGrid1: TDrawGrid
     Left = 0
     Height = 416
     Top = 0
-    Width = 640
+    Width = 800
     Align = alClient
     ColCount = 3
     DefaultColWidth = 200
@@ -28,13 +28,13 @@ object FormTable: TFormTable
     Left = 0
     Height = 48
     Top = 416
-    Width = 640
+    Width = 800
     Align = alBottom
     ClientHeight = 48
-    ClientWidth = 640
+    ClientWidth = 800
     TabOrder = 1
     object Button1: TButton
-      Left = 552
+      Left = 712
       Height = 25
       Top = 11
       Width = 75
@@ -61,13 +61,13 @@ object FormTable: TFormTable
     Top = 176
     object ActionCopy: TAction
       Caption = '&Copy'
-      OnExecute = ActionCopyExecute
       ShortCut = 16451
+      OnExecute = ActionCopyExecute
     end
     object ActionSelectAll: TAction
       Caption = 'Select &All'
-      OnExecute = ActionSelectAllExecute
       ShortCut = 16449
+      OnExecute = ActionSelectAllExecute
     end
   end
 end

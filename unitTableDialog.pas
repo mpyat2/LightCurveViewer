@@ -46,7 +46,7 @@ implementation
 {$R *.lfm}
 
 uses
-  Clipbrd, math, miscutils, guiutils;
+  DateUtils, Clipbrd, math, miscutils, guiutils;
 
 procedure ShowObservations(const Times, Magnitudes, Errors: TDoubleArray; Period, Epoch: Double; Title: string);
 var
@@ -63,9 +63,9 @@ begin
     F.FPeriod := Period;
     F.FEpoch := Epoch;
     if (not IsNan(Period)) and (not IsNan(Epoch)) then
-      F.DrawGrid1.ColCount := 5
+      F.DrawGrid1.ColCount := 6
     else
-      F.DrawGrid1.ColCount := 4;
+      F.DrawGrid1.ColCount := 5;
     F.DrawGrid1.FixedCols := 1;
     F.DrawGrid1.RowCount := Length(Times) + 1;
     F.DrawGrid1.FixedRows := 1;
@@ -110,6 +110,7 @@ end;
 
 function TFormTable.GetGridCell(Grid: TDrawGrid; C, R: Integer): string;
 var
+  DateTime: TDateTime;
   Idx: Integer;
 begin
   Result := '';
@@ -118,7 +119,8 @@ begin
       1: Result := 'Time';
       2: Result := 'Magnitude';
       3: Result := 'Error';
-      4: Result := 'Phase';
+      4: Result := 'Calendar Date/Time';
+      5: Result := 'Phase';
     end;
   end
   else begin
@@ -130,6 +132,14 @@ begin
         2: Result := FloatToStr(FMagnitudes[Idx]);
         3: Result := FloatToStr(FErrors[Idx]);
         4: try
+             DateTime := JulianDateToDateTime(FTimes[Idx]);
+             Result := FormatDateTime('yyyy"-"mm"-"dd" "hh":"nn":"ss', DateTime);
+           except
+             on E: Exception do begin
+               Result := E.Message;
+             end;
+           end;
+        5: try
              Result := FloatToStr(CalculatePhase(FTimes[Idx], FPeriod, FEpoch));
            except
              on E: Exception do begin

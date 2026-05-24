@@ -233,6 +233,9 @@ object FormMain: TFormMain
       object MenuItemYearByYearColor: TMenuItem
         Action = ActionYearByYearColor
       end
+      object Separator13: TMenuItem
+        Caption = '-'
+      end
       object MenuItemCustomHColor: TMenuItem
         Action = ActionCustomHColor
       end

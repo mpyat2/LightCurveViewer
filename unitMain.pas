@@ -109,6 +109,7 @@ type
     Separator10: TMenuItem;
     Separator11: TMenuItem;
     Separator12: TMenuItem;
+    Separator13: TMenuItem;
     Separator2: TMenuItem;
     Separator3: TMenuItem;
     Separator4: TMenuItem;
@@ -197,6 +198,7 @@ type
     FChartColorMode: TChartColorMode;
     function GetLCSrcDataCount: Integer;
     function GetLCSrcDataItem(N: Integer): PChartDataItem;
+    procedure UpdateColorActions;
     procedure ShowDataPoint(Tool: TDatapointClickTool; AddToFloatTextForm: Boolean);
     procedure UpdateTitle;
     procedure ChartSeriesModelToNil;
@@ -362,6 +364,14 @@ end;
 procedure TFormMain.ChartToolsetDataPointClickTool2PointClick(ATool: TChartTool; APoint: TPoint);
 begin
   ShowDataPoint(ATool as TDatapointClickTool, True);
+end;
+
+procedure TFormMain.UpdateColorActions;
+begin
+  ActionList.UpdateAction(ActionCycleByCycleColor); // Ubuntu bug (check state not always updated)? (GNOME)
+  ActionList.UpdateAction(ActionDayByDayColor); // Ubuntu bug (check state not always updated)? (GNOME)
+  ActionList.UpdateAction(ActionYearByYearColor); // Ubuntu bug (check state not always updated)? (GNOME)
+  ActionList.UpdateAction(ActionCustomHColor); // Ubuntu bug (check state not always updated)? (GNOME)
 end;
 
 procedure TFormMain.ShowDataPoint(Tool: TDatapointClickTool; AddToFloatTextForm: Boolean);
@@ -571,9 +581,7 @@ begin
   FChartColorMode := TChartColorMode.None;
   ChartSeriesData.ColorEach := ceNone;
   HideColorLegend;
-  ActionList.UpdateAction(ActionDayByDayColor); // Ubuntu bug (check state not always updated)? (GNOME)
-  ActionList.UpdateAction(ActionYearByYearColor); // Ubuntu bug (check state not always updated)? (GNOME)
-  ActionList.UpdateAction(ActionCustomHColor); // Ubuntu bug (check state not always updated)? (GNOME)
+  UpdateColorActions;
   if CurrentChartColorMode <> TChartColorMode.Phase then begin
     // Colorize both LCSrcData and LCSrcFoldedData
     FChartColorMode := TChartColorMode.Phase;
@@ -593,9 +601,7 @@ begin
   FChartColorMode := TChartColorMode.None;
   ChartSeriesData.ColorEach := ceNone;
   HideColorLegend;
-  ActionList.UpdateAction(ActionCycleByCycleColor); // Ubuntu bug (check state not always updated)? (GNOME)
-  ActionList.UpdateAction(ActionYearByYearColor); // Ubuntu bug (check state not always updated)? (GNOME)
-  ActionList.UpdateAction(ActionCustomHColor); // Ubuntu bug (check state not always updated)? (GNOME)
+  UpdateColorActions;
   if CurrentChartColorMode <> TChartColorMode.Day then begin
     // Set colors to both LCSrcData and LCSrcFoldedData
     FChartColorMode := TChartColorMode.Day;
@@ -615,9 +621,7 @@ begin
   FChartColorMode := TChartColorMode.None;
   ChartSeriesData.ColorEach := ceNone;
   HideColorLegend;
-  ActionList.UpdateAction(ActionCycleByCycleColor); // Ubuntu bug (check state not always updated)? (GNOME)
-  ActionList.UpdateAction(ActionDayByDayColor); // Ubuntu bug (check state not always updated)? (GNOME)
-  ActionList.UpdateAction(ActionCustomHColor); // Ubuntu bug (check state not always updated)? (GNOME)
+  UpdateColorActions;
   if CurrentChartColorMode <> TChartColorMode.Year then begin
     // Set colors to both LCSrcData and LCSrcFoldedData
     FChartColorMode := TChartColorMode.Year;
@@ -637,9 +641,7 @@ begin
   FChartColorMode := TChartColorMode.None;
   ChartSeriesData.ColorEach := ceNone;
   HideColorLegend;
-  ActionList.UpdateAction(ActionCycleByCycleColor); // Ubuntu bug (check state not always updated)? (GNOME)
-  ActionList.UpdateAction(ActionDayByDayColor); // Ubuntu bug (check state not always updated)? (GNOME)
-  ActionList.UpdateAction(ActionYearByYearColor); // Ubuntu bug (check state not always updated)? (GNOME)
+  UpdateColorActions;
   if CurrentChartColorMode <> TChartColorMode.Custom then begin
     // Set colors to both LCSrcData and LCSrcFoldedData
     FChartColorMode := TChartColorMode.Custom;
@@ -1092,10 +1094,7 @@ begin
   ChartSeriesData.ColorEach := ceNone;
   HideColorLegend;
   FChartColorMode := TChartColorMode.None;
-  ActionList.UpdateAction(ActionCycleByCycleColor); // Ubuntu bug (check state not always updated)? (GNOME)
-  ActionList.UpdateAction(ActionDayByDayColor); // Ubuntu bug (check state not always updated)? (GNOME)
-  ActionList.UpdateAction(ActionYearByYearColor); // Ubuntu bug (check state not always updated)? (GNOME)
-  ActionList.UpdateAction(ActionCustomHColor); // Ubuntu bug (check state not always updated)? (GNOME)
+  UpdateColorActions;
   ChartSeriesData.Active := True;
   ActionList.UpdateAction(ActionShowData); // Ubuntu bug (check state not always updated)? (GNOME)
   ChartSeriesData.YErrorBars.Visible := False;
@@ -1309,10 +1308,7 @@ begin
   ChartSeriesData.ColorEach := ceNone;
   HideColorLegend;
   FChartColorMode := TChartColorMode.None;
-  ActionList.UpdateAction(ActionCycleByCycleColor); // Ubuntu bug (check state not always updated)? (GNOME)
-  ActionList.UpdateAction(ActionDayByDayColor); // Ubuntu bug (check state not always updated)? (GNOME)
-  ActionList.UpdateAction(ActionYearByYearColor); // Ubuntu bug (check state not always updated)? (GNOME)
-  ActionList.UpdateAction(ActionCustomHColor); // Ubuntu bug (check state not always updated)? (GNOME)
+  UpdateColorActions;
   ChartSeriesData.Pointer.Brush.Color := TColor(Ini.ReadInteger('SETTINGS', 'DataColor', clPurple));
   ChartSeriesData.Pointer.Pen.Color := ChartSeriesData.Pointer.Brush.Color;
   ChartSeriesModel.LinePen.Color := TColor(Ini.ReadInteger('SETTINGS', 'ModelColor', clLime));
@@ -1451,6 +1447,7 @@ procedure TFormMain.SetSeasonalColor(Mode: Boolean);
 var
   Item, PrevItem, OriginalItem: PChartDataItem;
   IntervalN, PrevIntervalN, ColorIndex, I, L: Integer;
+  IntervalName, PrevIntervalName: string;
   XTime: TDateTime;
   Year, Month, Day: Word;
   X1: Double;
@@ -1471,25 +1468,35 @@ begin
 
   ColorIndex := 0;
   PrevIntervalN := 0;
+  PrevIntervalName := '';
   X1 := LCSrcData.Item[0]^.X;
   for I := 0 to L - 1 do begin
     Item := LCSrcData.Item[I];
     if Mode then begin
       // Years
-      XTime := JulianDateToDateTime(Item^.X);
-      DecodeDate(XTime, Year, Month, Day); // Works for A.D. only! Otherwise, returns 0
-      IntervalN := Year;
+      try
+        XTime := JulianDateToDateTime(Item^.X);
+        DecodeDate(XTime, Year, Month, Day); // Works for A.D. only! Otherwise, returns 0
+        IntervalN := Year;
+        IntervalName := IntToStr(IntervalN);
+      except
+        on E: EConvertError do begin
+           IntervalN := -1;
+           IntervalName := 'Cannot convert JD to DateTime';
+        end;
+      end;
     end
     else begin
       // Days
       IntervalN := Floor(Item^.X);
+      IntervalName := IntToStr(IntervalN);
     end;
     if I > 0 then begin
       PrevItem := LCSrcData.Item[I - 1];
       if (PrevItem^.X > Item^.X) then
         CalcError('Internal error: data must be sorted');
       if IntervalN <> PrevIntervalN then begin
-        FSimpleColorRegions.AddRegion(X1, PrevItem^.X, CycleByCycleColors[ColorIndex], IntToStr(PrevIntervalN));
+        FSimpleColorRegions.AddRegion(X1, PrevItem^.X, CycleByCycleColors[ColorIndex], PrevIntervalName);
         X1 := Item^.X;
         Inc(ColorIndex);
         if ColorIndex > Length(CycleByCycleColors) - 1 then
@@ -1498,8 +1505,9 @@ begin
     end;
     Item^.Color := CycleByCycleColors[ColorIndex];
     PrevIntervalN := IntervalN;
+    PrevIntervalName := IntervalName;
   end;
-  FSimpleColorRegions.AddRegion(X1, LCSrcData.Item[L - 1]^.X, CycleByCycleColors[ColorIndex], IntToStr(PrevIntervalN));
+  FSimpleColorRegions.AddRegion(X1, LCSrcData.Item[L - 1]^.X, CycleByCycleColors[ColorIndex], PrevIntervalName);
 
   L := LCSrcFoldedData.Count;
 
