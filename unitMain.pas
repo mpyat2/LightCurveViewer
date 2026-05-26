@@ -1829,9 +1829,9 @@ var
   Item: PChartDataItem;
   I: Integer;
   FPUExceptionMask: TFPUExceptionMask;
-  Intf: IUnknown;
+  WCursorIntf: IUnknown;
 begin
-  Intf := TWaitCursor.Create as IUnknown; // will be freed automatically
+  WCursorIntf := TWaitCursor.Create as IUnknown; // will be freed automatically
 
   FFitFormula := '';
   FFitInfo := '';

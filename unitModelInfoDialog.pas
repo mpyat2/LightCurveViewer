@@ -93,19 +93,13 @@ end;
 procedure TFormInfo.ActionCopyTableExecute(Sender: TObject);
 var
   Grid: TDrawGrid;
-  CurrentCursor: TCursor;
+  WCursorIntf: IUnknown;
 begin
   Grid := GetActiveGrid;
   if Grid = nil then
     Exit;
-  CurrentCursor := Screen.Cursor;
-  Screen.Cursor := crHourglass;
-  try
-    Clipboard.AsText := GetGridSelectionAsText(Grid, @GetGridCell);
-  finally
-    Screen.Cursor := CurrentCursor;
-  end;
-  //ShowMessage('Copied to Clipboard');
+  WCursorIntf := TWaitCursor.Create as IUnknown; // will be freed automatically
+  Clipboard.AsText := GetGridSelectionAsText(Grid, @GetGridCell);
 end;
 
 procedure TFormInfo.ActionList1Update(AAction: TBasicAction; var Handled: Boolean);

@@ -102,10 +102,7 @@ implementation
 {$R *.lfm}
 
 uses
-//{$IF defined(Windows)}
-//  Windows,
-//{$ENDIF}
-  math, Clipbrd, settings, sortutils, unitFitParamDialog, unitMain;
+  math, Clipbrd, settings, sortutils, guiutils, unitFitParamDialog, unitMain;
 
 const
   UnsincSelectColor = clLtGray;
@@ -214,7 +211,7 @@ end;
 procedure TFormDFTDialog.ActionGridCopyExecute(Sender: TObject);
 var
   Grid: TDrawGrid;
-  CurrentCursor: TCursor;
+  WCursorIntf: IUnknown;
 begin
   if DrawGridFrequencies.Focused then
     Grid := DrawGridFrequencies
@@ -223,13 +220,8 @@ begin
     Grid := DrawGridMaxima
   else
     Exit;
-  CurrentCursor := Screen.Cursor;
-  Screen.Cursor := crHourglass;
-  try
-    Clipboard.AsText := GetSelectedRowsAsString(Grid);
-  finally
-    Screen.Cursor := CurrentCursor;
-  end;
+  WCursorIntf := TWaitCursor.Create as IUnknown; // will be freed automatically
+  Clipboard.AsText := GetSelectedRowsAsString(Grid);
 end;
 
 procedure TFormDFTDialog.ActionCopyChartExecute(Sender: TObject);

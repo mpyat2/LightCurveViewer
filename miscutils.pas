@@ -45,6 +45,8 @@ function GetLogicalCpuCount: Integer;
 procedure OpenURLasync(const URL: string);
 {$ENDIF}
 
+procedure PrintDebug(const Message: string);
+
 implementation
 
 uses
@@ -283,6 +285,15 @@ begin
   end;
 end;
 {$ENDIF}
+
+procedure PrintDebug(const Message: string);
+begin
+{$IF defined(windows)}
+  OutputDebugString(PChar(Message));
+{$ELSE}
+  WriteLn(Message);
+{$ENDIF}
+end;
 
 end.
 

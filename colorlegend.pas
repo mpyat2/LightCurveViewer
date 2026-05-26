@@ -102,28 +102,18 @@ end;
 
 procedure TFormColorLegend.ActionCopyExecute(Sender: TObject);
 var
-  CurrentCursor: TCursor;
+  WCursorIntf: IUnknown;
 begin
-  CurrentCursor := Screen.Cursor;
-  Screen.Cursor := crHourglass;
-  try
-    Clipboard.AsText := GetGridSelectionAsText(DrawGrid1, @GetGridCell);
-  finally
-    Screen.Cursor := CurrentCursor;
-  end;
+  WCursorIntf := TWaitCursor.Create as IUnknown; // will be freed automatically
+  Clipboard.AsText := GetGridSelectionAsText(DrawGrid1, @GetGridCell);
 end;
 
 procedure TFormColorLegend.ActionCopyWithTitlesExecute(Sender: TObject);
 var
-  CurrentCursor: TCursor;
+  WCursorIntf: IUnknown;
 begin
-  CurrentCursor := Screen.Cursor;
-  Screen.Cursor := crHourglass;
-  try
-    Clipboard.AsText := GetGridSelectionAsText(DrawGrid1, @GetGridCell, True);
-  finally
-    Screen.Cursor := CurrentCursor;
-  end;
+  WCursorIntf := TWaitCursor.Create as IUnknown; // will be freed automatically
+  Clipboard.AsText := GetGridSelectionAsText(DrawGrid1, @GetGridCell, True);
 end;
 
 procedure TFormColorLegend.ActionSelectAllExecute(Sender: TObject);
