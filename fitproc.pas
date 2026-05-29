@@ -308,6 +308,7 @@ var
   x, nu, angle: Double;
   I, II, N, Idx, Idx1, Idx2, nfit: Integer;
   NofParameters: Integer;
+  stepC, stepS, curC, curS, newC: Double;
 begin
   nfit := Ceil((fitXmax - fitXmin) / fitXstep);
   if fitXmin + nfit * fitXstep < fitXmax then
@@ -335,12 +336,19 @@ begin
     for N := 0 to Length(ATrigPolyDegrees) - 1 do begin
       if ATrigPolyDegrees[N] > 0 then begin
         nu := AFrequencies[N];
+        angle := 2 * Pi * nu * x;
+        stepC := Cos(angle);
+        stepS := Sin(angle);
+        curC  := stepC;
+        curS  := stepS;
         for II := 1 to ATrigPolyDegrees[N] do begin
-          angle := 2 * Pi * nu * x;
           Idx := Idx2 + 2 * (II - 1);
-          Xvector[Idx] := Cos(II * angle);
-          Xvector[Idx + 1] := Sin(II * angle);
-          Yfit[I] := Yfit[I] + solution_vector[Idx] * Xvector[Idx] + solution_vector[Idx + 1] * Xvector[Idx + 1];
+          Xvector[Idx]     := curC;
+          Xvector[Idx + 1] := curS;
+          Yfit[I] := Yfit[I] + solution_vector[Idx] * curC + solution_vector[Idx + 1] * curS;
+          newC := curC * stepC - curS * stepS;
+          curS := curS * stepC + curC * stepS;
+          curC := newC;
         end;
         Idx2 := Idx2 + ATrigPolyDegrees[N] * 2;
       end;
@@ -382,29 +390,19 @@ var
   CW8087: WORD;
   MXCSR: DWORD;
 begin
-  if (n <= 0) or (Length(Xmatrix) <> m * n) or (Length(Yvector) <> m) or (Length(beta) <> n) then
+  if (n <= 0) or (Length(Xmatrix) <> m * n) or (Length(Yvector) <> m) or (Length(beta) <> n) or (m <= n) then
     CalcError('Cannot calculate coefficients'' errors: invalid parameters');
 
   // Calculate XTXI: Variance-Covariance Matrix
 
   SetLength(XmatrixTrans, Length(Xmatrix));
-  // XmatrixTrans is the transposed matrix
-  //TransposeMatrix(Xmatrix, m, n, XmatrixTrans);
-  CW8087 := Get8087CW;
-  MXCSR := GetMXCSR;
-  try
-    transpose_matrix(Xmatrix[0], m, n, XmatrixTrans[0]);
-  finally
-    Set8087CW(CW8087);
-    SetMXCSR(MXCSR);
-  end;
   SetLength(XTXI, n * n);
-  // Mult. the transposed mutrix by the original one
-  MultiplyMatrices(XmatrixTrans, Xmatrix, n, m, n, XTXI);
-  // Invert the XTXI matrix
+
   CW8087 := Get8087CW;
   MXCSR := GetMXCSR;
   try
+    transpose_matrix(Xmatrix[0], m, n, XmatrixTrans[0]); // XmatrixTrans is the transposed matrix
+    multiply_matrices(n, n, m, XmatrixTrans[0], Xmatrix[0], XTXI[0]); // Mult. the transposed mutrix by the original one
     info := invert_matrix(XTXI[0], n);
   finally
     Set8087CW(CW8087);
@@ -477,6 +475,7 @@ var
   I, II, N, Idx, Idx2: Integer;
   NofParameters: Integer;
   ndata: Integer;
+  stepC, stepS, curC, curS, newC: Double;
 begin
   if Length(Xarray) <> Length(Yarray) then
     CalcError('X and Y arrays myst be of equal length');
@@ -513,10 +512,17 @@ begin
       nu := AFrequencies[N];
       for I := 0 to ndata - 1 do begin
         angle := 2 * Pi * nu * Xarray[I];
+        stepC := Cos(angle);
+        stepS := Sin(angle);
+        curC := stepC;
+        curS := stepS;
         for II := 1 to ATrigPolyDegrees[N] do begin
           Idx := I * NofParameters + Idx2 + 2 * (II - 1);
-          a[Idx]     := Cos(II * angle);
-          a[Idx + 1] := Sin(II * angle);
+          a[Idx]     := curC;
+          a[Idx + 1] := curS;
+          newC := curC * stepC - curS * stepS;
+          curS := curS * stepC + curC * stepS;
+          curC := newC;
         end;
       end;
       Idx2 := Idx2 + ATrigPolyDegrees[N] * 2;

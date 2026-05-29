@@ -25,6 +25,8 @@ procedure SetGlobalIntParameter(const Name: string; Value: Integer);
 
 procedure SetGlobalBoolParameter(const Name: string; Value: Boolean);
 
+procedure UpdateParamFile;
+
 implementation
 
 var
@@ -108,6 +110,11 @@ begin
   GlobalIniFile.WriteInteger(F.Name, 'Top', F.Top);
   GlobalIniFile.WriteInteger(F.Name, 'Width', F.Width);
   GlobalIniFile.WriteInteger(F.Name, 'Height', F.Height);
+  GlobalIniFile.UpdateFile;
+end;
+
+procedure UpdateParamFile;
+begin
   GlobalIniFile.UpdateFile;
 end;
 

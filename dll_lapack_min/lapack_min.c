@@ -1,5 +1,6 @@
 // file lapack_min.c
 #include "mkl.h"
+#include "mkl_cblas.h"
 #include <stdlib.h>
 
 // Define EXPORT macro depending on platform/compiler
@@ -75,4 +76,19 @@ EXPORT
 void transpose_matrix(const double *a, int rows, int cols, double *b) {
     // Row-major ordering, transpose, no scaling
     mkl_domatcopy('R', 'T', rows, cols, 1.0, a, cols, b, rows);
+}
+
+// Multiply two row-major matrices: C = A * B
+// a: input matrix A of size m x k
+// b: input matrix B of size k x n
+// c: output matrix C of size m x n (preallocated, overwritten)
+// m: number of rows in A and C
+// n: number of cols in B and C
+// k: number of cols in A = number of rows in B
+EXPORT
+void multiply_matrices(int m, int n, int k, const double* a, const double* b, double* c) {
+    // Row-major ordering, no transposition, alpha=1.0, beta=0.0 (C is overwritten)
+    cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
+                m, n, k,
+                1.0, a, k, b, n, 0.0, c, n);
 }

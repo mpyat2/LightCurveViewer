@@ -1801,6 +1801,10 @@ end;
 
 procedure TFormMain.DoPolyFitProc(TrendDegree: Integer; const TrigPolyDegrees: THarmonicIntArray; const Frequencies: THarmonicDblArray);
 
+const
+  DEF_MIN_MODEL_INTERVALS = 500;
+  DEF_MAX_MODEL_INTERVALS = 100000;
+
   function FitStepFromFrequencies(Freq: THarmonicDblArray): Double;
   var
     I: Integer;
@@ -1813,7 +1817,8 @@ procedure TFormMain.DoPolyFitProc(TrendDegree: Integer; const TrigPolyDegrees: T
         F := Freq[I];
     end;
     if not IsNan(F) and (F > 0) then
-      Result := 1.0 / F * 0.01 * 0.5;
+      //Result := 1.0 / F * 0.01 * 0.5;
+      Result := 1.0 / F * 0.01 * 0.1;
   end;
 
 var
@@ -1830,6 +1835,7 @@ var
   I: Integer;
   FPUExceptionMask: TFPUExceptionMask;
   WCursorIntf: IUnknown;
+
 begin
   WCursorIntf := TWaitCursor.Create as IUnknown; // will be freed automatically
 
@@ -1885,15 +1891,33 @@ begin
 
       fitXmin := MinValue(X);
       fitXmax := MaxValue(X);
-      fitXstep := FitStepFromFrequencies(tempFrequencies);
-      if IsNan(fitXstep) then
-        fitXstep := (fitXmax - fitXmin) / (Length(X) * 3);
-      nfit := Ceil((fitXmax - fitXmin) / fitXstep);
-      nfit := Ceil(nfit / 10) * 10;
-      if nfit > 100000 then begin
-        nfit := 100000;
-        fitXstep := (fitXmax - fitXmin) / nfit;
+
+      nfit := GetGlobalIntParameter('ModelPoints', 0) - 1;
+      if nfit <> -1 then begin
+        if ((nfit + 1) > unitOptionsDialog.MAX_MODEL_POINTS) or ((nfit + 1) < unitOptionsDialog.MIN_MODEL_POINTS) then begin
+          ShowMessage('Invalid number of model points in settings. The default value will be used.');
+          nfit := -1;
+        end;
       end;
+
+      if nfit = -1 then begin
+        fitXstep := FitStepFromFrequencies(tempFrequencies);
+        if IsNan(fitXstep) then
+          fitXstep := (fitXmax - fitXmin) / (Length(X) * 100);
+
+        nfit := Ceil((fitXmax - fitXmin) / fitXstep);
+        nfit := Ceil(nfit / 10) * 10;
+        if nfit > DEF_MAX_MODEL_INTERVALS then begin
+          nfit := DEF_MAX_MODEL_INTERVALS;
+        end
+        else
+        if nfit < DEF_MIN_MODEL_INTERVALS then begin
+          nfit := DEF_MIN_MODEL_INTERVALS;
+        end;
+      end;
+
+      fitXstep := (fitXmax - fitXmin) / nfit;
+
       PolyFit(X, Y, TrendDegree, TrigPolyDegrees, tempFrequencies,
               fitXmin, fitXmax, fitXstep,
               FModelData[FitColumnType.x],

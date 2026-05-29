@@ -9,6 +9,7 @@ object FormFitparams: TFormFitparams
   ClientHeight = 436
   ClientWidth = 308
   Position = poMainFormCenter
+  LCLVersion = '4.4.0.0'
   OnCreate = FormCreate
   object EditPeriod1: TEdit
     Left = 72
@@ -285,7 +286,7 @@ object FormFitparams: TFormFitparams
   object EditTrigDeg9: TEdit
     Left = 248
     Height = 23
-    Top = 339
+    Top = 344
     Width = 40
     TabOrder = 18
   end
