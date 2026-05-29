@@ -1,1 +1,0 @@
-C:\lazarus64\fpc\3.2.2\bin\x86_64-win64\fpc -CX -XX -O2 sincos.pas
