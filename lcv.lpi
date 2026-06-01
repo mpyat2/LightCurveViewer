@@ -18,7 +18,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <RevisionNr Value="1"/>
-      <BuildNr Value="165"/>
+      <BuildNr Value="167"/>
       <StringTable CompanyName="Observatory Osokorky"/>
     </VersionInfo>
     <BuildModes>
@@ -291,6 +291,7 @@
         <Filename Value="unitPhasePlotHistory.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FormPhasePlotHistory"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit>
     </Units>
