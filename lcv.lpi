@@ -287,6 +287,12 @@
         <Filename Value="la.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
+      <Unit>
+        <Filename Value="unitPhasePlotHistory.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormPhasePlotHistory"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

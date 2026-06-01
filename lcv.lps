@@ -3,13 +3,13 @@
   <ProjectSession>
     <PathDelim Value="\"/>
     <Version Value="12"/>
-    <BuildModes Active="NoDebug"/>
+    <BuildModes Active="MemoryLeakCheck"/>
     <Units>
       <Unit>
         <Filename Value="lcv.lpr"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <CursorPos X="37" Y="15"/>
+        <CursorPos Y="24"/>
         <UsageCount Value="203"/>
       </Unit>
       <Unit>
@@ -18,12 +18,13 @@
         <ComponentName Value="FormMain"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <TopLine Value="1941"/>
-        <CursorPos X="32" Y="1806"/>
+        <EditorIndex Value="6"/>
+        <TopLine Value="1090"/>
+        <CursorPos X="22" Y="1097"/>
         <UsageCount Value="203"/>
         <Bookmarks Count="3">
-          <Item0 Y="1728" Left="1" Top="1698" ID="4"/>
-          <Item1 Y="1689" Left="1" Top="1662" ID="3"/>
+          <Item0 Y="1729" Left="1" Top="1699" ID="4"/>
+          <Item1 Y="1690" Left="1" Top="1663" ID="3"/>
           <Item2 X="22" Y="1097" Left="1" Top="1079" ID="1"/>
         </Bookmarks>
         <Loaded Value="True"/>
@@ -42,10 +43,12 @@
         <ComponentName Value="FormPhaseDialog"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="119"/>
-        <CursorPos X="17" Y="126"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="141"/>
+        <CursorPos X="43" Y="157"/>
         <UsageCount Value="202"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="unitDFTdialog.pas"/>
@@ -88,7 +91,7 @@
       <Unit>
         <Filename Value="fitproc.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="384"/>
         <CursorPos X="23" Y="406"/>
         <UsageCount Value="200"/>
@@ -96,15 +99,13 @@
           <Item0 Y="95" Left="1" Top="77"/>
           <Item1 Y="411" Left="1" Top="382" ID="2"/>
         </Bookmarks>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="lcv.inc"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="-1"/>
         <CursorPos X="2" Y="6"/>
         <UsageCount Value="212"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="unitFitParamDialog.pas"/>
@@ -160,9 +161,11 @@
       <Unit>
         <Filename Value="lcvtypes.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <CursorPos X="16" Y="24"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="90"/>
+        <CursorPos X="15" Y="105"/>
         <UsageCount Value="211"/>
+        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="miscutils.pas"/>
@@ -181,10 +184,11 @@
       <Unit>
         <Filename Value="guiutils.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="31"/>
-        <CursorPos Y="53"/>
+        <EditorIndex Value="7"/>
+        <TopLine Value="143"/>
+        <CursorPos Y="166"/>
         <UsageCount Value="211"/>
+        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="floattextform.pas"/>
@@ -231,8 +235,8 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="unitGetExtent"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="18"/>
-        <CursorPos X="12" Y="37"/>
+        <TopLine Value="39"/>
+        <CursorPos X="27" Y="61"/>
         <UsageCount Value="201"/>
       </Unit>
       <Unit>
@@ -252,12 +256,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="unitOptionsDialog"/>
-        <EditorIndex Value="1"/>
-        <TopLine Value="65"/>
-        <CursorPos X="5" Y="96"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="66"/>
+        <CursorPos X="25" Y="81"/>
         <UsageCount Value="200"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="edithelper.pas"/>
@@ -293,12 +295,10 @@
       <Unit>
         <Filename Value="la.pas"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="156"/>
         <CursorPos X="13" Y="15"/>
-        <UsageCount Value="103"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="107"/>
       </Unit>
       <Unit>
         <Filename Value="C:\lazarus64\fpc\3.2.2\source\packages\numlib\src\sle.pas"/>
@@ -407,8 +407,8 @@
       <Unit>
         <Filename Value="C:\lazarus64\fpc\3.2.2\source\rtl\objpas\sysutils\sysstrh.inc"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="113"/>
-        <CursorPos X="10" Y="131"/>
+        <TopLine Value="133"/>
+        <CursorPos X="10" Y="151"/>
         <UsageCount Value="12"/>
       </Unit>
       <Unit>
@@ -530,8 +530,8 @@
         <Filename Value="C:\lazarus64\lcl\stdctrls.pp"/>
         <UnitName Value="StdCtrls"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="1304"/>
-        <CursorPos X="32" Y="1322"/>
+        <TopLine Value="581"/>
+        <CursorPos X="15" Y="598"/>
         <UsageCount Value="24"/>
       </Unit>
       <Unit>
@@ -569,10 +569,11 @@
       <Unit>
         <Filename Value="C:\lazarus64\fpc\3.2.2\source\packages\fcl-base\src\contnrs.pp"/>
         <UnitName Value="Contnrs"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="56"/>
-        <CursorPos X="3" Y="74"/>
-        <UsageCount Value="10"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="885"/>
+        <CursorPos X="3" Y="887"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="C:\lazarus64\components\tachart\tachartutils.pas"/>
@@ -643,127 +644,173 @@
         <CursorPos X="3" Y="215"/>
         <UsageCount Value="10"/>
       </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus64\fpc\3.2.2\source\rtl\inc\objpash.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="188"/>
+        <CursorPos X="23" Y="206"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus64\fpc\3.2.2\source\rtl\inc\objpas.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="318"/>
+        <CursorPos X="9" Y="325"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="unitPhasePlotHistory.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormPhasePlotHistory"/>
+        <ResourceBaseClass Value="Form"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="37"/>
+        <CursorPos X="12" Y="56"/>
+        <UsageCount Value="24"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus64\fpc\3.2.2\source\rtl\objpas\classes\classesh.inc"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="235"/>
+        <CursorPos X="15" Y="253"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus64\lcl\include\customlistbox.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="655"/>
+        <CursorPos X="3" Y="657"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus64\fpc\3.2.2\source\rtl\objpas\classes\lists.inc"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="238"/>
+        <CursorPos X="3" Y="240"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit>
     </Units>
     <JumpHistory HistoryIndex="29">
       <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="1904" TopLine="1889"/>
+        <Filename Value="unitPhasePlotHistory.pas"/>
+        <Caret Line="71" Column="21" TopLine="51"/>
       </Position>
       <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="1905" TopLine="1889"/>
+        <Filename Value="unitPhasePlotHistory.pas"/>
+        <Caret Line="34" Column="11" TopLine="16"/>
       </Position>
       <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="1907" TopLine="1889"/>
+        <Filename Value="unitPhasePlotHistory.pas"/>
+        <Caret Line="71" Column="3" TopLine="57"/>
       </Position>
       <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="1908" TopLine="1889"/>
+        <Filename Value="lcvtypes.pas"/>
+        <Caret Line="105" Column="15" TopLine="87"/>
       </Position>
       <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="1909" TopLine="1889"/>
+        <Filename Value="lcvtypes.pas"/>
+        <Caret Line="231" Column="22" TopLine="202"/>
       </Position>
       <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="1914" TopLine="1889"/>
+        <Filename Value="lcvtypes.pas"/>
+        <Caret Line="235" Column="18" TopLine="203"/>
       </Position>
       <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="1902" TopLine="1889"/>
+        <Filename Value="C:\lazarus64\fpc\3.2.2\source\packages\fcl-base\src\contnrs.pp"/>
+        <Caret Line="89" Column="15" TopLine="71"/>
       </Position>
       <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="1903" TopLine="1889"/>
+        <Filename Value="C:\lazarus64\fpc\3.2.2\source\packages\fcl-base\src\contnrs.pp"/>
+        <Caret Line="887" Column="3" TopLine="885"/>
       </Position>
       <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="1904" TopLine="1889"/>
+        <Filename Value="C:\lazarus64\fpc\3.2.2\source\rtl\objpas\classes\classesh.inc"/>
+        <Caret Line="337" Column="15" TopLine="319"/>
       </Position>
       <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="1907" TopLine="1889"/>
+        <Filename Value="C:\lazarus64\fpc\3.2.2\source\rtl\objpas\classes\lists.inc"/>
+        <Caret Line="783" Column="3" TopLine="781"/>
       </Position>
       <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="1915" Column="43" TopLine="1889"/>
+        <Filename Value="C:\lazarus64\fpc\3.2.2\source\rtl\objpas\classes\classesh.inc"/>
+        <Caret Line="253" Column="15" TopLine="235"/>
       </Position>
       <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="1903" TopLine="1889"/>
+        <Filename Value="lcvtypes.pas"/>
+        <Caret Line="223" Column="32" TopLine="203"/>
       </Position>
       <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="1904" TopLine="1889"/>
+        <Filename Value="lcvtypes.pas"/>
       </Position>
       <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="1905" TopLine="1889"/>
+        <Filename Value="lcvtypes.pas"/>
+        <Caret Line="105" Column="21" TopLine="75"/>
       </Position>
       <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="1908" TopLine="1889"/>
+        <Filename Value="lcvtypes.pas"/>
+        <Caret Line="223" Column="31" TopLine="203"/>
       </Position>
       <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="1909" TopLine="1889"/>
+        <Filename Value="unitPhasePlotHistory.pas"/>
+        <Caret Line="72" Column="22" TopLine="54"/>
       </Position>
       <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="1910" TopLine="1889"/>
+        <Filename Value="unitPhasePlotHistory.pas"/>
+        <Caret Line="84" Column="8" TopLine="66"/>
       </Position>
       <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="1914" TopLine="1889"/>
+        <Filename Value="unitPhasePlotHistory.pas"/>
+        <Caret Line="56" Column="37" TopLine="50"/>
       </Position>
       <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="1915" TopLine="1889"/>
+        <Filename Value="unitPhasePlotHistory.pas"/>
       </Position>
       <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="1919" TopLine="1891"/>
+        <Filename Value="unitPhasePlotHistory.pas"/>
+        <Caret Line="25" Column="23"/>
       </Position>
       <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="1903" TopLine="1891"/>
+        <Filename Value="unitPhasePlotHistory.pas"/>
+        <Caret Line="56" Column="37" TopLine="27"/>
       </Position>
       <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="1904" TopLine="1891"/>
+        <Filename Value="unitPhasePlotHistory.pas"/>
+        <Caret Line="57" Column="37" TopLine="28"/>
       </Position>
       <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="1905" TopLine="1891"/>
+        <Filename Value="unitPhasePlotHistory.pas"/>
+        <Caret Line="91" Column="23" TopLine="62"/>
       </Position>
       <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="1906" TopLine="1891"/>
+        <Filename Value="unitPhasePlotHistory.pas"/>
+        <Caret Line="100" Column="21" TopLine="71"/>
       </Position>
       <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="1908" TopLine="1891"/>
+        <Filename Value="unitPhasePlotHistory.pas"/>
       </Position>
       <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="1909" TopLine="1891"/>
+        <Filename Value="unitPhasePlotHistory.pas"/>
+        <Caret Line="25" Column="23"/>
       </Position>
       <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="1910" TopLine="1891"/>
+        <Filename Value="unitPhasePlotHistory.pas"/>
+        <Caret Line="57" Column="85" TopLine="62"/>
       </Position>
       <Position>
-        <Filename Value="fitproc.pas"/>
-        <Caret Line="83" TopLine="76"/>
+        <Filename Value="lcvtypes.pas"/>
+        <Caret Line="105" Column="15" TopLine="87"/>
       </Position>
       <Position>
-        <Filename Value="la.pas"/>
-        <Caret Line="176" Column="37" TopLine="157"/>
+        <Filename Value="lcvtypes.pas"/>
+        <Caret Line="228" Column="3" TopLine="203"/>
       </Position>
       <Position>
-        <Filename Value="la.pas"/>
-        <Caret Line="15" Column="14"/>
+        <Filename Value="unitPhaseDialog.pas"/>
+        <Caret Line="157" Column="43" TopLine="141"/>
       </Position>
     </JumpHistory>
     <RunParams>

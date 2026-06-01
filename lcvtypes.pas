@@ -92,9 +92,26 @@ type
   end;
 
 type
+  TPhaseHistoryItem = class
+    FPhase: Double;
+    FEpoch: Double;
+    constructor Create(APhase, AEpoch: Double);
+    function GetDescription: string;
+  end;
+
+type
+  TPhaseHistory = class(TObjectList)
+    function Get(Index: Integer): TPhaseHistoryItem;
+    procedure InsertItem(APhase, AEpoch: Double);
+  end;
+
+type
   TProgressCaptionProc = procedure (const Msg: string) of object;
 
 implementation
+
+uses
+  SysUtils;
 
 { TFitPoint }
 
@@ -180,6 +197,42 @@ end;
 procedure TFoldedRegions.AddRegion(X1, X2: Double; Color: TColor; CycleN: Integer; Cycle0, Period: Double);
 begin
   Self.Add(TFoldedRegion.Create(X1, X2, Color, CycleN, Cycle0, Period));
+end;
+
+{ TPhaseHistoryItem }
+
+constructor TPhaseHistoryItem.Create(APhase, AEpoch: Double);
+begin
+  inherited Create;
+  FPhase := APhase;
+  FEpoch := AEpoch;
+end;
+
+function TPhaseHistoryItem.GetDescription: string;
+begin
+  Result := Format('Period: %g; Epoch: %g', [FPhase, FEpoch])
+end;
+
+{ TPhaseHistory }
+
+function TPhaseHistory.Get(Index: Integer): TPhaseHistoryItem;
+begin
+  Result := Self[Index] as TPhaseHistoryItem;
+end;
+
+procedure TPhaseHistory.InsertItem(APhase, AEpoch: Double);
+var
+  Item: TPhaseHistoryItem;
+  I: Integer;
+begin
+  for I := 0 to Self.Count - 1 do begin
+    Item := Get(I);
+    if (Item.FPhase = APhase) and (Item.FEpoch = AEpoch) then begin
+      Self.Delete(I);
+      Break;
+    end;
+  end;
+  Self.Insert(0, TPhaseHistoryItem.Create(APhase, AEpoch));
 end;
 
 end.

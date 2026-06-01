@@ -260,11 +260,11 @@ implementation
 {$R *.lfm}
 
 uses
-  lclintf, math, DateUtils, guiutils, unitPhaseDialog, unitMagShiftDialog,
-  unitFitParamDialog, unitDFTparamDialog, unitDFTdialog, unitTableDialog,
-  unitModelInfoDialog, colorLegend, floattextform, unitFormChartprops,
-  unitGetExtent, unitOptionsDialog, unitFormStat, unitAbout, dftThread, dataio,
-  sortutils, formatutils, miscutils, fitproc, settings;
+  lclintf, math, DateUtils, guiutils, unitPhaseDialog, unitPhasePlotHistory,
+  unitMagShiftDialog, unitFitParamDialog, unitDFTparamDialog, unitDFTdialog,
+  unitTableDialog, unitModelInfoDialog, colorLegend, floattextform,
+  unitFormChartprops, unitGetExtent, unitOptionsDialog, unitFormStat, unitAbout,
+  dftThread, dataio, sortutils, formatutils, miscutils, fitproc, settings;
 
 const
   XLIST_PHS_COLOR = 0; // index of phase color values in chart source XList (both raw and folded chart sources)
@@ -1117,6 +1117,7 @@ begin
   unitFitParamDialog.SetCurrentPeriods(tempDArray);
   unitFitParamDialog.SetCurrentTrigPolyDegrees(tempIArray);
   unitMagShiftDialog.SetCurrentMagShift(NaN);
+  unitPhasePlotHistory.ClearPhasePlotHistory;
   //CloseDFTdialogs;
 end;
 

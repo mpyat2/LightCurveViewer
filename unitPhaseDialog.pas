@@ -7,8 +7,8 @@ unit unitPhaseDialog;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, IniFiles,
-  math;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
+  IniFiles, math;
 
 type
   TApplyPhasePlotParams = procedure of object;
@@ -18,6 +18,7 @@ type
   { TFormPhaseDialog }
 
   TFormPhaseDialog = class(TForm)
+    BitBtnHistory: TBitBtn;
     ButtonApply: TButton;
     ButtonOK: TButton;
     ButtonCancel: TButton;
@@ -25,6 +26,7 @@ type
     EditEpoch: TEdit;
     LabelPeriod: TLabel;
     LabelEpoch: TLabel;
+    procedure BitBtnHistoryClick(Sender: TObject);
     procedure ButtonApplyClick(Sender: TObject);
     procedure ButtonOKClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -58,7 +60,7 @@ implementation
 {$R *.lfm}
 
 uses
-  guiutils;
+  guiutils, unitPhasePlotHistory;
 
 var
   CurrentEpoch: Double = NaN;
@@ -144,7 +146,18 @@ begin
   CurrentPeriod := LPeriod;
   CurrentEpoch := LEpoch;
   FApplyPhasePlotParams;
+  unitPhasePlotHistory.AddToPhasePlotHistory(CurrentPeriod, CurrentEpoch);
   FParamOk := True;
+end;
+
+procedure TFormPhaseDialog.BitBtnHistoryClick(Sender: TObject);
+var
+  Period, Epoch: Double;
+begin
+  if SelectPreviousPhasePlot(Period, Epoch) then begin
+    SetPeriod(Period);
+    SetEpoch(Epoch);
+  end;
 end;
 
 procedure TFormPhaseDialog.FormShow(Sender: TObject);
