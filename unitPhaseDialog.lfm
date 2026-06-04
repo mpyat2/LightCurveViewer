@@ -9,7 +9,7 @@ object FormPhaseDialog: TFormPhaseDialog
   ClientHeight = 130
   ClientWidth = 314
   Position = poMainFormCenter
-  LCLVersion = '4.4.0.0'
+  LCLVersion = '4.6.0.0'
   OnCreate = FormCreate
   OnShow = FormShow
   object LabelPeriod: TLabel
@@ -46,6 +46,7 @@ object FormPhaseDialog: TFormPhaseDialog
     Top = 88
     Width = 75
     Caption = 'OK'
+    Default = True
     TabOrder = 3
     OnClick = ButtonOKClick
   end

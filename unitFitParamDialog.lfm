@@ -2,14 +2,14 @@ object FormFitparams: TFormFitparams
   Left = 446
   Height = 436
   Top = 215
-  Width = 308
+  Width = 315
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Parameters'
   ClientHeight = 436
-  ClientWidth = 308
+  ClientWidth = 315
   Position = poMainFormCenter
-  LCLVersion = '4.4.0.0'
+  LCLVersion = '4.6.0.0'
   OnCreate = FormCreate
   object EditPeriod1: TEdit
     Left = 72
@@ -29,7 +29,7 @@ object FormFitparams: TFormFitparams
     OnClick = ButtonOkClick
   end
   object ButtonCancel: TButton
-    Left = 192
+    Left = 184
     Height = 25
     Top = 392
     Width = 75
@@ -46,7 +46,7 @@ object FormFitparams: TFormFitparams
     Caption = 'Trigonometric Polynomyal'
   end
   object EditTrigDeg1: TEdit
-    Left = 248
+    Left = 256
     Height = 23
     Top = 88
     Width = 40
@@ -60,7 +60,7 @@ object FormFitparams: TFormFitparams
     Caption = 'Polynomial Trend Degree'
   end
   object EditTrendDegree: TEdit
-    Left = 196
+    Left = 204
     Height = 23
     Top = 16
     Width = 92
@@ -88,7 +88,7 @@ object FormFitparams: TFormFitparams
     TabOrder = 3
   end
   object EditTrigDeg2: TEdit
-    Left = 248
+    Left = 256
     Height = 23
     Top = 120
     Width = 40
@@ -116,7 +116,7 @@ object FormFitparams: TFormFitparams
     TabOrder = 5
   end
   object EditTrigDeg3: TEdit
-    Left = 248
+    Left = 256
     Height = 23
     Top = 152
     Width = 40
@@ -144,7 +144,7 @@ object FormFitparams: TFormFitparams
     TabOrder = 7
   end
   object EditTrigDeg4: TEdit
-    Left = 248
+    Left = 256
     Height = 23
     Top = 184
     Width = 40
@@ -172,7 +172,7 @@ object FormFitparams: TFormFitparams
     TabOrder = 9
   end
   object EditTrigDeg5: TEdit
-    Left = 248
+    Left = 256
     Height = 23
     Top = 216
     Width = 40
@@ -200,7 +200,7 @@ object FormFitparams: TFormFitparams
     TabOrder = 11
   end
   object EditTrigDeg6: TEdit
-    Left = 248
+    Left = 256
     Height = 23
     Top = 248
     Width = 40
@@ -228,7 +228,7 @@ object FormFitparams: TFormFitparams
     TabOrder = 13
   end
   object EditTrigDeg7: TEdit
-    Left = 248
+    Left = 256
     Height = 23
     Top = 280
     Width = 40
@@ -256,7 +256,7 @@ object FormFitparams: TFormFitparams
     TabOrder = 15
   end
   object EditTrigDeg8: TEdit
-    Left = 248
+    Left = 256
     Height = 23
     Top = 312
     Width = 40
@@ -284,7 +284,7 @@ object FormFitparams: TFormFitparams
     TabOrder = 17
   end
   object EditTrigDeg9: TEdit
-    Left = 248
+    Left = 256
     Height = 23
     Top = 344
     Width = 40

@@ -10,7 +10,8 @@ object FormColorLegend: TFormColorLegend
   ClientWidth = 500
   FormStyle = fsStayOnTop
   Position = poDefaultPosOnly
-  LCLVersion = '4.4.0.0'
+  LCLVersion = '4.6.0.0'
+  OnCloseQuery = FormCloseQuery
   object DrawGrid1: TDrawGrid
     Left = 0
     Height = 191

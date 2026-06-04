@@ -1,14 +1,14 @@
 object FormMain: TFormMain
   Left = 522
-  Height = 600
+  Height = 480
   Top = 207
   Width = 800
   Caption = 'LCV'
-  ClientHeight = 600
+  ClientHeight = 480
   ClientWidth = 800
   Menu = MainMenu
   Position = poDefaultPosOnly
-  LCLVersion = '4.4.0.0'
+  LCLVersion = '4.6.0.0'
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
@@ -16,7 +16,7 @@ object FormMain: TFormMain
   object Chart: TChart
     Cursor = crCross
     Left = 0
-    Height = 551
+    Height = 431
     Top = 26
     Width = 800
     AxisList = <    
@@ -97,7 +97,7 @@ object FormMain: TFormMain
   object StatusBar: TStatusBar
     Left = 0
     Height = 23
-    Top = 577
+    Top = 457
     Width = 800
     Panels = <    
       item
@@ -128,7 +128,7 @@ object FormMain: TFormMain
     end
     object ToolButtonDiv1: TToolButton
       Left = 24
-      Height = 5
+      Height = 22
       Top = 2
       Caption = 'ToolButtonDiv1'
       Style = tbsDivider
@@ -145,7 +145,7 @@ object FormMain: TFormMain
     end
     object ToolButtonDiv2: TToolButton
       Left = 75
-      Height = 5
+      Height = 22
       Top = 2
       Caption = 'ToolButtonDiv2'
       Style = tbsDivider
@@ -167,7 +167,7 @@ object FormMain: TFormMain
     end
     object ToolButtonDiv3: TToolButton
       Left = 149
-      Height = 5
+      Height = 22
       Top = 2
       Caption = 'ToolButtonDiv3'
       Style = tbsDivider
@@ -527,7 +527,7 @@ object FormMain: TFormMain
     YErrorBarData.Kind = ebkChartSource
     YErrorBarData.IndexMinus = 1
     YErrorBarData.IndexPlus = 1
-    Left = 264
+    Left = 368
     Top = 128
   end
   object LCSrcFoldedData: TListChartSource
@@ -536,7 +536,7 @@ object FormMain: TFormMain
     YErrorBarData.Kind = ebkChartSource
     YErrorBarData.IndexMinus = 1
     YErrorBarData.IndexPlus = 1
-    Left = 264
+    Left = 368
     Top = 184
   end
   object ImageList: TImageList
@@ -580,7 +580,7 @@ object FormMain: TFormMain
     }
   end
   object ChartToolset: TChartToolset
-    Left = 264
+    Left = 368
     Top = 72
     object ChartToolsetZoomDragTool1: TZoomDragTool
       Shift = [ssCtrl, ssLeft]
@@ -626,39 +626,39 @@ object FormMain: TFormMain
   end
   object UDFSrcModel: TUserDefinedChartSource
     OnGetChartDataItem = UDFSrcModelGetChartDataItem
-    Left = 264
-    Top = 240
+    Left = 512
+    Top = 72
   end
   object UDFSrcModelUpLimit: TUserDefinedChartSource
     OnGetChartDataItem = UDFSrcModelGetChartDataItem
-    Left = 264
-    Top = 296
+    Left = 512
+    Top = 128
   end
   object UDFSrcModelDownLimit: TUserDefinedChartSource
     OnGetChartDataItem = UDFSrcModelGetChartDataItem
-    Left = 264
-    Top = 352
+    Left = 512
+    Top = 184
   end
   object UDFSrcModelFolded: TUserDefinedChartSource
     OnGetChartDataItem = UDFSrcModelFoldedGetChartDataItem
-    Left = 264
-    Top = 408
+    Left = 512
+    Top = 240
   end
   object UDFSrcModelFoldedUpLimit: TUserDefinedChartSource
     OnGetChartDataItem = UDFSrcModelFoldedGetChartDataItem
-    Left = 264
-    Top = 456
+    Left = 512
+    Top = 296
   end
   object UDFSrcModelFoldedDownLimit: TUserDefinedChartSource
     OnGetChartDataItem = UDFSrcModelFoldedGetChartDataItem
-    Left = 264
-    Top = 504
+    Left = 512
+    Top = 352
   end
   object SavePictureDialog: TSavePictureDialog
     DefaultExt = '.png'
     Filter = 'PNG files (*.png)|*.png|All files (*.*)|*.*'
     Options = [ofOverwritePrompt, ofPathMustExist, ofEnableSizing, ofViewDetail]
-    Left = 79
-    Top = 408
+    Left = 176
+    Top = 352
   end
 end

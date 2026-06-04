@@ -28,6 +28,7 @@ type
     procedure ActionCopyWithTitlesExecute(Sender: TObject);
     procedure ActionSelectAllExecute(Sender: TObject);
     procedure DrawGrid1DrawCell(Sender: TObject; aCol, aRow: Integer; aRect: TRect; aState: TGridDrawState);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
   private
     FRegions: TBaseRegions;
     function GetGridCell(Grid: TDrawGrid; aCol, aRow: Integer): string;
@@ -98,6 +99,11 @@ begin
   if aCol > 0 then begin
     GridCanvas.TextRect(aRect, aRect.Left + 2, aRect.Top + 2, GetGridCell(DrawGrid1, aCol, aRow));
   end;
+end;
+
+procedure TFormColorLegend.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+begin
+  CanClose := False;
 end;
 
 procedure TFormColorLegend.ActionCopyExecute(Sender: TObject);

@@ -19,7 +19,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
       <RevisionNr Value="1"/>
-      <BuildNr Value="167"/>
+      <BuildNr Value="168"/>
       <StringTable CompanyName="Observatory Osokorky"/>
     </VersionInfo>
     <BuildModes>
