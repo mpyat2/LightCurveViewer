@@ -8,10 +8,10 @@ object FormGetExtent: TFormGetExtent
   Caption = 'Extent'
   ClientHeight = 173
   ClientWidth = 460
+  Position = poMainFormCenter
+  LCLVersion = '4.6.0.0'
   OnCreate = FormCreate
   OnShow = FormShow
-  Position = poMainFormCenter
-  LCLVersion = '3.8.0.0'
   object PanelEdit: TPanel
     Left = 0
     Height = 117
@@ -49,28 +49,28 @@ object FormGetExtent: TFormGetExtent
       Width = 160
       TabOrder = 1
     end
-    object LabelTop: TLabel
+    object LabelYMin: TLabel
       Left = 16
       Height = 15
       Top = 75
-      Width = 20
-      Caption = 'Top'
+      Width = 31
+      Caption = 'Y Min'
     end
-    object EditTop: TEdit
+    object EditYMin: TEdit
       Left = 51
       Height = 23
       Top = 72
       Width = 160
       TabOrder = 2
     end
-    object LabelBottom: TLabel
+    object LabelYMax: TLabel
       Left = 232
       Height = 15
       Top = 75
-      Width = 40
-      Caption = 'Bottom'
+      Width = 32
+      Caption = 'Y Max'
     end
-    object EditBottom: TEdit
+    object EditYMax: TEdit
       Left = 280
       Height = 23
       Top = 72

@@ -18,13 +18,13 @@ type
     ButtonOK: TButton;
     ButtonCancel: TButton;
     EditLeft: TEdit;
-    EditTop: TEdit;
+    EditYMin: TEdit;
     EditRight: TEdit;
-    EditBottom: TEdit;
+    EditYMax: TEdit;
     LabelLeft: TLabel;
-    LabelTop: TLabel;
+    LabelYMin: TLabel;
     LabelRight: TLabel;
-    LabelBottom: TLabel;
+    LabelYMax: TLabel;
     PanelEdit: TPanel;
     PanelButtons: TPanel;
     procedure ButtonOKClick(Sender: TObject);
@@ -81,8 +81,8 @@ procedure TFormGetExtent.FormShow(Sender: TObject);
 begin
   EditLeft.Text := FloatToStr(FX1);
   EditRight.Text := FloatToStr(FX2);
-  EditTop.Text := FloatToStr(FY1);
-  EditBottom.Text := FloatToStr(FY2);
+  EditYMin.Text := FloatToStr(FY1);
+  EditYMax.Text := FloatToStr(FY2);
 end;
 
 procedure TFormGetExtent.ButtonOKClick(Sender: TObject);
@@ -91,16 +91,16 @@ begin
 
   if not GetFieldValue(EditLeft, NaN, NaN, 'Left', FX1) then Exit;
   if not GetFieldValue(EditRight, NaN, NaN, 'Right', FX2) then Exit;
-  if not GetFieldValue(EditTop, NaN, NaN, 'Top', FY1) then Exit;
-  if not GetFieldValue(EditBottom, NaN, NaN, 'Bottom', FY2) then Exit;
+  if not GetFieldValue(EditYMin, NaN, NaN, 'Y Min', FY1) then Exit;
+  if not GetFieldValue(EditYMax, NaN, NaN, 'Y Max', FY2) then Exit;
 
   if FX1 >= FX2 then begin
-    ShowMessage('The Right value mut be greater than the Left one');
+    ShowMessage('The "Right" value mut be greater than the "Left" one');
     Exit;
   end;
 
   if FY1 >= FY2 then begin
-    ShowMessage('The Topt value mut be greater than the Bottom one');
+    ShowMessage('The "Y Max" value mut be greater than the "Y Min" one');
     Exit;
   end;
 
