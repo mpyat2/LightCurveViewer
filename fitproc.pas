@@ -154,13 +154,13 @@ begin
     if ATrigPolyDegrees[N] > 0 then begin
       for I := 1 to ATrigPolyDegrees[N] do begin
         Idx := Idx2 + 2 * (I - 1);
-        S := '2*math.pi*' + FloatToStrLocaleIndependent(I * AFrequencies[N] / X_scale) + '*(t-timeZeroPoint)';
+        S := '2*np.pi*' + FloatToStrLocaleIndependent(I * AFrequencies[N] / X_scale) + '*(t-timeZeroPoint)';
         S2 := '2*π*' + Trim(FloatToStrMod(I * AFrequencies[N] / X_scale)) + '*(t-timeZeroPoint)';
         if solution_vector[Idx] < 0 then Sign := ' - ' else Sign := ' + ';
-        Formula := Formula + Sign + FloatToStrLocaleIndependent(Abs(solution_vector[Idx]))     + ' * math.cos(' + S + ')';
+        Formula := Formula + Sign + FloatToStrLocaleIndependent(Abs(solution_vector[Idx]))     + ' * np.cos(' + S + ')';
         Info := Info + FloatToStrMod(solution_vector[Idx]) + ^I'±'^I + Trim(FloatToStrMod(solution_vector_errors[Idx])) + ^I' * cos(' + S2 + ')' + ^M^J;
         if solution_vector[Idx + 1] < 0 then Sign := ' - ' else Sign := ' + ';
-        Formula := Formula + Sign + FloatToStrLocaleIndependent(Abs(solution_vector[Idx + 1])) + ' * math.sin(' + S + ') \' + ^M^J;
+        Formula := Formula + Sign + FloatToStrLocaleIndependent(Abs(solution_vector[Idx + 1])) + ' * np.sin(' + S + ') \' + ^M^J;
         Info := Info + FloatToStrMod(solution_vector[Idx + 1]) + ^I'±'^I + Trim(FloatToStrMod(solution_vector_errors[Idx + 1])) + ^I' * sin(' + S2 + ')' + ^M^J;
         SetLength(Amplitudes, Length(Amplitudes) + 1);
         Amplitudes[Length(Amplitudes) - 1][0] := I * AFrequencies[N] / X_scale;

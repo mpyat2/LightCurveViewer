@@ -1954,7 +1954,6 @@ begin
 
   FFitFormula := '# Python'^M^J^M^J +
                  'import numpy as np'^M^J +
-                 'import math'^M^J +
                  'import matplotlib.pyplot as plt'^M^J^M^J +
                  'def f(t):' + ^M^J +
                  ' timeZeroPoint = ' + FloatToStrLocaleIndependent(meanTime) + ^M^J +
@@ -1964,12 +1963,12 @@ begin
                  't_max = ' + FloatToStrLocaleIndependent(meanTime + fitXmin * t_scale + nfit * fitXstep * t_scale) + ^M^J +
                  'n = ' + IntToStr(nfit + 1) + ^M^J +
                  't = np.linspace(t_min, t_max, n)' + ^M^J +
-                 'v = np.array(list(map(f, t)))' + ^M^J^M^J +
+                 'm = f(t)' + ^M^J^M^J +
                  'fig, ax = plt.subplots()' + ^M^J;
   if Chart.AxisList[0].Inverted then
     FFitFormula := FFitFormula + 'ax.invert_yaxis()' + ^M^J;
   FFitFormula := FFitFormula +
-                 'ax.plot(t, v)' + ^M^J^M^J +
+                 'ax.plot(t, m)' + ^M^J^M^J +
                  'plt.show()' + ^M^J;
 
   FFitInfo := FFitInfo + ^M^J;
