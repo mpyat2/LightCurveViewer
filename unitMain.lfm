@@ -80,8 +80,11 @@ object FormMain: TFormMain
     end
     object ChartSeriesData: TLineSeries
       LineType = ltNone
+      MarkPositions = lmpInside
+      Marks.Arrow.Visible = True
       Marks.Format = '%2:s'
-      Marks.LinkPen.Color = clBlack
+      Marks.LinkPen.Color = clRed
+      Marks.LinkPen.Width = 2
       Marks.Style = smsLabel
       Pointer.Brush.Color = clPurple
       Pointer.HorizSize = 2
@@ -128,7 +131,7 @@ object FormMain: TFormMain
     end
     object ToolButtonDiv1: TToolButton
       Left = 24
-      Height = 5
+      Height = 22
       Top = 2
       Caption = 'ToolButtonDiv1'
       Style = tbsDivider
@@ -145,7 +148,7 @@ object FormMain: TFormMain
     end
     object ToolButtonDiv2: TToolButton
       Left = 75
-      Height = 5
+      Height = 22
       Top = 2
       Caption = 'ToolButtonDiv2'
       Style = tbsDivider
@@ -167,7 +170,7 @@ object FormMain: TFormMain
     end
     object ToolButtonDiv3: TToolButton
       Left = 149
-      Height = 5
+      Height = 22
       Top = 2
       Caption = 'ToolButtonDiv3'
       Style = tbsDivider
@@ -267,6 +270,12 @@ object FormMain: TFormMain
         Action = ActionLogicalExtent
       end
       object Separator3: TMenuItem
+        Caption = '-'
+      end
+      object MenuItemCleanMarks: TMenuItem
+        Action = ActionCleanMarks
+      end
+      object Separator14: TMenuItem
         Caption = '-'
       end
       object MenuItemObservations: TMenuItem
@@ -511,6 +520,11 @@ object FormMain: TFormMain
       Category = 'View'
       Caption = 'Highlight Visible Points'
       OnExecute = ActionCustomHColorExecute
+    end
+    object ActionCleanMarks: TAction
+      Category = 'View'
+      Caption = 'Clean Marks'
+      OnExecute = ActionCleanMarksExecute
     end
   end
   object OpenDialog: TOpenDialog

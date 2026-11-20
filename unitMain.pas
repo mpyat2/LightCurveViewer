@@ -17,6 +17,7 @@ type
   { TFormMain }
 
   TFormMain = class(TForm)
+    ActionCleanMarks: TAction;
     ActionCustomHColor: TAction;
     ActionYearByYearColor: TAction;
     ActionDayByDayColor: TAction;
@@ -65,6 +66,7 @@ type
     LCSrcData: TListChartSource;
     MainMenu: TMainMenu;
     MenuFile: TMenuItem;
+    MenuItemCleanMarks: TMenuItem;
     MenuItemCustomHColor: TMenuItem;
     MenuItemDayByDayColor: TMenuItem;
     MenuItemYearByYearColor: TMenuItem;
@@ -110,6 +112,7 @@ type
     Separator11: TMenuItem;
     Separator12: TMenuItem;
     Separator13: TMenuItem;
+    Separator14: TMenuItem;
     Separator2: TMenuItem;
     Separator3: TMenuItem;
     Separator4: TMenuItem;
@@ -137,6 +140,7 @@ type
     UDFSrcModelFoldedUpLimit: TUserDefinedChartSource;
     UDFSrcModelFoldedDownLimit: TUserDefinedChartSource;
     procedure ActionChartPropertiesExecute(Sender: TObject);
+    procedure ActionCleanMarksExecute(Sender: TObject);
     procedure ActionCopyChartImageExecute(Sender: TObject);
     procedure ActionCustomHColorExecute(Sender: TObject);
     procedure ActionCycleByCycleColorExecute(Sender: TObject);
@@ -662,6 +666,18 @@ begin
   end;
 end;
 
+procedure TFormMain.ActionCleanMarksExecute(Sender: TObject);
+var
+  Source: TListChartSource;
+  I: Integer;
+begin
+  if (ChartSeriesData.Source = LCSrcData) or (ChartSeriesData.Source = LCSrcFoldedData) then begin
+    Source := ChartSeriesData.Source as TListChartSource;
+    for I := 0 to Source.Count - 1 do
+      Source.SetText(I, '');
+  end;
+end;
+
 procedure TFormMain.ActionUserManualExecute(Sender: TObject);
 begin
 {$IFDEF Linux}
@@ -808,6 +824,10 @@ begin
   end
   else
   if AAction = ActionLogicalExtent then begin
+    (AAction as TAction).Enabled := (LCSrcData.Count > 0) and not FCalculationInProgress;
+  end
+  else
+  if AAction = ActionCleanMarks then begin
     (AAction as TAction).Enabled := (LCSrcData.Count > 0) and not FCalculationInProgress;
   end
   else
@@ -1314,7 +1334,7 @@ begin
   ChartSeriesData.Pointer.Pen.Color := ChartSeriesData.Pointer.Brush.Color;
   ChartSeriesModel.LinePen.Color := TColor(Ini.ReadInteger('SETTINGS', 'ModelColor', clLime));
   ChartSeriesModelUpLimit.LinePen.Color := TColor(Ini.ReadInteger('SETTINGS', 'ModelUpLimitColor', clRed));
-  ChartSeriesModelUpLimit.LinePen.Color := TColor(Ini.ReadInteger('SETTINGS', 'ModelDownLimitColor', clRed));
+  ChartSeriesModelDownLimit.LinePen.Color := TColor(Ini.ReadInteger('SETTINGS', 'ModelDownLimitColor', clRed));
   FChartXtitle := Ini.ReadString(Section, 'XTitle', '');
   FChartYtitle := Ini.ReadString(Section, 'YTitle', '');
   FObjectName := Ini.ReadString(Section, 'Object', FObjectName);
