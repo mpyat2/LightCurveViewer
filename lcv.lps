@@ -19,8 +19,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="413"/>
-        <CursorPos Y="431"/>
+        <TopLine Value="1323"/>
+        <CursorPos X="3" Y="1327"/>
         <UsageCount Value="203"/>
         <Bookmarks Count="5">
           <Item0 Y="1749" Left="1" Top="1719" ID="4"/>
@@ -679,18 +679,6 @@
     <JumpHistory HistoryIndex="29">
       <Position>
         <Filename Value="unitMain.pas"/>
-        <Caret Line="705" TopLine="686"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="400" Column="28" TopLine="386"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
-        <Caret Line="701" Column="3" TopLine="686"/>
-      </Position>
-      <Position>
-        <Filename Value="unitMain.pas"/>
         <Caret Line="410" Column="24" TopLine="386"/>
       </Position>
       <Position>
@@ -796,6 +784,17 @@
       <Position>
         <Filename Value="unitMain.pas"/>
         <Caret Line="302" TopLine="286"/>
+      </Position>
+      <Position>
+        <Filename Value="unitMain.pas"/>
+        <Caret Line="431" TopLine="413"/>
+      </Position>
+      <Position>
+        <Filename Value="unitMain.pas"/>
+      </Position>
+      <Position>
+        <Filename Value="unitMain.pas"/>
+        <Caret Line="224" Column="32" TopLine="195"/>
       </Position>
     </JumpHistory>
     <RunParams>
