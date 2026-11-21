@@ -80,7 +80,6 @@ object FormMain: TFormMain
     end
     object ChartSeriesData: TLineSeries
       LineType = ltNone
-      MarkPositions = lmpInside
       Marks.Arrow.Visible = True
       Marks.Format = '%2:s'
       Marks.LinkPen.Color = clRed
@@ -272,8 +271,8 @@ object FormMain: TFormMain
       object Separator3: TMenuItem
         Caption = '-'
       end
-      object MenuItemCleanMarks: TMenuItem
-        Action = ActionCleanMarks
+      object MenuItemClearMarks: TMenuItem
+        Action = ActionClearMarks
       end
       object Separator14: TMenuItem
         Caption = '-'
@@ -521,10 +520,10 @@ object FormMain: TFormMain
       Caption = 'Highlight Visible Points'
       OnExecute = ActionCustomHColorExecute
     end
-    object ActionCleanMarks: TAction
+    object ActionClearMarks: TAction
       Category = 'View'
-      Caption = 'Clean Marks'
-      OnExecute = ActionCleanMarksExecute
+      Caption = 'Clear Marks'
+      OnExecute = ActionClearMarksExecute
     end
   end
   object OpenDialog: TOpenDialog

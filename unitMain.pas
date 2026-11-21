@@ -17,7 +17,7 @@ type
   { TFormMain }
 
   TFormMain = class(TForm)
-    ActionCleanMarks: TAction;
+    ActionClearMarks: TAction;
     ActionCustomHColor: TAction;
     ActionYearByYearColor: TAction;
     ActionDayByDayColor: TAction;
@@ -66,7 +66,7 @@ type
     LCSrcData: TListChartSource;
     MainMenu: TMainMenu;
     MenuFile: TMenuItem;
-    MenuItemCleanMarks: TMenuItem;
+    MenuItemClearMarks: TMenuItem;
     MenuItemCustomHColor: TMenuItem;
     MenuItemDayByDayColor: TMenuItem;
     MenuItemYearByYearColor: TMenuItem;
@@ -140,7 +140,7 @@ type
     UDFSrcModelFoldedUpLimit: TUserDefinedChartSource;
     UDFSrcModelFoldedDownLimit: TUserDefinedChartSource;
     procedure ActionChartPropertiesExecute(Sender: TObject);
-    procedure ActionCleanMarksExecute(Sender: TObject);
+    procedure ActionClearMarksExecute(Sender: TObject);
     procedure ActionCopyChartImageExecute(Sender: TObject);
     procedure ActionCustomHColorExecute(Sender: TObject);
     procedure ActionCycleByCycleColorExecute(Sender: TObject);
@@ -666,7 +666,7 @@ begin
   end;
 end;
 
-procedure TFormMain.ActionCleanMarksExecute(Sender: TObject);
+procedure TFormMain.ActionClearMarksExecute(Sender: TObject);
 var
   Source: TListChartSource;
   I: Integer;
@@ -827,7 +827,7 @@ begin
     (AAction as TAction).Enabled := (LCSrcData.Count > 0) and not FCalculationInProgress;
   end
   else
-  if AAction = ActionCleanMarks then begin
+  if AAction = ActionClearMarks then begin
     (AAction as TAction).Enabled := (LCSrcData.Count > 0) and not FCalculationInProgress;
   end
   else
